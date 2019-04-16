@@ -1,0 +1,8 @@
+version: "3"
+services:
+    data-processor:
+        image: python:3-stretch
+        volumes:
+            - $PWD:/srv/50words
+        working_dir: /srv/50words
+        command: "./extract-data.sh"
