@@ -1,0 +1,22 @@
+$background-color: rgba(34, 49, 63, 0.05);
+$background-color-dark: #22313f;
+$background-color-light-grey: #ececec;
+$brand-primary-color: #68c3a3;
+$brand-success-color: #26a65b;
+$brand-highlight-color: #f9690e;
+$brand-error-color: #cf000f;
+$brand-text-color: #013243;
+$brand-help-color: #6c7a89;
+$white: #fff;
+:export {
+    backgroundColor: $background-color;
+    backgroundColorDark: $background-color-dark;
+    backgroundColorLightGrey: $background-color-light-grey;
+    brandPrimaryColor: $brand-primary-color;
+    brandSuccessColor: $brand-success-color;
+    brandHighlightColor: $brand-highlight-color;
+    brandErrorColor: $brand-error-color;
+    brandTextColor: $brand-text-color;
+    brandHelpColor: $brand-help-color;
+    white: $white;
+}
