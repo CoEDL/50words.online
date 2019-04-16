@@ -1,0 +1,62 @@
+{
+    "name": "50words",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "develop": "npm install --no-progress && node_modules/.bin/webpack-dev-server --config webpack.develop.js --hot --inline",
+        "build": "npm install --no-progress && node_modules/.bin/webpack --config webpack.production.js",
+        "unitTests": "npm install && node_modules/mocha/bin/mocha -w -r jsdom-global/register 'src/**/*.spec.js'"
+    },
+    "repository": {
+        "type": "git",
+        "url": ";"
+    },
+    "author": "Marco La Rosa",
+    "license": "ISC",
+    "dependencies": {
+        "@babel/polyfill": "^7.2.5",
+        "@fortawesome/fontawesome-pro": "^5.7.0",
+        "@fortawesome/fontawesome-svg-core": "^1.2.13",
+        "bootstrap": "^4.2.1",
+        "element-ui": "^2.6.1",
+        "hammerjs": "^2.0.8",
+        "iv-viewer": "^2.0.0",
+        "lodash": "^4.17.11",
+        "vue": "^2.5.22",
+        "vue-infinite-scroll": "^2.0.2",
+        "vue-masonry": "^0.11.7",
+        "vue-router": "^3.0.2",
+        "vue-scrollto": "^2.13.0",
+        "vuex": "^3.1.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.2.3",
+        "@babel/core": "^7.3.4",
+        "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+        "@babel/preset-env": "^7.3.4",
+        "babel-loader": "^8.0.5",
+        "chai": "^4.2.0",
+        "clean-webpack-plugin": "^0.1.19",
+        "connect-history-api-fallback": "^1.6.0",
+        "css-loader": "^0.28.11",
+        "file-loader": "^1.1.11",
+        "html-webpack-plugin": "^4.0.0-beta.5",
+        "jsdom": "^11.12.0",
+        "jsdom-global": "^3.0.2",
+        "koa-connect": "^2.0.1",
+        "mini-css-extract-plugin": "^0.4.5",
+        "mocha": "^5.2.0",
+        "node-sass": "^4.11.0",
+        "optimize-css-assets-webpack-plugin": "^5.0.1",
+        "raw-loader": "^0.5.1",
+        "sass-loader": "^7.1.0",
+        "terser-webpack-plugin": "^1.2.3",
+        "uglifyjs-webpack-plugin": "^2.1.1",
+        "vue-loader": "^15.6.2",
+        "vue-template-compiler": "^2.5.22",
+        "webpack": "4.28.0",
+        "webpack-cli": "^3.2.1",
+        "webpack-dev-server": "^3.1.14"
+    }
+}
