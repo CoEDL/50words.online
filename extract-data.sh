@@ -1,4 +1,5 @@
 #!/bin/bash
 
 pip install xlrd
-find data
+python3 --version
+python3 extract-data.py
