@@ -7,12 +7,29 @@ Vue.use(Vuex);
 
 const configuration = {
     strict: process.env.NODE_ENV !== "production",
-    state: {},
+    state: reset(),
     mutations: {
         reset(state) {
-            state = {};
+            state = reset();
+        },
+        setWords(state, payload) {
+            state.words = { ...payload.words };
+        },
+        setLanguages(state, payload) {
+            state.languages = [...payload.languages];
+        },
+        setSelectedLanguage(state, payload) {
+            state.selectedLanguage = payload;
         }
     },
     getters: {}
 };
 export const store = new Vuex.Store(configuration);
+
+function reset() {
+    return {
+        words: {},
+        languages: [],
+        selectedLanguage: {}
+    };
+}

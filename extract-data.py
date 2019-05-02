@@ -90,7 +90,7 @@ class DataExtractor:
         self.makepath(self.repository)
         for key, item in self.data.items():
             item_path = os.path.join(self.repository, item['code'])
-            self.languages[item['name']] = item['code'] 
+            self.languages[item['name']] = { 'name': item['name'], 'code': item['code'] , 'lat': item['lat'], 'lng': item['lng'] }
             self.makepath(item_path)
 
             if 'words' in item.keys():
@@ -121,7 +121,7 @@ class DataExtractor:
             f.write(json.dumps({ 'words': list(self.words.keys()) }))
 
         with open(f"{self.repository}/languages.json", 'w') as f:
-            f.write(json.dumps({ 'languages': self.languages }))
+            f.write(json.dumps({ 'languages': [ item for (key, item) in self.languages.items() ] }))
 
 
 if __name__ == "__main__":
