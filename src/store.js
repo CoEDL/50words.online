@@ -2,7 +2,6 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import { flattenDeep } from "lodash";
 Vue.use(Vuex);
 
 const configuration = {
@@ -13,7 +12,7 @@ const configuration = {
             state = reset();
         },
         setWords(state, payload) {
-            state.words = { ...payload.words };
+            state.words = [...payload.words];
         },
         setLanguages(state, payload) {
             state.languages = [...payload.languages];
@@ -28,7 +27,7 @@ export const store = new Vuex.Store(configuration);
 
 function reset() {
     return {
-        words: {},
+        words: [],
         languages: [],
         selectedLanguage: {}
     };

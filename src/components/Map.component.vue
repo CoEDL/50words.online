@@ -1,6 +1,11 @@
 <template>
     <div>
         <div id="map" class="style-map"></div>
+        <div class="style-map-reset">
+            <el-button type="primary" circle @click="centerMap">
+                <i class="fas fa-crosshairs"></i>
+            </el-button>
+        </div>
     </div>
 </template>
 
@@ -93,6 +98,13 @@ export default {
     left: 50px;
     width: calc(100vw - 50px);
     height: 100vh;
+}
+
+.style-map-reset {
+    position: fixed;
+    z-index: 2;
+    top: 10px;
+    left: calc(100vw - 50px);
 }
 </style>
 

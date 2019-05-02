@@ -6,8 +6,13 @@
         >
             <div class="row">
                 <div class="col">
-                    <el-button type="text" circle class="style-button" @click="toggleCollapse">
-                        <i class="fal fa-info-circle fa-2x"></i>
+                    <el-button type="text" class="px-2 style-button" @click="toggleCollapse">
+                        <span v-show="isCollapsed">
+                            <i class="fal fa-info-circle fa-2x"></i>
+                        </span>
+                        <span v-show="!isCollapsed" class="px-2">
+                            <i class="fal fa-arrow-left fa-2x"></i>
+                        </span>
                     </el-button>
                 </div>
             </div>
@@ -22,6 +27,11 @@
                     <div class="row">
                         <div class="col">more information to come...</div>
                     </div>
+                    <div class="row">
+                        <div class="col">
+                            <word-list-component/>
+                        </div>
+                    </div>
                 </span>
                 <span v-if="showLanguageData">
                     <render-language-information :data="languageData"/>
@@ -33,11 +43,13 @@
 
 <script>
 import RenderLanguageInformation from "./RenderLanguageInformation.component.vue";
+import WordListComponent from "./WordList.component.vue";
 import { loadLanguageData } from "../data-loader.service.js";
 
 export default {
     components: {
-        RenderLanguageInformation
+        RenderLanguageInformation,
+        WordListComponent
     },
     data() {
         return {
@@ -74,6 +86,7 @@ export default {
                 }, 400);
             } else {
                 this.showContent = false;
+                this.$store.commit("setSelectedLanguage", undefined);
             }
             this.isCollapsed = !this.isCollapsed;
         }
@@ -105,6 +118,7 @@ export default {
 @media only screen and (min-width: 600px) {
     .style-open-panel {
         width: calc(100vw * 0.5);
+        max-width: 500px;
         transition-timing-function: ease-in;
     }
 }

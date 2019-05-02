@@ -2,6 +2,7 @@
 
 import base64
 import json
+import hashlib
 import os
 import os.path
 from shutil import copyfile
@@ -24,26 +25,19 @@ class DataExtractor:
         def parse_row(row):
             return {
                 'code': row[0],
-                'name': row[1],
+                'name': row[5],
                 'lat': row[3],
                 'lng': row[4],
-                'asciiName': row[5],
                 'glotto_id': row[6]
             }
 
 
         print("Extracting geography data")
         with xlrd.open_workbook('data/AIATSIS-geography.xlsx') as wb:
-            sh = wb.sheet_by_index(0)  # or wb.sheet_by_name('name_of_the_sheet_here')
+            sh = wb.sheet_by_index(0)
             for r in range(1, sh.nrows):
                 row = parse_row(sh.row_values(r))
                 self.data[row['code']] = row
-            # with open('data/AIATSIS-geography.csv', 'w', newline="") as f:   # open('a_file.csv', 'w', newline="") for python 3
-            #     c = csv.writer(f)
-            #     for r in range(sh.nrows):
-            #         print(sh.row_values(r))
-            #         data[sh.row_values]
-            #         c.writerow(sh.row_values(r))
     
     def extract_language_data(self):
         def parse_row(row):
@@ -90,17 +84,23 @@ class DataExtractor:
         self.makepath(self.repository)
         for key, item in self.data.items():
             item_path = os.path.join(self.repository, item['code'])
-            self.languages[item['name']] = { 'name': item['name'], 'code': item['code'] , 'lat': item['lat'], 'lng': item['lng'] }
+            self.languages[item['code']] = { 'name': item['name'], 'code': item['code'] , 'lat': item['lat'], 'lng': item['lng'] }
             self.makepath(item_path)
 
             if 'words' in item.keys():
                 words = []
                 for word in item['words']:
-                    self.words[word['english']] = True
+                    if word['english'] not in self.words.keys():
+                        self.words[word['english']] = []
+
                     if word['audio_file']:
                         copyfile(word['audio_file'], os.path.join(item_path, os.path.basename(word['audio_file'])))
                         word['audio_file'] = os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', '')
+
                     words.append(word)
+                    word['language'] = item['name']
+                    word['code'] = item['code']
+                    self.words[word['english']].append(word)
                 item['words'] = words
 
             with open(os.path.join(item_path, 'index.json'), 'w') as f:
@@ -113,16 +113,24 @@ class DataExtractor:
             pass
 
     def write_master_indices(self):
-        # print(self.data)
         with open(f"{self.repository}/index.json", 'w') as f:
             f.write(json.dumps(self.data))
 
-        with open(f"{self.repository}/words.json", 'w') as f:
-            f.write(json.dumps({ 'words': list(self.words.keys()) }))
-
         with open(f"{self.repository}/languages.json", 'w') as f:
             f.write(json.dumps({ 'languages': [ item for (key, item) in self.languages.items() ] }))
+        
 
+        words = []
+        for (key, item) in self.words.items():
+            m = hashlib.sha256()
+            m.update(key.encode())
+            word = m.hexdigest()
+            words.append({ 'name': item[0]['english'], 'index': f"{word}.json" })
+            with open(f"{self.repository}/{word}.json", 'w') as f:
+                f.write(json.dumps(item))
+
+        with open(f"{self.repository}/words.json", 'w') as f:
+            f.write(json.dumps({ 'words': words }))
 
 if __name__ == "__main__":
     d = DataExtractor()

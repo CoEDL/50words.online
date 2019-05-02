@@ -1,6 +1,6 @@
 "use strict";
 
-import { capitalize } from "lodash";
+import { capitalize, orderBy } from "lodash";
 
 export async function loadData({ store }) {
     const dataFiles = ["words", "languages"];
@@ -25,4 +25,13 @@ export async function loadLanguageData({ code }) {
         throw new Error(response);
     }
     return await response.json();
+}
+
+export async function loadWordData({ index }) {
+    // console.log(`/repository/${index}`);
+    let response = await fetch(`/repository/${index}`);
+    if (response.status !== 200) {
+        throw new Error(response);
+    }
+    return orderBy(await response.json(), "language");
 }

@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col">
                 <h2 class="style-heading">
-                    {{data.asciiName}}
+                    {{data.name}}
                     <el-button type="text" class="style-button" circle @click="reset">
                         <i class="fas fa-times fa-2x"></i>
                     </el-button>
