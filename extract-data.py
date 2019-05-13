@@ -20,6 +20,11 @@ class DataExtractor:
         self.extract_language_data()
         self.build_repository()
         self.write_master_indices()
+        for lang in self.data.items():
+            print(lang)
+
+        for lang in self.languages.items():
+            print(lang)
 
     def extract_aiatsis_geographies(self):
         def parse_row(row):
@@ -87,6 +92,7 @@ class DataExtractor:
             self.languages[item['code']] = { 'name': item['name'], 'code': item['code'] , 'lat': item['lat'], 'lng': item['lng'] }
             self.makepath(item_path)
 
+            self.languages[item['code']]['words'] = False
             if 'words' in item.keys():
                 words = []
                 for word in item['words']:
@@ -101,6 +107,7 @@ class DataExtractor:
                     word['language'] = item['name']
                     word['code'] = item['code']
                     self.words[word['english']].append(word)
+                self.languages[item['code']]['words'] = True
                 item['words'] = words
 
             with open(os.path.join(item_path, 'index.json'), 'w') as f:
