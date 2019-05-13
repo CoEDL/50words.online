@@ -36,7 +36,14 @@ export async function loadLanguageData({ code }) {
     if (response.status !== 200) {
         throw new Error(response);
     }
-    return await response.json();
+    let data = await response.json();
+    data.words = data.words.map(w => {
+        return {
+            ...w,
+            audio_file: mapRepositoryRoot(w.audio_file)
+        };
+    });
+    return data;
 }
 
 export async function loadWordData({ index }) {
