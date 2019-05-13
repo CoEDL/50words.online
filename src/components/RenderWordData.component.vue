@@ -27,12 +27,23 @@ export default {
         word: Object
     },
     data() {
-        return {};
+        return {
+            watchers: {},
+            canPlayThrough: false
+        };
+    },
+    mounted() {
+        this.watchers.audio = this.$watch("word.audio_file", () => {
+            if (this.$refs.audioElement) this.$refs.audioElement.load();
+        });
+    },
+    beforeDestroy() {
+        if (this.watchers.audio) this.watchers.audio();
     },
     methods: {
         playWord() {
             setTimeout(() => {
-                this.$refs["audioElement"].play();
+                this.$refs.audioElement.play();
             }, 500);
         }
     }
