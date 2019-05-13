@@ -16,8 +16,8 @@
                     >{{word}}</el-button>
                 </div>
             </div>
-            <div class="row">
-                <div class="col" v-if="selectedWord === word">
+            <div class="row" v-if="selectedWord === word">
+                <div class="col">
                     <div v-for="(w, idx2) of wordData" :key="idx2">
                         <render-word-data-component :word="w"/>
                     </div>
