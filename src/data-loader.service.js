@@ -44,7 +44,14 @@ export async function loadWordData({ index }) {
     if (response.status !== 200) {
         throw new Error(response);
     }
-    return orderBy(await response.json(), "language");
+    let word = orderBy(await response.json(), "language");
+    word = word.map(w => {
+        return {
+            ...w,
+            audio_file: mapRepositoryRoot(w.audio_file)
+        };
+    });
+    return word;
 }
 
 export function mapRepositoryRoot(path) {
