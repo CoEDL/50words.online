@@ -22,12 +22,16 @@
 </template>
 
 <script>
+import { mapRepositoryRoot } from "src/data-loader.service";
 export default {
     props: {
         word: Object
     },
     data() {
         return {};
+    },
+    mounted() {
+        this.word.audio_file = mapRepositoryRoot(this.word.audio_file);
     },
     methods: {
         playWord() {

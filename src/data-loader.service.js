@@ -1,26 +1,38 @@
 "use strict";
 
-import { capitalize, orderBy } from "lodash";
+import { compact, orderBy } from "lodash";
 
 export async function loadData({ store }) {
-    const dataFiles = ["words", "languages"];
-    for (let file of dataFiles) {
+    const words = (await get(mapRepositoryRoot("/repository/words.json")))
+        .words;
+    store.commit(`setWords`, { words });
+    let languages = (await get(mapRepositoryRoot("/repository/languages.json")))
+        .languages;
+    languages = compact(
+        languages.map(l => {
+            return l.words ? l : undefined;
+        })
+    );
+    store.commit(`setLanguages`, { languages });
+
+    async function get(path) {
         try {
-            let response = await fetch(`/repository/${file}.json`);
+            let response = await fetch(path);
             if (response.status !== 200) {
                 throw new Error(response);
             }
-            let data = await response.json();
-            store.commit(`set${capitalize(file)}`, data);
+            return await response.json();
         } catch (error) {
             console.log(error);
+            return [];
         }
     }
 }
 
 export async function loadLanguageData({ code }) {
-    // console.log(`/repository/${code}/index.json`)
-    let response = await fetch(`/repository/C20/index.json`);
+    let response = await fetch(
+        mapRepositoryRoot(`/repository/${code}/index.json`)
+    );
     if (response.status !== 200) {
         throw new Error(response);
     }
@@ -28,10 +40,17 @@ export async function loadLanguageData({ code }) {
 }
 
 export async function loadWordData({ index }) {
-    // console.log(`/repository/${index}`);
-    let response = await fetch(`/repository/${index}`);
+    let response = await fetch(mapRepositoryRoot(`/repository/${index}`));
     if (response.status !== 200) {
         throw new Error(response);
     }
     return orderBy(await response.json(), "language");
+}
+
+export function mapRepositoryRoot(path) {
+    const root =
+        process.env.NODE_ENV === "development"
+            ? "/repository"
+            : "/50words/repository";
+    return path.replace("/repository", root);
 }
