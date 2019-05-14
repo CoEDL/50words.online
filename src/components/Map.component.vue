@@ -73,13 +73,8 @@ export default {
                 .addTo(this.map);
             const popupInstance = new RenderWordClass({
                 propsData: {
-                    word: {
-                        english: "goodbye/I'll see you later",
-                        indigenous: "marndaj",
-                        audio_file: "/repository/N36/N36_goodbye.wav",
-                        language: "Bilinarra",
-                        code: "N36"
-                    }
+                    layout: "popup",
+                    word: e.features[0].properties
                 }
             });
             popupInstance.$mount("#vue-popup-content");
@@ -207,3 +202,10 @@ export default {
     left: calc(100vw - 50px);
 }
 </style>
+
+<style lang="scss">
+.mapboxgl-popup-content {
+    width: 400px;
+}
+</style>
+
