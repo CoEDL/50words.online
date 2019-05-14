@@ -16,37 +16,37 @@
                     >{{word}}</el-button>
                 </div>
             </div>
-            <div class="row" v-if="selectedWord === word">
-                <div class="col">
-                    <div v-for="(w, idx2) of wordData" :key="idx2">
-                        <render-word-data-component :word="w"/>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </template>
 
 <script>
-import RenderWordDataComponent from "./RenderWordData.component.vue";
 import { loadWordData } from "../data-loader.service";
 
 export default {
-    components: {
-        RenderWordDataComponent
-    },
     data() {
         return {
+            watchers: {},
             selectedWord: undefined,
             wordData: []
         };
     },
     computed: {
+        storeSelectedWord: function() {
+            if (!this.$store.state.selectedWord) this.selectedWord = undefined;
+            return this.$store.state.selectedWord;
+        },
         words: function() {
             return this.$store.state.words.map(w => {
                 return w.name;
             });
         }
+    },
+    mounted() {
+        this.watchers.selectedWord = this.$watch("storeSelectedWord", () => {});
+    },
+    beforeDestroy() {
+        this.watchers.selectedWord();
     },
     methods: {
         async setSelectedWord(word) {
@@ -54,7 +54,8 @@ export default {
             word = this.$store.state.words.filter(w => {
                 return w.name === word;
             })[0];
-            this.wordData = await loadWordData({ index: word.index });
+            const wordData = await loadWordData({ index: word.index });
+            this.$store.commit("setSelectedWord", { word: wordData });
         }
     }
 };
