@@ -19,6 +19,21 @@ const configuration = {
         },
         setSelectedLanguage(state, payload) {
             state.selectedLanguage = payload;
+        },
+        setSelectedWord(state, payload) {
+            state.selectedWord = payload.word.map(w => {
+                const language = state.languages.filter(
+                    l => l.code === w.code
+                )[0];
+                return {
+                    ...w,
+                    lat: language.lat,
+                    lng: language.lng
+                };
+            });
+        },
+        unsetSelectedWord(state) {
+            state.selectedWord = undefined;
         }
     },
     getters: {}
@@ -29,6 +44,7 @@ function reset() {
     return {
         words: [],
         languages: [],
-        selectedLanguage: {}
+        selectedLanguage: {},
+        selectedWord: undefined
     };
 }
