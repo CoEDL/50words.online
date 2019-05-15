@@ -34,6 +34,12 @@ const configuration = {
         },
         unsetSelectedWord(state) {
             state.selectedWord = undefined;
+        },
+        unsetSelectedLanguage(state) {
+            state.selectedLanguage = undefined;
+        },
+        show(state, payload) {
+            state.show = payload;
         }
     },
     getters: {}
@@ -42,9 +48,10 @@ export const store = new Vuex.Store(configuration);
 
 function reset() {
     return {
+        show: "languages",
         words: [],
         languages: [],
-        selectedLanguage: {},
+        selectedLanguage: undefined,
         selectedWord: undefined
     };
 }

@@ -2,6 +2,7 @@
     <div>
         <information-panel-component/>
         <map-component/>
+        <data-selector-component class="style-data-selector"/>
     </div>
 </template>
 
@@ -9,11 +10,13 @@
 import { loadData } from "src/data-loader.service";
 import MapComponent from "./Map.component.vue";
 import InformationPanelComponent from "./InformationPanel.component.vue";
+import DataSelectorComponent from "./DataSelector.component.vue";
 
 export default {
     components: {
         MapComponent,
-        InformationPanelComponent
+        InformationPanelComponent,
+        DataSelectorComponent
     },
     data() {
         return {};
@@ -24,4 +27,10 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.style-data-selector {
+    position: fixed;
+    top: 15px;
+    left: calc(100vw - 370px);
+}
+</style>

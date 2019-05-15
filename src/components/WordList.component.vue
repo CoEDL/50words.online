@@ -65,7 +65,7 @@ export default {
 @import "assets/variables.scss";
 
 .style-selected-word {
-    color: $brand-primary-color;
+    color: $text-color;
     font-size: 3em;
 }
 </style>

@@ -61,6 +61,8 @@ export default {
     },
     computed: {
         selectedLanguage: function() {
+            if (!this.$store.state.selectedLanguage)
+                this.showLanguageData = false;
             return this.$store.state.selectedLanguage;
         }
     },
@@ -82,6 +84,7 @@ export default {
         toggleCollapse() {
             if (this.isCollapsed) {
                 setTimeout(() => {
+                    this.$store.commit("unsetSelectedLanguage");
                     this.showContent = true;
                 }, 400);
             } else {
@@ -95,13 +98,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "assets/variables.scss";
+
 .style-panel {
     position: fixed;
     z-index: 2;
     top: 0;
     left: 0;
     height: 100vh;
-    background-color: #049372;
+    background-color: $primary-color;
     transition: 0.3s;
     overflow-y: scroll;
     overflow-x: hidden;
