@@ -124,7 +124,6 @@ export default {
             });
         },
         renderLanguageLayer() {
-            console.log("render language layer");
             if (this.map.getLayer("words"))
                 this.map.setLayoutProperty("words", "visibility", "none");
             const features = this.$store.state.languages.map(language => {
@@ -194,7 +193,13 @@ export default {
                         "text-color": styles.textColor
                     },
                     layout: {
-                        "text-field": "{indigenous}"
+                        "text-field": "{indigenous}",
+                        "text-variable-anchor": [
+                            "top",
+                            "bottom",
+                            "left",
+                            "right"
+                        ]
                     }
                 });
             } else {
@@ -228,6 +233,11 @@ export default {
 <style lang="scss">
 .mapboxgl-popup-content {
     width: 400px;
+    font-size: 1.5em;
+}
+
+.mapboxgl-popup-close-button {
+    display: none;
 }
 </style>
 

@@ -3,6 +3,9 @@
         <div class="style-word-row">
             <span v-if="layout === 'popup'">
                 <div class="row">
+                    <div class="col">{{word.language}}</div>
+                </div>
+                <div class="row">
                     <div class="col-4">
                         <el-button
                             type="text"
@@ -17,12 +20,12 @@
                             <code>audio</code> element.
                         </audio>
                     </div>
-                    <div class="col-8">{{word.english}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-4"></div>
                     <div class="col-8">{{word.indigenous}}</div>
                 </div>
+                <!-- <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-8">{{word.indigenous}}</div>
+                </div>-->
             </span>
             <span v-if="layout !=='popup'">
                 <div class="row">
