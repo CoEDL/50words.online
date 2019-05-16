@@ -25,7 +25,6 @@ const configuration = {
                 const language = state.languages.filter(
                     l => l.code === w.code
                 )[0];
-                console.log(language);
                 return {
                     ...w,
                     language: language.name,
