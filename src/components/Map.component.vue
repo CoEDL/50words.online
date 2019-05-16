@@ -225,7 +225,7 @@ export default {
 .style-map-reset {
     position: fixed;
     z-index: 2;
-    top: 10px;
+    top: 23px;
     left: calc(100vw - 50px);
 }
 </style>
