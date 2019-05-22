@@ -1,9 +1,11 @@
 <template>
     <div>
-        <div class="row mt-5">
-            <div
-                class="col"
-            >Select a word to see the list of languages for that word and audio samples.</div>
+        <div class="row my-3">
+            <div class="col style-help-text text-center px-5">
+                Select a word to see the list of
+                languages
+                <br>for that word and audio samples.
+            </div>
         </div>
         <div v-for="(word, idx) of words" :key="idx">
             <div class="row">
@@ -67,6 +69,10 @@ export default {
 .style-selected-word {
     color: $text-color;
     font-size: 3em;
+}
+
+.style-help-text {
+    font-size: 1.2em;
 }
 </style>
 
