@@ -150,14 +150,13 @@ export default {
                             features
                         }
                     },
-                    layout: {
-                        visibility: "visible"
-                    },
                     paint: {
                         "text-color": "#f15a22"
                     },
                     layout: {
-                        "text-field": "{name}"
+                        visibility: "visible",
+                        "text-field": "{name}",
+                        "text-max-width": 20
                     }
                 });
             }
@@ -194,6 +193,7 @@ export default {
                     },
                     layout: {
                         "text-field": "{indigenous}",
+                        "text-max-width": 20,
                         "text-variable-anchor": [
                             "top",
                             "bottom",
