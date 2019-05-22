@@ -25,7 +25,12 @@
                 </div>
                 <span v-if="!showLanguageData">
                     <div class="row">
-                        <div class="col">more information to come...</div>
+                        <div class="col style-more-information text-justify">
+                            This project aims to provide resources for
+                            schools to teach at least fifty words in their local language.
+                            Australian Indigenous languages have many thousands of words but
+                            we are displaying just some on this site, with audio or video.
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col">
@@ -130,6 +135,11 @@ export default {
 
 .style-button {
     color: #000;
+}
+
+.style-more-information {
+    padding: 15px;
+    font-size: 1.6em;
 }
 </style>
 
