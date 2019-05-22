@@ -20,6 +20,11 @@
             <div class="px-4 style-content-section" v-if="showContent">
                 <div class="row">
                     <div class="col">
+                        <img :src="logo" class="style-logo py-2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center">
                         <h1 class="style-heading">50 Words</h1>
                     </div>
                 </div>
@@ -61,7 +66,8 @@ export default {
             isCollapsed: true,
             showContent: false,
             showLanguageData: false,
-            languageData: {}
+            languageData: {},
+            logo: require("../../logo.png")
         };
     },
     computed: {
@@ -133,6 +139,10 @@ export default {
 .style-content-section {
     height: calc(100vh - 100px);
     overflow: scroll;
+}
+
+.style-logo {
+    width: 100%;
 }
 
 .style-button {
