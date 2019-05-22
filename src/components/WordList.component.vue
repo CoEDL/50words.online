@@ -12,7 +12,7 @@
                 <div class="col">
                     <el-button
                         type="text"
-                        class="style-button"
+                        class="style-button style-word"
                         :class="{'style-selected-word': selectedWord === word }"
                         @click="setSelectedWord(word)"
                     >{{word}}</el-button>
@@ -65,6 +65,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "assets/variables.scss";
+
+.style-word {
+    font-size: 1.4em;
+}
 
 .style-selected-word {
     color: $text-color;
