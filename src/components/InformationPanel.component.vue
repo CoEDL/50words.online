@@ -17,28 +17,28 @@
                 </div>
             </div>
 
-            <div class="px-3" v-if="showContent">
+            <div class="px-4 style-content-section" v-if="showContent">
                 <div class="row">
                     <div class="col">
                         <h1 class="style-heading">50 Words</h1>
                     </div>
                 </div>
-                <span v-if="!showLanguageData">
-                    <div class="row">
-                        <div class="col style-more-information text-justify">
-                            This project aims to provide resources for
-                            schools to teach at least fifty words in their local language.
-                            Australian Indigenous languages have many thousands of words but
-                            we are displaying just some on this site, with audio or video.
-                        </div>
+                <div class="row">
+                    <div class="col style-more-information text-justify">
+                        This project aims to provide resources for
+                        schools to teach at least fifty words in their local language.
+                        Australian Indigenous languages have many thousands of words but
+                        we are displaying just some on this site, with audio or video.
                     </div>
+                </div>
+                <span v-if="!showLanguageData">
                     <div class="row">
                         <div class="col">
                             <word-list-component/>
                         </div>
                     </div>
                 </span>
-                <span v-if="showLanguageData">
+                <span v-else>
                     <render-language-information :data="languageData"/>
                 </span>
             </div>
@@ -113,8 +113,6 @@ export default {
     height: 100vh;
     background-color: $primary-color;
     transition: 0.3s;
-    overflow-y: scroll;
-    overflow-x: hidden;
 }
 
 .style-collapsed-panel {
@@ -131,6 +129,10 @@ export default {
         max-width: 500px;
         transition-timing-function: ease-in;
     }
+}
+.style-content-section {
+    height: calc(100vh - 100px);
+    overflow: scroll;
 }
 
 .style-button {
