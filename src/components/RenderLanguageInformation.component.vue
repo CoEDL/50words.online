@@ -10,9 +10,9 @@
                 </h2>
             </div>
         </div>
-        <div v-for="(word, idx) of data.words" :key="idx">
-            <render-word-component :word="word"/>
-        </div>
+        <span v-for="(word, idx) of data.words" :key="idx">
+            <render-word-component :word="word" v-if="word.indigenous"/>
+        </span>
     </div>
 </template>
 
