@@ -20,11 +20,6 @@ class DataExtractor:
         self.extract_language_data()
         self.build_repository()
         self.write_master_indices()
-        for lang in self.data.items():
-            print(lang)
-
-        for lang in self.languages.items():
-            print(lang)
 
     def extract_aiatsis_geographies(self):
         def parse_row(row):
@@ -68,7 +63,8 @@ class DataExtractor:
                 sheet = {
                     'language_name': sh.row_values(0)[1],
                     'code': sh.row_values(1)[1],
-                    'words': []
+                    'words': [],
+                    'speaker': sh.row_values(8)[1],
                 }
                 print(f"Creating repository for {sh.row_values(1)[1]}")
                 for r in range(10, sh.nrows):
@@ -89,7 +85,14 @@ class DataExtractor:
         self.makepath(self.repository)
         for key, item in self.data.items():
             item_path = os.path.join(self.repository, item['code'])
-            self.languages[item['code']] = { 'name': item['name'], 'code': item['code'] , 'lat': item['lat'], 'lng': item['lng'] }
+            self.languages[item['code']] = { 
+                'name': item['name'], 
+                'code': item['code'] , 
+                'lat': item['lat'], 
+                'lng': item['lng'],
+            }
+            if 'speaker' in item:
+                self.languages[item['code']]['speaker'] = item['speaker']
             self.makepath(item_path)
 
             self.languages[item['code']]['words'] = False
