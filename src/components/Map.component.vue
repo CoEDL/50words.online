@@ -19,16 +19,12 @@ import Vue from "vue";
 import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
 Vue.use(ElementUI, { locale });
-import RenderWordComponent from "components/RenderWord.component.vue";
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
     "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2p2NGhzMzFkMnFsbzQwandhNmJ2MWI2eCJ9.qxu6U_HfPFd-4BZ85eNCvw";
 import { throttle, map } from "lodash";
 
 export default {
-    components: {
-        RenderWordComponent
-    },
     data() {
         return {
             watchers: {},
