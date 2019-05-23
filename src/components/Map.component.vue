@@ -4,7 +4,7 @@
         <div class="style-map-reset">
             <div class="row">
                 <div class="col">
-                    <el-button type="primary" circle @click="centerMap">
+                    <el-button type="default" @click="centerMap">
                         <i class="fas fa-crosshairs"></i>
                     </el-button>
                 </div>
@@ -87,7 +87,11 @@ export default {
                 style: "mapbox://styles/mapbox/dark-v10",
                 center: [0, 0]
             });
-            // this.map.addControl(new mapboxgl.NavigationControl());
+            this.map.addControl(
+                new mapboxgl.NavigationControl({
+                    showCompass: false
+                })
+            );
             // this.map.addControl(new mapboxgl.FullscreenControl());
             this.centerMap();
             this.map.on("load", () => {
@@ -157,6 +161,8 @@ export default {
                         visibility: "visible",
                         "text-field": "{name}",
                         "text-max-width": 20
+                        // "text-allow-overlap": true,
+                        // "icon-allow-overlap": true
                     }
                 });
             }
@@ -225,8 +231,8 @@ export default {
 .style-map-reset {
     position: fixed;
     z-index: 2;
-    top: 23px;
-    left: calc(100vw - 50px);
+    top: 80px;
+    left: calc(100vw - 64px);
 }
 </style>
 
@@ -238,6 +244,10 @@ export default {
 
 .mapboxgl-popup-close-button {
     display: none;
+}
+
+.mapboxgl-ctrl-top-right {
+    margin: 0 10px 0 0;
 }
 </style>
 
