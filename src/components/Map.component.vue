@@ -156,7 +156,8 @@ export default {
                     layout: {
                         visibility: "visible",
                         "text-field": "{name}",
-                        "text-max-width": 20
+                        "text-size": 25,
+                        "text-max-width": 40
                         // "text-allow-overlap": true,
                         // "icon-allow-overlap": true
                     }
@@ -195,7 +196,8 @@ export default {
                     },
                     layout: {
                         "text-field": "{indigenous}",
-                        "text-max-width": 20,
+                        "text-size": 25,
+                        "text-max-width": 40,
                         "text-variable-anchor": [
                             "top",
                             "bottom",
