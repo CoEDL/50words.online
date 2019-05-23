@@ -10,6 +10,9 @@
                 </h2>
             </div>
         </div>
+        <div class="row">
+            <div class="col style-speaker">Speaker(s): {{data.speaker}}</div>
+        </div>
         <span v-for="(word, idx) of data.words" :key="idx">
             <render-word-component :word="word" v-if="word.indigenous"/>
         </span>
@@ -42,6 +45,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.style-speaker {
+    font-size: 1.5em;
+}
 </style>
 
 
