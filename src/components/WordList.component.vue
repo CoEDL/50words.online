@@ -47,6 +47,7 @@ export default {
     },
     methods: {
         async setSelectedWord(word) {
+            this.$emit("collapse-information-panel");
             this.selectedWord = word;
             this.$store.dispatch("loadWord", { word });
         },

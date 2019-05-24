@@ -39,7 +39,9 @@
                 <span v-if="!showLanguageData">
                     <div class="row">
                         <div class="col">
-                            <word-list-component/>
+                            <word-list-component
+                                v-on:collapse-information-panel="collapseInformationPanel"
+                            />
                         </div>
                     </div>
                 </span>
@@ -110,6 +112,12 @@ export default {
                 this.$store.commit("setSelectedLanguage", undefined);
             }
             this.isCollapsed = !this.isCollapsed;
+        },
+        collapseInformationPanel() {
+            if (window.innerWidth < 768) {
+                this.isCollapsed = true;
+                this.showContent = false;
+            }
         }
     }
 };
