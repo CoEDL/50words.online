@@ -3,6 +3,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 Vue.use(Vuex);
+import { loadWordData } from "./data-loader.service";
 
 const configuration = {
     strict: process.env.NODE_ENV !== "production",
@@ -41,6 +42,15 @@ const configuration = {
         },
         show(state, payload) {
             state.show = payload;
+        }
+    },
+    actions: {
+        async loadWord({ state, commit }, payload) {
+            const word = await loadWordData({
+                words: state.words,
+                word: payload.word
+            });
+            commit("setSelectedWord", { word });
         }
     },
     getters: {}
