@@ -63,6 +63,7 @@ export default {
     },
     data() {
         return {
+            watchers: {},
             isCollapsed: true,
             showContent: false,
             showLanguageData: false,
@@ -77,19 +78,25 @@ export default {
             return this.$store.state.selectedLanguage;
         }
     },
-    watch: {
-        selectedLanguage: async function() {
-            this.showLanguageData = this.selectedLanguage ? true : false;
-            if (this.selectedLanguage && this.selectedLanguage.code) {
-                this.isCollapsed = false;
-                setTimeout(() => {
-                    this.showContent = true;
-                }, 400);
-                this.languageData = await loadLanguageData({
-                    code: this.selectedLanguage.code
-                });
+    mounted() {
+        this.watchers.selectedLanguage = this.$watch(
+            "selectedLanguage",
+            async () => {
+                this.showLanguageData = this.selectedLanguage ? true : false;
+                if (this.selectedLanguage && this.selectedLanguage.code) {
+                    this.isCollapsed = false;
+                    setTimeout(() => {
+                        this.showContent = true;
+                    }, 400);
+                    this.languageData = await loadLanguageData({
+                        code: this.selectedLanguage.code
+                    });
+                }
             }
-        }
+        );
+    },
+    beforeDestroy() {
+        this.watchers.selectedLanguage();
     },
     methods: {
         toggleCollapse() {
