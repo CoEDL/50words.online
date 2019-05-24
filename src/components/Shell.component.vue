@@ -34,13 +34,27 @@ export default {
 .style-data-selector {
     position: fixed;
     top: 15px;
-    left: calc(100vw - 370px);
+    left: calc(100vw - 260px);
 }
 
 .style-selected-word {
     position: fixed;
-    top: 70px;
-    width: 420px;
-    left: calc(100vw - 500px);
+    top: 80px;
+    width: 300px;
+    left: calc(100vw - 370px);
+}
+@media (min-width: 1024px) {
+    .style-data-selector {
+        position: fixed;
+        top: 15px;
+        left: calc(100vw - 370px);
+    }
+
+    .style-selected-word {
+        position: fixed;
+        top: 70px;
+        width: 420px;
+        left: calc(100vw - 500px);
+    }
 }
 </style>

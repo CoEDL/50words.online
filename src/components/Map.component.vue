@@ -218,7 +218,6 @@ export default {
 
 .style-map-reset {
     position: fixed;
-    z-index: 2;
     top: 80px;
     left: calc(100vw - 64px);
 }

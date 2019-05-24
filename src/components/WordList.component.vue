@@ -67,7 +67,13 @@ export default {
 
 .style-selected-word {
     color: $text-color;
-    font-size: 3em;
+    font-size: 2em;
+}
+@media (min-width: 1024px) {
+    .style-selected-word {
+        color: $text-color;
+        font-size: 3em;
+    }
 }
 
 .style-help-text {

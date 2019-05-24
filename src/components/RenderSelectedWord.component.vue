@@ -21,8 +21,14 @@ export default {
 @import "assets/variables.scss";
 
 .style-selected-word {
-    font-size: 2.5em;
+    font-size: 1.5em;
     color: $text-color;
+}
+@media (min-width: 1024px) {
+    .style-selected-word {
+        font-size: 2.5em;
+        color: $text-color;
+    }
 }
 </style>
 
