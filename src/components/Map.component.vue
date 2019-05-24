@@ -18,6 +18,7 @@ import styles from "assets/variables.scss";
 import Vue from "vue";
 import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
+import RenderWordComponent from "components/RenderWord.component.vue";
 Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
@@ -25,6 +26,9 @@ mapboxgl.accessToken =
 import { throttle, map } from "lodash";
 
 export default {
+    components: {
+        RenderWordComponent
+    },
     data() {
         return {
             watchers: {},
