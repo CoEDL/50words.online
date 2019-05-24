@@ -13,7 +13,7 @@
                     <el-button
                         type="text"
                         class="style-button style-word"
-                        :class="{'style-selected-word': selectedWord === word }"
+                        :class="{'style-selected-word': styleWord(word)}"
                         @click="setSelectedWord(word)"
                     >{{word}}</el-button>
                 </div>
@@ -23,41 +23,36 @@
 </template>
 
 <script>
-import { loadWordData } from "../data-loader.service";
-
 export default {
     data() {
         return {
-            watchers: {},
-            selectedWord: undefined,
-            wordData: []
+            watchers: {}
         };
     },
     computed: {
-        storeSelectedWord: function() {
-            if (!this.$store.state.selectedWord) this.selectedWord = undefined;
-            return this.$store.state.selectedWord;
+        selectedWord: {
+            get: function() {
+                return this.$store.state.selectedWord;
+            },
+            set: function(word) {
+                this.$store.dispatch("loadWord", { word });
+            }
         },
+
         words: function() {
             return this.$store.state.words.map(w => {
                 return w.name;
             });
         }
     },
-    mounted() {
-        this.watchers.selectedWord = this.$watch("storeSelectedWord", () => {});
-    },
-    beforeDestroy() {
-        this.watchers.selectedWord();
-    },
     methods: {
         async setSelectedWord(word) {
             this.selectedWord = word;
-            word = this.$store.state.words.filter(w => {
-                return w.name === word;
-            })[0];
-            const wordData = await loadWordData({ index: word.index });
-            this.$store.commit("setSelectedWord", { word: wordData });
+            this.$store.dispatch("loadWord", { word });
+        },
+        styleWord(word) {
+            let selectedWord = this.selectedWord ? this.selectedWord[0] : {};
+            return word === selectedWord.english;
         }
     }
 };
