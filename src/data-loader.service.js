@@ -46,12 +46,15 @@ export async function loadLanguageData({ code }) {
     return data;
 }
 
-export async function loadWordData({ index }) {
+export async function loadWordData({ word, words }) {
+    let index = words.filter(w => {
+        return w.name === word;
+    })[0].index;
     let response = await fetch(mapRepositoryRoot(`/repository/${index}`));
     if (response.status !== 200) {
         throw new Error(response);
     }
-    let word = orderBy(await response.json(), "language");
+    word = orderBy(await response.json(), "language");
     word = word.map(w => {
         return {
             ...w,
