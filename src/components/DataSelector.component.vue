@@ -30,9 +30,8 @@ export default {
         }
     },
     mounted() {
-        this.watchers.selectedWord = this.$watch("selectedWord", () => {
+        this.watchers.selectedWord = this.$watch("selectedWord", d => {
             this.selector = this.selectedWord ? false : true;
-            this.storeSwitchState();
         });
         this.storeSwitchState();
     },
@@ -40,13 +39,12 @@ export default {
         this.watchers.selectedWord();
     },
     methods: {
-        storeSwitchState() {
+        async storeSwitchState() {
             if (this.selector) {
-                this.$store.commit("show", "languages");
                 this.$store.commit("unsetSelectedWord");
             } else {
-                this.$store.commit("show", "words");
                 this.$store.commit("unsetSelectedLanguage");
+                this.$store.dispatch("loadWord", { word: "hello" });
             }
         }
     }
