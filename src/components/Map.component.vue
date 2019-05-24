@@ -47,20 +47,11 @@ export default {
     },
     mounted() {
         this.renderMap();
-        this.watchers.words = this.$watch("words", () => {
-            this.renderWordLayer();
-        });
-        this.watchers.selectedLanguage = this.$watch("selectedLanguage", () => {
-            this.renderLanguageLayer();
-        });
-        this.watchers.selectedWord = this.$watch("selectedWord", () => {
-            this.renderWordLayer();
-        });
-        this.watchers.show = this.$watch("show", () => {
-            if (this.show === "languages") {
-                this.renderLanguageLayer();
-            } else {
+        this.watchers.words = this.$watch("words", d => {
+            if (d) {
                 this.renderWordLayer();
+            } else {
+                this.renderLanguageLayer();
             }
         });
     },
@@ -70,7 +61,6 @@ export default {
     },
     beforeDestroy() {
         this.watchers.words();
-        this.watchers.selectedLanguage();
         window.removeEventListener("resize", this.centerMap);
     },
     methods: {
