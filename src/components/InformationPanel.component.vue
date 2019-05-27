@@ -166,7 +166,7 @@ export default {
 
 .style-more-information {
     padding: 15px;
-    font-size: 1.6em;
+    font-size: 1.2em;
 }
 </style>
 
