@@ -1,13 +1,17 @@
 <template>
     <div>
         <div class="style-logo-text-background"></div>
-        <div class="style-logo-container">
-            <img :src="logo" class="style-logo">
-        </div>
-        <span class="style-logo-text">
-            RESEARCH UNIT FOR
-            <br>INDIGENOUS LANGUAGE
-        </span>
+        <a
+            href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+        >
+            <div class="style-logo-container">
+                <img :src="logo" class="style-logo">
+            </div>
+            <div class="style-logo-text">
+                RESEARCH UNIT FOR
+                <br>INDIGENOUS LANGUAGE
+            </div>
+        </a>
     </div>
 </template>
 

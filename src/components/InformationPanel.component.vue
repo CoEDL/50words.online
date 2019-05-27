@@ -20,7 +20,11 @@
             <div class="px-4 style-content-section" v-if="showContent">
                 <div class="row">
                     <div class="col">
-                        <img :src="logo" class="style-logo py-2">
+                        <a
+                            href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+                        >
+                            <img :src="logo" class="style-logo py-2">
+                        </a>
                     </div>
                 </div>
                 <div class="row">
