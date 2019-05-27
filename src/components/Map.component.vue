@@ -222,8 +222,24 @@ export default {
 
 .style-map-reset {
     position: fixed;
-    top: 80px;
+    top: 130px;
     left: calc(100vw - 64px);
+}
+
+@media (min-width: 768px) {
+    .style-map-reset {
+        position: fixed;
+        top: 90px;
+        left: calc(100vw - 64px);
+    }
+}
+
+@media (min-width: 1024px) {
+    .style-map-reset {
+        position: fixed;
+        top: 100px;
+        left: calc(100vw - 64px);
+    }
 }
 </style>
 
@@ -238,7 +254,19 @@ export default {
 }
 
 .mapboxgl-ctrl-top-right {
-    margin: 0 10px 0 0;
+    margin: 55px 10px 0 0;
+}
+
+@media (min-width: 768px) {
+    .mapboxgl-ctrl-top-right {
+        margin: 10px 0 0 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .mapboxgl-ctrl-top-right {
+        margin: 10px 10px 0 0;
+    }
 }
 </style>
 

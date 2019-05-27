@@ -56,7 +56,7 @@
 <script>
 import RenderLanguageInformation from "./RenderLanguageInformation.component.vue";
 import WordListComponent from "./WordList.component.vue";
-import { loadLanguageData } from "../data-loader.service.js";
+import { loadLanguageData } from "src/data-loader.service.js";
 
 export default {
     components: {
@@ -70,7 +70,7 @@ export default {
             showContent: false,
             showLanguageData: false,
             languageData: {},
-            logo: require("../../logo.png")
+            logo: require("src/assets/logo.png")
         };
     },
     computed: {
