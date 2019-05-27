@@ -44,7 +44,7 @@ export default {
                 this.$store.commit("unsetSelectedWord");
             } else {
                 this.$store.commit("unsetSelectedLanguage");
-                this.$store.dispatch("loadWord", { word: "hello" });
+                this.$store.dispatch("loadWord", { word: "hand" });
             }
         }
     }
