@@ -32,7 +32,8 @@ export default {
     data() {
         return {
             watchers: {},
-            map: undefined
+            map: undefined,
+            popup: undefined
         };
     },
     computed: {
@@ -93,8 +94,9 @@ export default {
                 });
             });
             this.map.on("click", "words", e => {
+                if (this.popup) this.popup.remove();
                 const RenderWordClass = Vue.extend(RenderWordComponent);
-                const popup = new mapboxgl.Popup()
+                this.popup = new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML('<div id="vue-popup-content"></div>')
                     .addTo(this.map);
@@ -105,7 +107,7 @@ export default {
                     }
                 });
                 popupInstance.$mount("#vue-popup-content");
-                popup._update();
+                this.popup._update();
             });
             // Change the cursor to a pointer when the mouse is over the places layer.
             this.map.on("mouseenter", "languages", () => {
@@ -118,6 +120,7 @@ export default {
             });
         },
         renderLanguageLayer() {
+            if (this.popup) this.popup.remove();
             if (this.map.getLayer("words"))
                 this.map.setLayoutProperty("words", "visibility", "none");
             const features = this.$store.state.languages.map(language => {
@@ -160,6 +163,7 @@ export default {
             this.map.setLayoutProperty("languages", "visibility", "visible");
         },
         renderWordLayer() {
+            if (this.popup) this.popup.remove();
             this.map.setLayoutProperty("languages", "visibility", "none");
             if (!this.words) return;
             const features = this.words.map(word => {
