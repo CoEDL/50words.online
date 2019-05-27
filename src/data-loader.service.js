@@ -65,6 +65,7 @@ export async function loadWordData({ word, words }) {
 }
 
 export function mapRepositoryRoot(path) {
+    return path;
     const root =
         process.env.NODE_ENV === "development"
             ? "/repository"

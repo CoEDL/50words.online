@@ -16,8 +16,7 @@ module.exports = {
     entry: ["./src/vendor.js", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[hash].bundle.js",
-        publicPath: "/50words/"
+        filename: "[name].[hash].bundle.js"
     },
     optimization: {
         splitChunks: {
