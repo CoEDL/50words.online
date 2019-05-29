@@ -154,9 +154,9 @@ export default {
                         visibility: "visible",
                         "text-field": "{name}",
                         "text-size": 25,
-                        "text-max-width": 40
-                        // "text-allow-overlap": true,
-                        // "icon-allow-overlap": true
+                        "text-max-width": 40,
+                        "text-allow-overlap": true,
+                        "icon-allow-overlap": true
                     }
                 });
             }
