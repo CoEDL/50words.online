@@ -196,6 +196,8 @@ export default {
                         "text-field": "{indigenous}",
                         "text-size": 25,
                         "text-max-width": 40,
+                        "text-allow-overlap": true,
+                        "icon-allow-overlap": true,
                         "text-variable-anchor": [
                             "top",
                             "bottom",
