@@ -8,11 +8,11 @@ export async function loadData({ store }) {
     store.commit(`setWords`, { words });
     let languages = (await get(mapRepositoryRoot("/repository/languages.json")))
         .languages;
-    languages = compact(
-        languages.map(l => {
-            return l.words ? l : undefined;
-        })
-    );
+    // languages = compact(
+    //     languages.map(l => {
+    //         return l.words ? l : undefined;
+    //     })
+    // );
     store.commit(`setLanguages`, { languages });
 
     async function get(path) {
