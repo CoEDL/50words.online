@@ -25,7 +25,7 @@ class DataExtractor:
         def parse_row(row):
             return {
                 'code': row[0],
-                'name': row[5],
+                'name': row[1],
                 'lat': row[3],
                 'lng': row[4],
                 'glotto_id': row[6]
@@ -74,7 +74,6 @@ class DataExtractor:
                     }, 
                     'thankyou': sh.row_values(3)[1]
                 }
-                print(sheet)
                 if sheet['code'] not in self.data.keys():
                     print(f"ERROR::: ooops - {sheet['code']} not in AIATSIS-geography.xlsx")
                     continue
