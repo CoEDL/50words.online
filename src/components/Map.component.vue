@@ -123,48 +123,114 @@ export default {
             if (this.popup) this.popup.remove();
             if (this.map.getLayer("words"))
                 this.map.setLayoutProperty("words", "visibility", "none");
-            const features = this.$store.state.languages.map(language => {
-                return {
-                    type: "Feature",
-                    properties: {
-                        ...language
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [language.lng, language.lat]
-                    }
-                };
+
+            let languages = this.$store.state.languages.filter(l => !l.words);
+            renderLanguagesWithoutData({
+                languages: this.$store.state.languages,
+                map: this.map
             });
-            // console.log(JSON.stringify(features, null, 2));
-            if (!this.map.getLayer("languages")) {
-                this.map.addLayer({
-                    id: "languages",
-                    type: "symbol",
-                    source: {
-                        type: "geojson",
-                        data: {
-                            type: "FeatureCollection",
-                            features
-                        }
-                    },
-                    paint: {
-                        "text-color": "#f15a22"
-                    },
-                    layout: {
-                        visibility: "visible",
-                        "text-field": "{name}",
-                        "text-size": 25,
-                        "text-max-width": 40,
-                        "text-allow-overlap": true,
-                        "icon-allow-overlap": true
-                    }
-                });
-            }
+            renderLanguagesWithData({
+                languages: this.$store.state.languages,
+                map: this.map
+            });
             this.map.setLayoutProperty("languages", "visibility", "visible");
+            this.map.setLayoutProperty(
+                "languagesWithoutData",
+                "visibility",
+                "visible"
+            );
+
+            function renderLanguagesWithData({ languages, map }) {
+                languages = languages.filter(l => l.words);
+                let features = languages.map(language => {
+                    return {
+                        type: "Feature",
+                        properties: {
+                            ...language
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [language.lng, language.lat]
+                        }
+                    };
+                });
+                // console.log(JSON.stringify(features, null, 2));
+                if (!map.getLayer("languages")) {
+                    map.addLayer({
+                        id: "languages",
+                        type: "symbol",
+                        source: {
+                            type: "geojson",
+                            data: {
+                                type: "FeatureCollection",
+                                features
+                            }
+                        },
+                        paint: {
+                            "text-color": styles.textColor
+                        },
+                        layout: {
+                            visibility: "visible",
+                            "text-field": "{name}",
+                            "text-size": 25,
+                            "text-max-width": 40,
+                            "text-allow-overlap": true,
+                            "icon-allow-overlap": true
+                        }
+                    });
+                }
+            }
+
+            function renderLanguagesWithoutData({ languages, map }) {
+                languages = languages.filter(l => !l.words);
+                let features = languages.map(language => {
+                    return {
+                        type: "Feature",
+                        properties: {
+                            ...language
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [language.lng, language.lat]
+                        }
+                    };
+                });
+                // console.log(JSON.stringify(features, null, 2));
+                if (!map.getLayer("languagesWithoutData")) {
+                    map.addLayer({
+                        id: "languagesWithoutData",
+                        type: "symbol",
+                        source: {
+                            type: "geojson",
+                            data: {
+                                type: "FeatureCollection",
+                                features
+                            }
+                        },
+                        paint: {
+                            "text-color": styles.primaryColor,
+                            "text-opacity": 0.4
+                        },
+                        layout: {
+                            visibility: "visible",
+                            "text-field": "{name}",
+                            "text-size": 15,
+                            "text-max-width": 40,
+                            "text-allow-overlap": true,
+                            "icon-allow-overlap": true
+                        }
+                    });
+                }
+            }
         },
         renderWordLayer() {
             if (this.popup) this.popup.remove();
             this.map.setLayoutProperty("languages", "visibility", "none");
+            this.map.setLayoutProperty(
+                "languagesWithoutData",
+                "visibility",
+                "none"
+            );
             if (!this.words) return;
             const features = this.words.map(word => {
                 return {
