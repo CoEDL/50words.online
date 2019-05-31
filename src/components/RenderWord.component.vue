@@ -93,13 +93,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "assets/variables.scss";
+
 .style-word-row {
     line-height: 40px;
 }
 
 .style-english {
     opacity: 0.8;
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 .style-indigenous {
