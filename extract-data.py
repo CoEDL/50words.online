@@ -43,11 +43,14 @@ class DataExtractor:
     
     def extract_language_data(self):
         def parse_row(row):
-            return {
+            data = {
                 'english': row[0],
                 'indigenous': row[1],
                 'audio_file': row[2],
             }
+            if len(row) == 4 and row[3]:
+                data['english'] = row[3]
+            return data
 
         for root, dirs, files in os.walk('data'):
             for file in files:
