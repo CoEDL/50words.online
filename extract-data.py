@@ -5,8 +5,10 @@ import json
 import hashlib
 import os
 import os.path
+import pprint
 from shutil import copyfile
 import xlrd
+pp = pprint.PrettyPrinter(compact=True)
 
 class DataExtractor:
     def __init__(self):
@@ -64,16 +66,17 @@ class DataExtractor:
                 sheet = {
                     'language': {
                         'name': sh.row_values(0)[1],
-                        'audio_file': sh.row_values(8)[1]
+                        'audio_file':  os.path.join(root, sh.row_values(8)[2]) if sh.row_values(8)[2] else ''
                     },
                     'code': sh.row_values(1)[1],
                     'words': [],
                     'speaker': {
                         'name': sh.row_values(7)[1],
-                        'audio_file': sh.row_values(7)[1]
+                        'audio_file':  os.path.join(root, sh.row_values(7)[2]) if sh.row_values(7)[2] else ''
                     }, 
                     'thankyou': sh.row_values(3)[1]
                 }
+                # pp.pprint(sheet)
                 if sheet['code'] not in self.data.keys():
                     print(f"ERROR::: ooops - {sheet['code']} not in AIATSIS-geography.xlsx")
                     continue
@@ -108,6 +111,21 @@ class DataExtractor:
             self.makepath(item_path)
 
             self.languages[item['code']]['words'] = False
+
+            if 'language' in item and item['language']['audio_file']:
+                try:
+                    copyfile(item['language']['audio_file'], os.path.join(item_path, os.path.basename(item['language']['audio_file'])))
+                    item['language']['audio_file'] = os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('dist', '')
+                except FileNotFoundError: 
+                    print(f"ERRROR::: missing file {item['language']['audio_file']}")
+
+            if 'speaker' in item and item['speaker']['audio_file']:
+                try:
+                    copyfile(item['speaker']['audio_file'], os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])))
+                    item['speaker']['audio_file'] = os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('dist', '')
+                except FileNotFoundError: 
+                    print(f"ERRROR::: missing file {item['speaker']['audio_file']}")
+
             if 'words' in item.keys():
                 words = []
                 for word in item['words']:
