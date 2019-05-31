@@ -12,23 +12,23 @@
                     >
                         <i class="fas fa-volume-up fa-2x"></i>
                     </el-button>
-                    <audio
-                        ref="languageAudioElement"
-                        v-if="data.language.audio_file"
-                    >
-                        <source :src="data.language.audio_file" />
-                        Your browser does not support the
+                    <audio ref="languageAudioElement" v-if="data.language.audio_file">
+                        <source :src="data.language.audio_file">Your browser does not support the
                         <code>audio</code> element.
                     </audio>
-                    <el-button
-                        type="text"
-                        class="style-button"
-                        circle
-                        @click="reset"
-                    >
+                    <el-button type="text" class="style-button" circle @click="reset">
                         <i class="fas fa-times fa-2x"></i>
                     </el-button>
                 </h2>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col">
+                See more information about {{data.language.name}} here:
+                <a
+                    :href="aiatsisLink"
+                    target="_blank"
+                >https://collection.aiatsis.gov.au/austlang/language/{{data.code}}</a>
             </div>
         </div>
         <div class="row">
@@ -43,19 +43,16 @@
                     <i class="fas fa-volume-up fa-2x"></i>
                 </el-button>
                 <audio ref="speakerAudioElement" v-if="data.speaker.audio_file">
-                    <source :src="data.speaker.audio_file" />
-                    Your browser does not support the
+                    <source :src="data.speaker.audio_file">Your browser does not support the
                     <code>audio</code> element.
                 </audio>
             </div>
         </div>
         <div class="row mt-3">
-            <div class="col style-speaker" v-if="data.thankyou">
-                Thanks also to {{ data.thankyou }}
-            </div>
+            <div class="col style-speaker" v-if="data.thankyou">Thanks also to {{ data.thankyou }}</div>
         </div>
         <span v-for="(word, idx) of data.words" :key="idx">
-            <render-word-component :word="word" v-if="word.indigenous" />
+            <render-word-component :word="word" v-if="word.indigenous"/>
         </span>
     </div>
 </template>
@@ -71,6 +68,13 @@ export default {
     },
     data() {
         return {};
+    },
+    computed: {
+        aiatsisLink: function() {
+            return `https://collection.aiatsis.gov.au/austlang/language/${
+                this.data.code
+            }`;
+        }
     },
     mounted() {
         // console.log(JSON.stringify(this.data, null, 2));
