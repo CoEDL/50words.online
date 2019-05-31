@@ -16,8 +16,7 @@
                             <i class="fas fa-volume-up fa-2x"></i>
                         </el-button>
                         <audio ref="audioElement" v-if="word.audio_file">
-                            <source :src="word.audio_file" />
-                            Your browser does not support the
+                            <source :src="word.audio_file">Your browser does not support the
                             <code>audio</code> element.
                         </audio>
                     </div>
@@ -41,19 +40,14 @@
                                 <i class="fas fa-volume-up fa-2x"></i>
                             </el-button>
                             <audio ref="audioElement" v-if="word.audio_file">
-                                <source :src="word.audio_file" />
-                                Your browser does not support the
+                                <source :src="word.audio_file">Your browser does not support the
                                 <code>audio</code> element.
                             </audio>
                         </div>
                         <div class="col-10">
                             <div class="row">
-                                <div class="col-12 style-english">
-                                    {{ word.english }}
-                                </div>
-                                <div class="col-12 style-indigenous">
-                                    {{ word.indigenous }}
-                                </div>
+                                <div class="col-12 style-english">{{ word.english }}</div>
+                                <div class="col-12 style-indigenous">{{ word.indigenous }}</div>
                             </div>
                         </div>
                     </div>
@@ -86,7 +80,7 @@ export default {
         playWord() {
             setTimeout(() => {
                 this.$refs.audioElement.play();
-            }, 500);
+            }, 200);
         }
     }
 };

@@ -67,7 +67,9 @@ export default {
         data: Object
     },
     data() {
-        return {};
+        return {
+            watchers: {}
+        };
     },
     computed: {
         aiatsisLink: function() {
@@ -80,23 +82,18 @@ export default {
         // console.log(JSON.stringify(this.data, null, 2));
     },
     methods: {
-        playWord() {
-            setTimeout(() => {
-                this.$refs["audioElement"].play();
-            }, 500);
-        },
         reset() {
             this.$store.commit("setSelectedLanguage", undefined);
         },
         playSpeaker() {
             setTimeout(() => {
                 this.$refs.speakerAudioElement.play();
-            }, 500);
+            }, 200);
         },
         playLanguage() {
             setTimeout(() => {
                 this.$refs.languageAudioElement.play();
-            }, 500);
+            }, 200);
         }
     }
 };
