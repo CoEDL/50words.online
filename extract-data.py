@@ -57,15 +57,28 @@ class DataExtractor:
             print(f"Extracting language data from {sheet}")
             with xlrd.open_workbook(sheet) as wb:
                 sh = wb.sheet_by_index(0)  # or wb.sheet_by_name('name_of_the_sheet_here')
-                if (sh.nrows != 67):
-                    print(f"ooops - {sheet} isn't exactly 67 rows - is it correct?")
+                if (sh.nrows != 66):
+                    print(f"ERROR::: oops - {sheet} isn't exactly 66 rows - is it correct?")
+                    continue
 
                 sheet = {
-                    'language_name': sh.row_values(0)[1],
+                    'language': {
+                        'name': sh.row_values(0)[1],
+                        'audio_file': sh.row_values(8)[1]
+                    },
                     'code': sh.row_values(1)[1],
                     'words': [],
-                    'speaker': sh.row_values(8)[1],
+                    'speaker': {
+                        'name': sh.row_values(7)[1],
+                        'audio_file': sh.row_values(7)[1]
+                    }, 
+                    'thankyou': sh.row_values(3)[1]
                 }
+                print(sheet)
+                if sheet['code'] not in self.data.keys():
+                    print(f"ERROR::: ooops - {sheet['code']} not in AIATSIS-geography.xlsx")
+                    continue
+
                 print(f"Creating repository for {sh.row_values(1)[1]}")
                 for r in range(10, sh.nrows):
                     data = parse_row(sh.row_values(r))
@@ -103,8 +116,11 @@ class DataExtractor:
                         self.words[word['english']] = []
 
                     if word['audio_file']:
-                        copyfile(word['audio_file'], os.path.join(item_path, os.path.basename(word['audio_file'])))
-                        word['audio_file'] = os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', '')
+                        try:
+                            copyfile(word['audio_file'], os.path.join(item_path, os.path.basename(word['audio_file'])))
+                            word['audio_file'] = os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', '')
+                        except FileNotFoundError: 
+                            print(f"ERRROR::: missing file {word['audio_file']}")
 
                     words.append(word)
                     word['language'] = item['name']
