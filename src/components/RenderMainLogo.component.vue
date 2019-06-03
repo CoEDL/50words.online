@@ -12,6 +12,9 @@
                 <br>INDIGENOUS LANGUAGE
             </div>
         </a>
+        <div class="style-uom-logo-container">
+            <img :src="uomLogo" class="style-logo">
+        </div>
     </div>
 </template>
 
@@ -19,7 +22,8 @@
 export default {
     data() {
         return {
-            logo: require("src/assets/logo-image.png")
+            logo: require("src/assets/logo-image.png"),
+            uomLogo: require('src/assets/UOMLogo.jpg')
         };
     }
 };
@@ -29,6 +33,12 @@ export default {
 .style-logo-container {
     position: relative;
     width: 70px;
+}
+.style-uom-logo-container {
+    position: relative;
+    top: calc(100vh - 170px);
+    left: calc(100vw - 140px);
+    width: 80px;
 }
 
 .style-logo {
@@ -53,6 +63,14 @@ export default {
     left: 80px;
     font-size: 1.2em;
     color: white;
+}
+@media (min-width: 768px) {
+    .style-uom-logo-container {
+        position: relative;
+        top: calc(100vh - 160px);
+        left: calc(100vw - 140px);
+        width: 80px;
+    }
 }
 @media (min-width: 1024px) {
     .style-logo-container {
@@ -83,6 +101,12 @@ export default {
         left: 110px;
         font-size: 1.8em;
         color: white;
+    }
+    .style-uom-logo-container {
+        position: relative;
+        top: calc(100vh - 220px);
+        left: calc(100vw - 182px);
+        width: 120px;
     }
 }
 </style>
