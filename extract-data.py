@@ -63,14 +63,14 @@ class DataExtractor:
             print(f"Extracting language data from {sheet}")
             with xlrd.open_workbook(sheet) as wb:
                 sh = wb.sheet_by_index(0)  # or wb.sheet_by_name('name_of_the_sheet_here')
-                if (sh.nrows != 66):
+                if (sh.nrows != 64):
                     print(f"ERROR::: oops - {sheet} isn't exactly 66 rows - is it correct?")
                     continue
 
                 sheet = {
                     'language': {
                         'name': sh.row_values(0)[1],
-                        'audio_file':  os.path.join(root, sh.row_values(1)[2]) if sh.row_values(1)[2] else ''
+                        'audio_file':  os.path.join(root, sh.row_values(0)[2]) if sh.row_values(0)[2] else ''
                     },
                     'code': sh.row_values(1)[1],
                     'words': [],
@@ -86,7 +86,7 @@ class DataExtractor:
                     continue
 
                 print(f"Creating repository for {sh.row_values(1)[1]}")
-                for r in range(9, sh.nrows):
+                for r in range(7, sh.nrows):
                     data = parse_row(sh.row_values(r))
                     if data['audio_file']:
                         data['audio_file'] = os.path.join(root, data['audio_file'])
