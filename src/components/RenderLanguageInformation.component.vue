@@ -84,6 +84,18 @@ export default {
     },
     mounted() {
         // console.log(JSON.stringify(this.data, null, 2));
+        this.watchers.language = this.$watch("data.language.audio_file", () => {
+            if (this.$refs.languageAudioElement)
+                this.$refs.languageAudioElement.load();
+        });
+        this.watchers.speaker = this.$watch("data.speaker.audio_file", () => {
+            if (this.$refs.speakerAudioElement)
+                this.$refs.speakerAudioElement.load();
+        });
+    },
+    beforeDestroy() {
+        this.watchers.language();
+        this.watchers.speaker();
     },
     methods: {
         reset() {
