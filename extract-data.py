@@ -50,7 +50,7 @@ class DataExtractor:
                 'audio_file': row[2],
             }
             if len(row) == 4 and row[3]:
-                data['english'] = row[3]
+                data['english_alternate'] = row[3]
             return data
 
         for root, dirs, files in os.walk('data'):
@@ -86,7 +86,7 @@ class DataExtractor:
                     continue
 
                 print(f"Creating repository for {sh.row_values(1)[1]}")
-                for r in range(10, sh.nrows):
+                for r in range(9, sh.nrows):
                     data = parse_row(sh.row_values(r))
                     if data['audio_file']:
                         data['audio_file'] = os.path.join(root, data['audio_file'])
