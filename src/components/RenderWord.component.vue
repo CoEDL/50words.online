@@ -24,7 +24,7 @@
                             <code>audio</code> element.
                         </audio>
                     </div>
-                    <div class="col-8">{{ word.indigenous }}</div>
+                    <div class="col-8 text-lowercase">{{ word.indigenous }}</div>
                 </div>
             </span>
             <span v-if="layout !== 'popup'">
@@ -51,11 +51,16 @@
                         <div class="col-10">
                             <div class="row">
                                 <div
-                                    class="col-12 style-english"
+                                    class="col-12 style-english text-lowercase"
                                     v-if="word.english_alternate"
                                 >{{ word.english_alternate }}</div>
-                                <div class="col-12 style-english" v-else>{{ word.english}}</div>
-                                <div class="col-12 style-indigenous">{{ word.indigenous }}</div>
+                                <div
+                                    class="col-12 style-english text-lowercase"
+                                    v-else
+                                >{{ word.english}}</div>
+                                <div
+                                    class="col-12 style-indigenous text-lowercase"
+                                >{{ word.indigenous }}</div>
                             </div>
                         </div>
                     </div>
