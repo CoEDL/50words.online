@@ -11,14 +11,23 @@
                             type="text"
                             class="style-button px-3"
                             @click="playWord"
-                            v-if="word.audio_file"
+                            v-if="word.audio_file.length"
                         >
                             <i class="fas fa-volume-up fa-2x"></i>
                         </el-button>
-                        <audio ref="audioElement" v-if="word.audio_file">
-                            <source :src="word.audio_file">Your browser does not support the
+                        <audio ref="audioElement" v-if="word.audio_file.length">
+                            <source
+                                :src="file"
+                                v-for="(file, idx) of JSON.parse(word.audio_file)"
+                                :key="idx"
+                            >Your browser does not support the
                             <code>audio</code> element.
                         </audio>
+                        <!-- <audio ref="audioElement" v-if="word.audio_file.length">
+                            <source :src="word.audio_file[0]">
+                            <source :src="word.audio_file[1]">Your browser does not support the
+                            <code>audio</code> element.
+                        </audio>-->
                     </div>
                     <div class="col-8">{{ word.indigenous }}</div>
                 </div>
@@ -35,12 +44,16 @@
                                 type="text"
                                 class="style-button px-3"
                                 @click="playWord"
-                                v-if="word.audio_file"
+                                v-if="word.audio_file.length"
                             >
                                 <i class="fas fa-volume-up fa-2x"></i>
                             </el-button>
-                            <audio ref="audioElement" v-if="word.audio_file">
-                                <source :src="word.audio_file">Your browser does not support the
+                            <audio ref="audioElement" v-if="word.audio_file.length">
+                                <source
+                                    :src="file"
+                                    v-for="(file, idx) of word.audio_file"
+                                    :key="idx"
+                                >Your browser does not support the
                                 <code>audio</code> element.
                             </audio>
                         </div>

@@ -8,12 +8,16 @@
                         type="text"
                         class="style-button px-3"
                         @click="playLanguage"
-                        v-if="data.language.audio_file"
+                        v-if="data.language.audio_file.length"
                     >
                         <i class="fas fa-volume-up fa-2x"></i>
                     </el-button>
-                    <audio ref="languageAudioElement" v-if="data.language.audio_file">
-                        <source :src="data.language.audio_file">Your browser does not support the
+                    <audio ref="languageAudioElement" v-if="data.language.audio_file.length">
+                        <source
+                            :src="file"
+                            v-for="(file, idx) of data.language.audio_file"
+                            :key="idx"
+                        >Your browser does not support the
                         <code>audio</code> element.
                     </audio>
                     <el-button type="text" class="style-button" circle @click="reset">
@@ -38,12 +42,12 @@
                     type="text"
                     class="style-button px-3"
                     @click="playSpeaker"
-                    v-if="data.speaker.audio_file"
+                    v-if="data.speaker.audio_file.length"
                 >
                     <i class="fas fa-volume-up fa-2x"></i>
                 </el-button>
-                <audio ref="speakerAudioElement" v-if="data.speaker.audio_file">
-                    <source :src="data.speaker.audio_file">Your browser does not support the
+                <audio ref="speakerAudioElement" v-if="data.speaker.audio_file.length">
+                    <source :src="file" v-for="(file, idx) of data.speaker.audio_file" :key="idx">Your browser does not support the
                     <code>audio</code> element.
                 </audio>
             </div>
