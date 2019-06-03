@@ -7,6 +7,7 @@ import os
 import os.path
 import pprint
 from shutil import copyfile
+import subprocess
 import xlrd
 pp = pprint.PrettyPrinter(compact=True)
 
@@ -100,8 +101,16 @@ class DataExtractor:
                 }
         
     def build_repository(self):
+        def get_target_name(path, file, ext):
+            return os.path.join(path, os.path.splitext(os.path.basename(file))[0]) + ext
+
+        def transcode(item, target):
+            if not os.path.exists(target):
+                subprocess.run(['ffmpeg', '-hide_banner', '-loglevel',  'panic', '-i', item, target])
+            
         self.makepath(self.repository)
         for key, item in self.data.items():
+            print(f"Processing {item['code']}")
             item_path = os.path.join(self.repository, item['code'])
             self.languages[item['code']] = { 
                 'name': item['name'], 
@@ -117,15 +126,34 @@ class DataExtractor:
 
             if 'language' in item and item['language']['audio_file']:
                 try:
+                    print(f"Transcoding language to webm and mp3")
+                    transcode(item['language']['audio_file'], get_target_name(item_path, item['language']['audio_file'], '.webm'))
+                    transcode(item['language']['audio_file'], get_target_name(item_path, item['language']['audio_file'], '.mp3'))
                     copyfile(item['language']['audio_file'], os.path.join(item_path, os.path.basename(item['language']['audio_file'])))
-                    item['language']['audio_file'] = os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('dist', '')
+                    audio_files = [
+                        get_target_name(item_path, item['language']['audio_file'], '.webm').replace('dist', ''),
+                        get_target_name(item_path, item['language']['audio_file'], '.mp3').replace('dist', '')
+                    ]
+                    if 'wav' in item['language']['audio_file']:
+                        audio_files.append(os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('dist', ''))
+                    item['language']['audio_file'] = audio_files
+                        
                 except FileNotFoundError: 
                     print(f"ERRROR::: missing file {item['language']['audio_file']}")
 
             if 'speaker' in item and item['speaker']['audio_file']:
                 try:
+                    print(f"Transcoding speaker to webm and mp3")
+                    transcode(item['speaker']['audio_file'], get_target_name(item_path, item['speaker']['audio_file'], '.webm'))
+                    transcode(item['speaker']['audio_file'], get_target_name(item_path, item['speaker']['audio_file'], '.mp3'))
                     copyfile(item['speaker']['audio_file'], os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])))
-                    item['speaker']['audio_file'] = os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('dist', '')
+                    audio_files = [
+                        get_target_name(item_path, item['speaker']['audio_file'], '.webm').replace('dist', ''),
+                        get_target_name(item_path, item['speaker']['audio_file'], '.mp3').replace('dist', '')
+                    ]
+                    if 'wav' in item['speaker']['audio_file']:
+                        audio_files.append(os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('dist', ''))
+                    item['speaker']['audio_file'] = audio_files
                 except FileNotFoundError: 
                     print(f"ERRROR::: missing file {item['speaker']['audio_file']}")
 
@@ -137,8 +165,17 @@ class DataExtractor:
 
                     if word['audio_file']:
                         try:
+                            print(f"Transcoding {word['audio_file']} to webm and mp3")
+                            transcode(word['audio_file'], get_target_name(item_path, word['audio_file'], '.webm'))
+                            transcode(word['audio_file'], get_target_name(item_path, word['audio_file'], '.mp3'))
                             copyfile(word['audio_file'], os.path.join(item_path, os.path.basename(word['audio_file'])))
-                            word['audio_file'] = os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', '')
+                            audio_files = [
+                                get_target_name(item_path, word['audio_file'], '.webm').replace('dist', ''),
+                                get_target_name(item_path, word['audio_file'], '.mp3').replace('dist', '')
+                            ]
+                            if 'wav' in word['audio_file']:
+                                audio_files.append(os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', ''))
+                            word['audio_file'] = audio_files
                         except FileNotFoundError: 
                             print(f"ERRROR::: missing file {word['audio_file']}")
 
