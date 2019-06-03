@@ -70,13 +70,13 @@ class DataExtractor:
                 sheet = {
                     'language': {
                         'name': sh.row_values(0)[1],
-                        'audio_file':  os.path.join(root, sh.row_values(8)[2]) if sh.row_values(8)[2] else ''
+                        'audio_file':  os.path.join(root, sh.row_values(1)[2]) if sh.row_values(1)[2] else ''
                     },
                     'code': sh.row_values(1)[1],
                     'words': [],
                     'speaker': {
-                        'name': sh.row_values(7)[1],
-                        'audio_file':  os.path.join(root, sh.row_values(7)[2]) if sh.row_values(7)[2] else ''
+                        'name': sh.row_values(2)[1],
+                        'audio_file':  os.path.join(root, sh.row_values(2)[2]) if sh.row_values(2)[2] else ''
                     }, 
                     'thankyou': sh.row_values(3)[1]
                 }
