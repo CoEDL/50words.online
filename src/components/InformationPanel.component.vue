@@ -33,11 +33,38 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col style-more-information text-justify">
-                        This project aims to provide resources for
-                        schools to teach at least fifty words in their local language.
-                        Australian Indigenous languages have many thousands of words but
-                        we are displaying just some on this site, with audio or video.
+                    <div class="col-12 style-more-information text-justify">
+                        <p>
+                            This project aims to provide fifty words in every Indigenous language of Australia.
+                            We hope that this will be a useful resource for schools and educational organisations to
+                            learn 50 words in their local languages, and for the general public to discover the diversity of
+                            languages around Australia. All words, audio and video recordings are provided by
+                            language speakers and are included here with permission. Australian Indigenous languages
+                            have many thousands of words but we are displaying just some on this site, with audio or video.
+                        </p>
+                        <p>
+                            <a href="" @click.prevent="toggleMoreInformation" class="mt-2">show more</a>
+                        </p>
+                    </div>
+
+                    <div v-if="showMore" class="col-12 style-more-information text-justify">
+                        <p>
+                            The words included here are just a small sample to give an idea of what 
+                            Australian languages sound like. In some languages, words are more specific, for example, 
+                            you have to say if a grey kangaroo is male or female in Murrinhpatha, so we have included 
+                            only the word for the male grey kangaroo in that list. In some languages, the word for 
+                            'thigh' is the same as the word for 'leg' so they are both shown in those lists.
+                        </p>
+                        <p>
+                            For more information about Australian Indigenous languages, see 
+                            <a href="https://www.firstlanguages.org.au" target="_blank">First Languages Australia</a> or 
+                            <a href="https://collection.aiatsis.gov.au/austlang/search">Austlang</a>.
+                        </p>
+                        <p>
+                            The 50-word project is led by the Research Unit for Indigenous Language at the University of 
+                            Melbourne, funded by the Duncan Leary Trust for Australia Indigenous Languages. 
+                            For further information see: <a href="http://indiglang.arts.unimelb.edu.au">http://indiglang.arts.unimelb.edu.au</a>
+                        </p>
                     </div>
                 </div>
                 <span v-if="!showLanguageData">
@@ -74,7 +101,8 @@ export default {
             showContent: false,
             showLanguageData: false,
             languageData: {},
-            logo: require("src/assets/logo.png")
+            logo: require("src/assets/logo.png"),
+            showMore: false
         };
     },
     computed: {
@@ -116,6 +144,9 @@ export default {
                 this.$store.commit("setSelectedLanguage", undefined);
             }
             this.isCollapsed = !this.isCollapsed;
+        },
+        toggleMoreInformation() {
+            this.showMore = !this.showMore
         },
         collapseInformationPanel() {
             if (window.innerWidth < 768) {
