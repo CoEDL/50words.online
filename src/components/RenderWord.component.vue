@@ -23,18 +23,9 @@
                             >Your browser does not support the
                             <code>audio</code> element.
                         </audio>
-                        <!-- <audio ref="audioElement" v-if="word.audio_file.length">
-                            <source :src="word.audio_file[0]">
-                            <source :src="word.audio_file[1]">Your browser does not support the
-                            <code>audio</code> element.
-                        </audio>-->
                     </div>
                     <div class="col-8">{{ word.indigenous }}</div>
                 </div>
-                <!-- <div class="row">
-                    <div class="col-4"></div>
-                    <div class="col-8">{{word.indigenous}}</div>
-                </div>-->
             </span>
             <span v-if="layout !== 'popup'">
                 <div class="my-4">
@@ -59,7 +50,11 @@
                         </div>
                         <div class="col-10">
                             <div class="row">
-                                <div class="col-12 style-english">{{ word.english }}</div>
+                                <div
+                                    class="col-12 style-english"
+                                    v-if="word.english_alternate"
+                                >{{ word.english_alternate }}</div>
+                                <div class="col-12 style-english" v-else>{{ word.english}}</div>
                                 <div class="col-12 style-indigenous">{{ word.indigenous }}</div>
                             </div>
                         </div>
