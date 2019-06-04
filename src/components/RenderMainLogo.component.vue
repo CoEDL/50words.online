@@ -23,7 +23,7 @@ export default {
     data() {
         return {
             logo: require("src/assets/logo-image.png"),
-            uomLogo: require('src/assets/UOMLogo.jpg')
+            uomLogo: require("src/assets/UOMLogo.jpg")
         };
     }
 };
@@ -49,7 +49,7 @@ export default {
 .style-logo-text-background {
     position: absolute;
     background-color: #191a1a;
-    width: 290px;
+    width: 280px;
     height: 48px;
     top: 0px;
     left: 0px;
@@ -58,8 +58,8 @@ export default {
 .style-logo-text {
     position: absolute;
     font-family: times, serif;
-    width: 500px;
     top: 0px;
+    width: 210px;
     left: 80px;
     font-size: 1.2em;
     color: white;
@@ -96,7 +96,7 @@ export default {
     .style-logo-text {
         position: absolute;
         font-family: times, serif;
-        width: 500px;
+        width: 310px;
         top: 0px;
         left: 110px;
         font-size: 1.8em;
