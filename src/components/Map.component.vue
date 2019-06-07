@@ -290,6 +290,7 @@ export default {
     left: 50px;
     width: calc(100vw - 50px);
     height: 100vh;
+    cursor: pointer;
 }
 
 .style-map-reset {
@@ -316,9 +317,17 @@ export default {
 </style>
 
 <style lang="scss">
+@import "assets/variables.scss";
+
+.mapboxgl-popup-tip {
+    border-top-color: $primary-color !important;
+}
+
 .mapboxgl-popup-content {
-    width: 400px;
+    text-align: center;
+    min-width: 500px;
     font-size: 1.5em;
+    background-color: $primary-color;
 }
 
 .mapboxgl-popup-close-button {
