@@ -3,13 +3,10 @@
         <div class="style-word-row">
             <span v-if="layout === 'popup'">
                 <div class="row">
-                    <div class="col">{{ word.language }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-4">
+                    <div class="col-12">
                         <el-button
                             type="text"
-                            class="style-button px-3"
+                            class="style-button px-3 style-audio-control"
                             @click="playWord"
                             v-if="word.audio_file.length"
                         >
@@ -23,8 +20,13 @@
                             >Your browser does not support the
                             <code>audio</code> element.
                         </audio>
+                        <span class="style-english">{{word.language}}</span>
                     </div>
-                    <div class="col-8 text-lowercase">{{ word.indigenous }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <span class="style-indigenous">{{word.indigenous}}</span>
+                    </div>
                 </div>
             </span>
             <span v-if="layout !== 'popup'">
@@ -33,7 +35,7 @@
                         <div class="col-2">
                             <el-button
                                 type="text"
-                                class="style-button px-3"
+                                class="style-button px-3 style-audio-control"
                                 @click="playWord"
                                 v-if="word.audio_file.length"
                             >

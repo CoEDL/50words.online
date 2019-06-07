@@ -1,9 +1,9 @@
 <template>
     <div>
         <div class="row my-3">
-            <div class="col style-help-text text-center px-5">
-                Select from the list below, then click on the words shown on the map to hear the audio and see the language name.
-            </div>
+            <div
+                class="col style-help-text text-center px-5"
+            >Select from the list below, then click on the words shown on the map to hear the audio and see the language name.</div>
         </div>
         <div v-for="(word, idx) of words" :key="idx">
             <div class="row">
