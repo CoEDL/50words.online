@@ -28,11 +28,10 @@
         </div>
         <div class="row my-3">
             <div class="col">
-                See more information about {{data.language.name}} here:
                 <a
                     :href="aiatsisLink"
                     target="_blank"
-                >https://collection.aiatsis.gov.au/austlang/language/{{data.code}}</a>
+                >See more information about {{data.language.name}} here.</a>
             </div>
         </div>
         <div class="row">
