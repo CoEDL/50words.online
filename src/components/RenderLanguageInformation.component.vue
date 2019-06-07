@@ -34,6 +34,9 @@
                 >See more information about {{data.language.name}} here.</a>
             </div>
         </div>
+        <div class="row my-3">
+            <div class="col style-speaker">Date received: {{data.date_received}}</div>
+        </div>
         <div class="row">
             <div class="col style-speaker" v-if="data.speaker">
                 Speaker(s): {{ data.speaker.name }}
@@ -52,7 +55,7 @@
             </div>
         </div>
         <div class="row mt-3">
-            <div class="col style-speaker" v-if="data.thankyou">Thanks also to {{ data.thankyou }}</div>
+            <div class="col style-speaker" v-if="data.thankyou">Thanks also to: {{ data.thankyou }}</div>
         </div>
         <span v-for="(word, idx) of data.words" :key="idx">
             <render-word-component :word="word" v-if="word.indigenous"/>

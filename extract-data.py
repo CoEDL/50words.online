@@ -129,6 +129,7 @@ class DataExtractor:
                         'name': sh.row_values(0)[1],
                         'audio_file':  os.path.join(root, sh.row_values(0)[2]) if sh.row_values(0)[2] else ''
                     },
+                    'date_received': sh.row_values(6)[1],
                     'code': sh.row_values(1)[1],
                     'words': [],
                     'speaker': {
