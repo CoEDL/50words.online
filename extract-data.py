@@ -20,6 +20,7 @@ log.basicConfig(level=log.INFO)
 class SheetVerifier:
     def __init__(self, sheet):
         self.sheet = sheet
+        self.ok = True
     
     def verify(self):
         self.check(0, 0, "Language name")
@@ -47,6 +48,7 @@ class SheetVerifier:
 
     def check(self, row, column, value=None):
         if value and self.sheet.row_values(row)[column] != value:
+            self.ok = False
             log.error(f"""Unexpected value in row: {row}, column: {column}."""
             f"""Expected: {value}, Got: {self.sheet.row_values(row)[column]}""")
         elif not self.sheet.row_values(row)[column]:
@@ -117,6 +119,9 @@ class DataExtractor:
                 log.info(f"Verifying {sheet}")
                 v = SheetVerifier(sh)
                 v.verify()
+                if not v.ok:
+                    log.error('Errors found in sheet - skipping this folder.')
+                    continue
 
                 log.info(f"Extracting language data from {sheet}")
                 sheet = {
