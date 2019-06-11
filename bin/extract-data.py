@@ -190,11 +190,11 @@ class DataExtractor:
                     transcode(item['language']['audio_file'], get_target_name(item_path, item['language']['audio_file'], '.mp3'))
                     copyfile(item['language']['audio_file'], os.path.join(item_path, os.path.basename(item['language']['audio_file'])))
                     audio_files = [
-                        get_target_name(item_path, item['language']['audio_file'], '.webm').replace('dist', ''),
-                        get_target_name(item_path, item['language']['audio_file'], '.mp3').replace('dist', '')
+                        get_target_name(item_path, item['language']['audio_file'], '.webm').replace('/srv/dist', ''),
+                        get_target_name(item_path, item['language']['audio_file'], '.mp3').replace('/srv/dist', '')
                     ]
                     if 'wav' in item['language']['audio_file']:
-                        audio_files.append(os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('dist', ''))
+                        audio_files.append(os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('/srv/dist', ''))
                     item['language']['audio_file'] = audio_files
                         
                 except FileNotFoundError: 
@@ -206,11 +206,11 @@ class DataExtractor:
                     transcode(item['speaker']['audio_file'], get_target_name(item_path, item['speaker']['audio_file'], '.mp3'))
                     copyfile(item['speaker']['audio_file'], os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])))
                     audio_files = [
-                        get_target_name(item_path, item['speaker']['audio_file'], '.webm').replace('dist', ''),
-                        get_target_name(item_path, item['speaker']['audio_file'], '.mp3').replace('dist', '')
+                        get_target_name(item_path, item['speaker']['audio_file'], '.webm').replace('/srv/dist', ''),
+                        get_target_name(item_path, item['speaker']['audio_file'], '.mp3').replace('/srv/dist', '')
                     ]
                     if 'wav' in item['speaker']['audio_file']:
-                        audio_files.append(os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('dist', ''))
+                        audio_files.append(os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('/srv/dist', ''))
                     item['speaker']['audio_file'] = audio_files
                 except FileNotFoundError: 
                     log.error(f"missing file {item['speaker']['audio_file']}")
@@ -227,11 +227,11 @@ class DataExtractor:
                             transcode(word['audio_file'], get_target_name(item_path, word['audio_file'], '.mp3'))
                             copyfile(word['audio_file'], os.path.join(item_path, os.path.basename(word['audio_file'])))
                             audio_files = [
-                                get_target_name(item_path, word['audio_file'], '.webm').replace('dist', ''),
-                                get_target_name(item_path, word['audio_file'], '.mp3').replace('dist', '')
+                                get_target_name(item_path, word['audio_file'], '.webm').replace('/srv/dist', ''),
+                                get_target_name(item_path, word['audio_file'], '.mp3').replace('/srv/dist', '')
                             ]
                             if 'wav' in word['audio_file']:
-                                audio_files.append(os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', ''))
+                                audio_files.append(os.path.join(item_path, os.path.basename(word['audio_file'])).replace('/srv/dist', ''))
                             word['audio_file'] = audio_files
                         except FileNotFoundError: 
                             log.error(f"missing file {word['audio_file']}")
