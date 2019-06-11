@@ -102,7 +102,7 @@ class DataExtractor:
             for file in files:
                 if 'xlsx' in file and not '~$' in file:
                     sheet.append(file)
-            if root == 'data':
+            if root == '/srv/data':
                 continue
             print("")
             log.info(f"Processing: {root}")
