@@ -90,7 +90,7 @@ class DataExtractor:
         def parse_row(row):
             data = {
                 'english': row[0],
-                'indigenous': row[1],
+                'indigenous': row[1].lower(),
                 'audio_file': row[2],
             }
             if len(row) == 4 and row[3]:
