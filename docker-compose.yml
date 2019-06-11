@@ -4,6 +4,8 @@ services:
         image: python:3-stretch
         tty: true
         volumes:
+            - $DATA_50WORDS:/srv/data
+            - $REPOSITORY_50WORDS:/srv/dist
             - $PWD:/srv/50words
         working_dir: /srv/50words
         command: "./extract-data.sh"

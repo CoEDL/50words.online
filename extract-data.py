@@ -59,7 +59,8 @@ class DataExtractor:
         self.data = {}
         self.words = {}
         self.languages = {}
-        self.repository = 'dist/repository'
+        self.data_path = '/srv/data'
+        self.repository = '/srv/dist/repository'
     
     def extract(self):
         self.extract_aiatsis_geographies()
@@ -79,7 +80,7 @@ class DataExtractor:
 
 
         print("Extracting geography data")
-        with xlrd.open_workbook('data/AIATSIS-geography.xlsx') as wb:
+        with xlrd.open_workbook(f"{self.data_path}/AIATSIS-geography.xlsx") as wb:
             sh = wb.sheet_by_index(0)
             for r in range(1, sh.nrows):
                 row = parse_row(sh.row_values(r))
@@ -96,7 +97,7 @@ class DataExtractor:
                 data['english_alternate'] = row[3]
             return data
 
-        for root, dirs, files in os.walk('data'):
+        for root, dirs, files in os.walk(self.data_path):
             sheet = []
             for file in files:
                 if 'xlsx' in file and not '~$' in file:
