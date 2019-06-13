@@ -16,14 +16,13 @@ import { store } from "store";
 
 const isProd = process.env.NODE_ENV === "production";
 Vue.use(VueAnalytics, {
-    id: "UA-142046528-1",
+    id: "UA-36256674-2",
     router,
     debug: {
         isProd: !isProd,
         sendHitTask: isProd
     }
 });
-// production id "UA-36256674-2",
 App.router = router;
 App.store = store;
 const app = new Vue(App);
