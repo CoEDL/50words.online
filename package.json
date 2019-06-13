@@ -22,7 +22,7 @@
         "element-ui": "^2.9.1",
         "lodash": "^4.17.11",
         "mapbox-gl": "^0.54.0",
-        "momentjs": "^2.0.0",
+        "moment": "^2.24.0",
         "vue": "^2.5.22",
         "vue-analytics": "^5.17.0",
         "vue-router": "^3.0.6",
