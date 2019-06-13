@@ -86,7 +86,7 @@ export default {
             }`;
         },
         dateReceived: function() {
-            return moment(this.data.date_received).format("LL");
+            return moment(this.data.date_received, "YYYYMMDD").format("LL");
         }
     },
     mounted() {
