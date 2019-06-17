@@ -12,8 +12,15 @@
                 <br>INDIGENOUS LANGUAGE
             </div>
         </a>
+        <div class="style-firstlang-logo-container">
+            <a href="https://www.firstlanguages.org.au" target="_blank">
+                <img :src="firstLangLogo" class="style-logo">
+            </a>
+        </div>
         <div class="style-uom-logo-container">
-            <img :src="uomLogo" class="style-logo">
+            <a href="https://www.unimelb.edu.au" target="_blank">
+                <img :src="uomLogo" class="style-logo">
+            </a>
         </div>
     </div>
 </template>
@@ -23,7 +30,8 @@ export default {
     data() {
         return {
             logo: require("src/assets/logo-image.png"),
-            uomLogo: require("src/assets/UOMLogo.jpg")
+            uomLogo: require("src/assets/UOMLogo.jpg"),
+            firstLangLogo: require("src/assets/firstlanguages.png")
         };
     }
 };
@@ -36,8 +44,15 @@ export default {
 }
 .style-uom-logo-container {
     position: relative;
-    top: calc(100vh - 170px);
-    left: calc(100vw - 140px);
+    top: calc(100vh - 210px);
+    left: calc(100vw - 138px);
+    width: 80px;
+}
+
+.style-firstlang-logo-container {
+    position: relative;
+    top: calc(100vh - 210px);
+    left: calc(100vw - 138px);
     width: 80px;
 }
 
@@ -67,7 +82,13 @@ export default {
 @media (min-width: 768px) {
     .style-uom-logo-container {
         position: relative;
-        top: calc(100vh - 160px);
+        top: calc(100vh - 190px);
+        left: calc(100vw - 140px);
+        width: 80px;
+    }
+    .style-firstlang-logo-container {
+        position: relative;
+        top: calc(100vh - 190px);
         left: calc(100vw - 140px);
         width: 80px;
     }
@@ -104,8 +125,14 @@ export default {
     }
     .style-uom-logo-container {
         position: relative;
-        top: calc(100vh - 220px);
+        top: calc(100vh - 269px);
         left: calc(100vw - 182px);
+        width: 120px;
+    }
+    .style-firstlang-logo-container {
+        position: relative;
+        top: calc(100vh - 150px);
+        left: calc(100vw - 304px);
         width: 120px;
     }
 }
