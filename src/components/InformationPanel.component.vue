@@ -62,18 +62,29 @@
                             'thigh' is the same as the word for 'leg' so they are both shown in those lists.
                         </p>
                         <p>
-                            For more information about Australian Indigenous languages, see
+                            For more information about Australian Indigenous languages, see our pages
                             <a
+                                class="style-link"
+                                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/training/australian-indigenous-languages"
+                                target="_blank"
+                            >here</a>
+                            and also
+                            <a
+                                class="style-link"
                                 href="https://www.firstlanguages.org.au"
                                 target="_blank"
                             >First Languages Australia</a> or
-                            <a href="https://collection.aiatsis.gov.au/austlang/search">Austlang</a>.
+                            <a
+                                class="style-link"
+                                href="https://collection.aiatsis.gov.au/austlang/search"
+                            >Austlang</a>.
                         </p>
                         <p>
                             The 50-word project is led by the Research Unit for Indigenous Language at the University of
                             Melbourne, funded by the Duncan Leary Trust for Australian Indigenous Languages.
                             For further information see:
                             <a
+                                class="style-link"
                                 href="http://indiglang.arts.unimelb.edu.au"
                             >http://indiglang.arts.unimelb.edu.au</a>
                         </p>
@@ -214,6 +225,10 @@ export default {
 .style-more-information {
     padding: 15px;
     font-size: 1.2em;
+}
+
+.style-link {
+    color: $text-color;
 }
 </style>
 
