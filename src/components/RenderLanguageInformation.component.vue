@@ -20,19 +20,18 @@
                         >Your browser does not support the
                         <code>audio</code> element.
                     </audio>
-                    <el-button type="text" class="style-button" circle @click="reset">
+                    <!-- <el-button type="text" class="style-button" circle @click="reset">
                         <i class="fas fa-times fa-2x"></i>
-                    </el-button>
+                    </el-button>-->
                 </h2>
             </div>
         </div>
         <div class="row my-3">
             <div class="col">
-                See more information about {{data.language.name}} here:
                 <a
                     :href="aiatsisLink"
                     target="_blank"
-                >https://collection.aiatsis.gov.au/austlang/language/{{data.code}}</a>
+                >See more information about {{data.language.name}} here.</a>
             </div>
         </div>
         <div class="row">
@@ -53,7 +52,10 @@
             </div>
         </div>
         <div class="row mt-3">
-            <div class="col style-speaker" v-if="data.thankyou">Thanks also to {{ data.thankyou }}</div>
+            <div class="col style-speaker" v-if="data.thankyou">Thanks also to: {{ data.thankyou }}</div>
+        </div>
+        <div class="row my-3">
+            <div class="col">Date received: {{dateReceived}}</div>
         </div>
         <span v-for="(word, idx) of data.words" :key="idx">
             <render-word-component :word="word" v-if="word.indigenous"/>
@@ -63,6 +65,8 @@
 
 <script>
 import RenderWordComponent from "./RenderWord.component.vue";
+import moment from "moment";
+
 export default {
     components: {
         RenderWordComponent
@@ -80,6 +84,9 @@ export default {
             return `https://collection.aiatsis.gov.au/austlang/language/${
                 this.data.code
             }`;
+        },
+        dateReceived: function() {
+            return moment(this.data.date_received, "YYYYMMDD").format("LL");
         }
     },
     mounted() {

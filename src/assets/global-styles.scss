@@ -1,4 +1,5 @@
 @import "./variables.scss";
+
 body {
     height: 100vh;
     margin: 0;
@@ -13,14 +14,14 @@ a {
 
 a:link,
 a:visited {
-    color: #22313f;
+    color: $text-color;
     font-weight: 500;
     text-decoration: none;
 }
 
 a:hover,
 a:active {
-    color: #22313f;
+    color: $text-color;
     opacity: 0.8;
 }
 
@@ -30,4 +31,8 @@ a:active {
 
 .style-button {
     color: #000;
+}
+
+.style-audio-control {
+    color: $text-color;
 }

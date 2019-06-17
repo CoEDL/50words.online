@@ -1,22 +1,66 @@
 #!/usr/bin/env python
 
 import base64
+import coloredlogs
 import json
 import hashlib
+import logging as log
 import os
 import os.path
 import pprint
 from shutil import copyfile
 import subprocess
+import sys
 import xlrd
+coloredlogs.install()
 pp = pprint.PrettyPrinter(compact=True)
+
+log.basicConfig(level=log.INFO)
+
+class SheetVerifier:
+    def __init__(self, sheet):
+        self.sheet = sheet
+        self.ok = True
+    
+    def verify(self):
+        self.check(0, 0, "Language name")
+        self.check(0, 1)
+        self.check(0, 2)
+        self.check(1, 0, "AIATSIS code")
+        self.check(1, 1)
+        self.check(2, 0, "Speaker's name")
+        self.check(2, 1)
+        self.check(2, 2)
+        self.check(3, 0, "Other people who helped to get the list produced")
+        self.check(3, 1)
+        self.check(4, 0, "Permission form received (Y/N)?")
+        self.check(4, 1)
+        self.check(5, 0, "Source")
+        self.check(5, 1)
+        self.check(6, 0, "Date received")
+        self.check(6, 1)
+        self.check(7, 1, 'Word')
+        self.check(7, 2, 'Audio filename')
+        for i in range(8, 65):
+            self.check(i, 0)
+            self.check(i, 1)
+            self.check(i, 2)
+
+    def check(self, row, column, value=None):
+        if value and self.sheet.row_values(row)[column] != value:
+            self.ok = False
+            log.error(f"""Unexpected value in row: {row}, column: {column}."""
+            f"""Expected: {value}, Got: {self.sheet.row_values(row)[column]}""")
+        elif not self.sheet.row_values(row)[column]:
+            log.warning(f"Empty cell found at row: {row+1}, column: {column+1}. Value expected.")
 
 class DataExtractor:
     def __init__(self):
         self.data = {}
         self.words = {}
         self.languages = {}
-        self.repository = 'dist/repository'
+        self.data_path = '/srv/data'
+        self.repository = '/srv/dist/repository'
     
     def extract(self):
         self.extract_aiatsis_geographies()
@@ -36,7 +80,7 @@ class DataExtractor:
 
 
         print("Extracting geography data")
-        with xlrd.open_workbook('data/AIATSIS-geography.xlsx') as wb:
+        with xlrd.open_workbook(f"{self.data_path}/AIATSIS-geography.xlsx") as wb:
             sh = wb.sheet_by_index(0)
             for r in range(1, sh.nrows):
                 row = parse_row(sh.row_values(r))
@@ -46,32 +90,47 @@ class DataExtractor:
         def parse_row(row):
             data = {
                 'english': row[0],
-                'indigenous': row[1],
+                'indigenous': row[1].lower(),
                 'audio_file': row[2],
             }
             if len(row) == 4 and row[3]:
                 data['english_alternate'] = row[3]
             return data
 
-        for root, dirs, files in os.walk('data'):
+        for root, dirs, files in os.walk(self.data_path):
+            sheet = []
             for file in files:
                 if 'xlsx' in file and not '~$' in file:
-                    sheet = file 
-            if root == 'data':
+                    sheet.append(file)
+            if root == '/srv/data':
                 continue
+            print("")
+            log.info(f"Processing: {root}")
+            if len(sheet) > 1:
+                log.error('Found more than one data spreadsheet. Skipping this folder.')
+                continue
+            sheet = sheet[0]
             sheet = os.path.join(root, sheet)
-            print(f"Extracting language data from {sheet}")
             with xlrd.open_workbook(sheet) as wb:
-                sh = wb.sheet_by_index(0)  # or wb.sheet_by_name('name_of_the_sheet_here')
-                if (sh.nrows != 64):
-                    print(f"ERROR::: oops - {sheet} isn't exactly 66 rows - is it correct?")
+                sh = wb.sheet_by_index(0) 
+                if (sh.nrows != 65):
+                    log.error(f"{sheet} isn't exactly 65 rows - is it correct?")
                     continue
 
+                log.info(f"Verifying {sheet}")
+                v = SheetVerifier(sh)
+                v.verify()
+                if not v.ok:
+                    log.error('Errors found in sheet - skipping this folder.')
+                    continue
+
+                log.info(f"Extracting language data from {sheet}")
                 sheet = {
                     'language': {
                         'name': sh.row_values(0)[1],
                         'audio_file':  os.path.join(root, sh.row_values(0)[2]) if sh.row_values(0)[2] else ''
                     },
+                    'date_received': sh.row_values(6)[1],
                     'code': sh.row_values(1)[1],
                     'words': [],
                     'speaker': {
@@ -82,11 +141,11 @@ class DataExtractor:
                 }
                 # pp.pprint(sheet)
                 if sheet['code'] not in self.data.keys():
-                    print(f"ERROR::: ooops - {sheet['code']} not in AIATSIS-geography.xlsx")
+                    log.error(f"{sheet['code']} not in AIATSIS-geography.xlsx")
                     continue
 
-                print(f"Creating repository for {sh.row_values(1)[1]}")
-                for r in range(7, sh.nrows):
+                log.info(f"Creating repository for {sh.row_values(1)[1]}")
+                for r in range(8, sh.nrows):
                     data = parse_row(sh.row_values(r))
                     if data['audio_file']:
                         data['audio_file'] = os.path.join(root, data['audio_file'])
@@ -106,11 +165,12 @@ class DataExtractor:
 
         def transcode(item, target):
             if not os.path.exists(target):
+                log.info(f"Transcoding {item} to webm and mp3")
                 subprocess.run(['ffmpeg', '-hide_banner', '-loglevel',  'panic', '-i', item, target])
             
         self.makepath(self.repository)
         for key, item in self.data.items():
-            print(f"Processing {item['code']}")
+            log.info(f"Building repository for {item['code']}")
             item_path = os.path.join(self.repository, item['code'])
             self.languages[item['code']] = { 
                 'name': item['name'], 
@@ -126,36 +186,34 @@ class DataExtractor:
 
             if 'language' in item and item['language']['audio_file']:
                 try:
-                    print(f"Transcoding language to webm and mp3")
                     transcode(item['language']['audio_file'], get_target_name(item_path, item['language']['audio_file'], '.webm'))
                     transcode(item['language']['audio_file'], get_target_name(item_path, item['language']['audio_file'], '.mp3'))
                     copyfile(item['language']['audio_file'], os.path.join(item_path, os.path.basename(item['language']['audio_file'])))
                     audio_files = [
-                        get_target_name(item_path, item['language']['audio_file'], '.webm').replace('dist', ''),
-                        get_target_name(item_path, item['language']['audio_file'], '.mp3').replace('dist', '')
+                        get_target_name(item_path, item['language']['audio_file'], '.webm').replace('/srv/dist', ''),
+                        get_target_name(item_path, item['language']['audio_file'], '.mp3').replace('/srv/dist', '')
                     ]
                     if 'wav' in item['language']['audio_file']:
-                        audio_files.append(os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('dist', ''))
+                        audio_files.append(os.path.join(item_path, os.path.basename(item['language']['audio_file'])).replace('/srv/dist', ''))
                     item['language']['audio_file'] = audio_files
                         
                 except FileNotFoundError: 
-                    print(f"ERRROR::: missing file {item['language']['audio_file']}")
+                    log.error(f"missing file {item['language']['audio_file']}")
 
             if 'speaker' in item and item['speaker']['audio_file']:
                 try:
-                    print(f"Transcoding speaker to webm and mp3")
                     transcode(item['speaker']['audio_file'], get_target_name(item_path, item['speaker']['audio_file'], '.webm'))
                     transcode(item['speaker']['audio_file'], get_target_name(item_path, item['speaker']['audio_file'], '.mp3'))
                     copyfile(item['speaker']['audio_file'], os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])))
                     audio_files = [
-                        get_target_name(item_path, item['speaker']['audio_file'], '.webm').replace('dist', ''),
-                        get_target_name(item_path, item['speaker']['audio_file'], '.mp3').replace('dist', '')
+                        get_target_name(item_path, item['speaker']['audio_file'], '.webm').replace('/srv/dist', ''),
+                        get_target_name(item_path, item['speaker']['audio_file'], '.mp3').replace('/srv/dist', '')
                     ]
                     if 'wav' in item['speaker']['audio_file']:
-                        audio_files.append(os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('dist', ''))
+                        audio_files.append(os.path.join(item_path, os.path.basename(item['speaker']['audio_file'])).replace('/srv/dist', ''))
                     item['speaker']['audio_file'] = audio_files
                 except FileNotFoundError: 
-                    print(f"ERRROR::: missing file {item['speaker']['audio_file']}")
+                    log.error(f"missing file {item['speaker']['audio_file']}")
 
             if 'words' in item.keys():
                 words = []
@@ -165,19 +223,18 @@ class DataExtractor:
 
                     if word['audio_file']:
                         try:
-                            print(f"Transcoding {word['audio_file']} to webm and mp3")
                             transcode(word['audio_file'], get_target_name(item_path, word['audio_file'], '.webm'))
                             transcode(word['audio_file'], get_target_name(item_path, word['audio_file'], '.mp3'))
                             copyfile(word['audio_file'], os.path.join(item_path, os.path.basename(word['audio_file'])))
                             audio_files = [
-                                get_target_name(item_path, word['audio_file'], '.webm').replace('dist', ''),
-                                get_target_name(item_path, word['audio_file'], '.mp3').replace('dist', '')
+                                get_target_name(item_path, word['audio_file'], '.webm').replace('/srv/dist', ''),
+                                get_target_name(item_path, word['audio_file'], '.mp3').replace('/srv/dist', '')
                             ]
                             if 'wav' in word['audio_file']:
-                                audio_files.append(os.path.join(item_path, os.path.basename(word['audio_file'])).replace('dist', ''))
+                                audio_files.append(os.path.join(item_path, os.path.basename(word['audio_file'])).replace('/srv/dist', ''))
                             word['audio_file'] = audio_files
                         except FileNotFoundError: 
-                            print(f"ERRROR::: missing file {word['audio_file']}")
+                            log.error(f"missing file {word['audio_file']}")
 
                     words.append(word)
                     word['language'] = item['name']

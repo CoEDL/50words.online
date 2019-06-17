@@ -1,0 +1,25 @@
+version: "3"
+
+volumes:
+    PDSC_STACK_DB_VOLUME:
+        driver: local
+
+networks:
+    pdscnet:
+
+services:
+    web:
+        image: pdsc/50words.online
+        deploy:
+            replicas: 2
+            restart_policy:
+                condition: on-failure
+            resources:
+                limits:
+                    memory: 256M
+        ports:
+            - "80:80"
+        volumes:
+            - /srv/50words.online:/var/www/50words.online
+        networks:
+            - pdscnet
