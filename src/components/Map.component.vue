@@ -2,13 +2,9 @@
     <div>
         <div id="map" class="style-map"></div>
         <div class="style-map-reset">
-            <div class="row">
-                <div class="col">
-                    <el-button type="default" @click="centerMap">
-                        <i class="fas fa-crosshairs"></i>
-                    </el-button>
-                </div>
-            </div>
+            <el-button type="default" @click="centerMap" size="mini" class="style-reset-button">
+                <i class="fas fa-crosshairs style-reset-button-image"></i>
+            </el-button>
         </div>
     </div>
 </template>
@@ -296,22 +292,31 @@ export default {
 .style-map-reset {
     position: fixed;
     top: 130px;
-    left: calc(100vw - 64px);
+    left: calc(100vw - 51px);
+}
+
+.style-reset-button {
+    max-width: 8px;
+    font-size: 12px;
+}
+
+.style-reset-button-image {
+    margin-left: -6px;
 }
 
 @media (min-width: 768px) {
     .style-map-reset {
         position: fixed;
         top: 90px;
-        left: calc(100vw - 64px);
+        left: calc(100vw - 41px);
     }
 }
 
 @media (min-width: 1024px) {
     .style-map-reset {
         position: fixed;
-        top: 100px;
-        left: calc(100vw - 64px);
+        top: 90px;
+        left: calc(100vw - 51px);
     }
 }
 </style>
