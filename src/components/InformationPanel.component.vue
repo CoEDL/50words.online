@@ -62,6 +62,17 @@
                             'thigh' is the same as the word for 'leg' so they are both shown in those lists.
                         </p>
                         <p>
+                            When you listen to these words you will notice that Australian languages have many
+                            sounds that are not found in English, and these can be tricky for English speakers to pronounce.
+                            For an explanation of these sounds, and help in pronouncing them we recommend you watch the
+                            short video series we put online at the
+                            <a
+                                class="style-link"
+                                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/training/australian-indigenous-languages/sounds-of-aboriginal-languages"
+                                target="_blank"
+                            >RUIL website.</a>
+                        </p>
+                        <p>
                             For more information about Australian Indigenous languages, see our pages
                             <a
                                 class="style-link"
