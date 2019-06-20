@@ -260,7 +260,7 @@ export default {
                     },
                     layout: {
                         "text-field": "{indigenous}",
-                        "text-size": 25,
+                        "text-size": 15,
                         "text-max-width": 40,
                         "text-allow-overlap": true,
                         "icon-allow-overlap": true,
