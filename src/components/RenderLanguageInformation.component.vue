@@ -6,7 +6,7 @@
                     {{ data.language.name }}
                     <el-button
                         type="text"
-                        class="style-button px-3"
+                        class="style-button px-3 style-audio-control"
                         @click="playLanguage"
                         v-if="data.language.audio_file.length"
                     >
@@ -39,7 +39,7 @@
                 Speaker(s): {{ data.speaker.name }}
                 <el-button
                     type="text"
-                    class="style-button px-3"
+                    class="style-button px-3 style-audio-control"
                     @click="playSpeaker"
                     v-if="data.speaker.audio_file.length"
                 >

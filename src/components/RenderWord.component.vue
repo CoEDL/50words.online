@@ -12,14 +12,12 @@
                         >
                             <i class="fas fa-volume-up fa-2x"></i>
                         </el-button>
-                        <audio ref="audioElement" v-if="word.audio_file.length">
-                            <source
-                                :src="file"
-                                v-for="(file, idx) of JSON.parse(word.audio_file)"
-                                :key="idx"
-                            >Your browser does not support the
-                            <code>audio</code> element.
-                        </audio>
+                        <audio-player-control
+                            :files="word.audio_file"
+                            :play="play"
+                            v-on:ready="ready"
+                            v-on:finished-playing="stopPlaying"
+                        />
                         <span class="style-english">{{word.language}}</span>
                     </div>
                 </div>
@@ -37,21 +35,20 @@
                                 type="text"
                                 class="style-button px-3 style-audio-control"
                                 @click="playWord"
+                                :disabled="playDisabled"
                                 v-if="word.audio_file.length"
                             >
                                 <i class="fas fa-volume-up fa-2x"></i>
                             </el-button>
-                            <audio ref="audioElement" v-if="word.audio_file.length">
-                                <source
-                                    :src="file"
-                                    v-for="(file, idx) of word.audio_file"
-                                    :key="idx"
-                                >Your browser does not support the
-                                <code>audio</code> element.
-                            </audio>
+                            <audio-player-control
+                                :files="word.audio_file"
+                                :play="play"
+                                v-on:ready="ready"
+                                v-on:finished-playing="stopPlaying"
+                            />
                         </div>
                         <div class="col-10">
-                            <div class="row">
+                            <div class="row style-row">
                                 <div
                                     class="col-12 style-english"
                                     v-if="word.english_alternate"
@@ -70,29 +67,32 @@
 </template>
 
 <script>
+import AudioPlayerControl from "./AudioPlayerControl.component.vue";
+
 export default {
+    components: {
+        AudioPlayerControl
+    },
     props: {
         layout: String,
         word: Object
     },
     data() {
         return {
-            watchers: {}
+            playDisabled: true,
+            play: [false]
         };
     },
-    mounted() {
-        this.watchers.audio = this.$watch("word.audio_file", () => {
-            if (this.$refs.audioElement) this.$refs.audioElement.load();
-        });
-    },
-    beforeDestroy() {
-        if (this.watchers.audio) this.watchers.audio();
-    },
+
     methods: {
+        ready() {
+            this.playDisabled = false;
+        },
         playWord() {
-            setTimeout(() => {
-                this.$refs.audioElement.play();
-            }, 200);
+            this.play = [true];
+        },
+        stopPlaying() {
+            this.play = [false];
         }
     }
 };
@@ -111,7 +111,11 @@ export default {
 }
 
 .style-indigenous {
-    border-bottom: 1px solid #000;
+    // border-bottom: 1px solid #000;
     font-size: 2em;
+}
+
+.style-row {
+    border-bottom: 1px solid #000;
 }
 </style>
