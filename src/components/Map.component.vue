@@ -6,6 +6,10 @@
                 <i class="fas fa-crosshairs style-reset-button-image"></i>
             </el-button>
         </div>
+        <audio ref="audioElement" v-if="playAllAudioControl.enable">
+            <source v-for="(file, idx) of playAllAudioControl.files" :src="file" :key="idx">Your browser does not support the
+            <code>audio</code> element.
+        </audio>
     </div>
 </template>
 
@@ -15,6 +19,7 @@ import Vue from "vue";
 import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
 import RenderWordComponent from "components/RenderWord.component.vue";
+import AudioPlayerControl from "./AudioPlayerControl.component.vue";
 Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
@@ -23,13 +28,18 @@ import { throttle, map } from "lodash";
 
 export default {
     components: {
-        RenderWordComponent
+        RenderWordComponent,
+        AudioPlayerControl
     },
     data() {
         return {
             watchers: {},
             map: undefined,
-            popup: undefined
+            popup: undefined,
+            playAllAudioControl: {
+                enable: false,
+                files: []
+            }
         };
     },
     computed: {
@@ -44,6 +54,9 @@ export default {
         },
         selectedWord: function() {
             return this.$store.state.selectedWord;
+        },
+        playAll: function() {
+            return this.$store.state.playAll;
         }
     },
     mounted() {
@@ -55,6 +68,7 @@ export default {
                 this.renderLanguageLayer();
             }
         });
+        this.watchers.words = this.$watch("playAll", this.playAllWords);
     },
 
     beforeMount() {
@@ -66,6 +80,7 @@ export default {
     },
     methods: {
         centerMap() {
+            if (this.popup) this.popup.remove();
             this.map.fitBounds([[96, -45], [168, -8]]);
         },
         renderMap() {
@@ -274,6 +289,77 @@ export default {
                     .setData({ type: "FeatureCollection", features });
             }
             this.map.setLayoutProperty("words", "visibility", "visible");
+        },
+        async playAllWords() {
+            if (!this.playAll.play) return;
+            this.playAllAudioControl.enable = true;
+            await sleep(100);
+            const map = this.map;
+            const popup = this.popup;
+            const playAllAudioControl = this.playAllAudioControl;
+            const audioElement = this.$refs.audioElement;
+            const words = [...this.$store.state.selectedWord];
+            const self = this;
+            self.word = words.pop();
+
+            self.map.on("moveend", renderPopupAndPlayAudio);
+
+            async function renderPopupAndPlayAudio() {
+                if (!self.playAll.play) cleanup();
+                const RenderWordClass = Vue.extend(RenderWordComponent);
+                const popup = new mapboxgl.Popup()
+                    .setLngLat([self.word.lng, self.word.lat])
+                    .setHTML('<div id="vue-popup-content"></div>')
+                    .addTo(map);
+                const popupInstance = new RenderWordClass({
+                    propsData: {
+                        layout: "popup",
+                        word: self.word
+                    }
+                });
+                popupInstance.$mount("#vue-popup-content");
+                popup._update();
+                await sleep(1000);
+                audioElement.load();
+                audioElement.play();
+                await sleep(2000);
+                popup.remove();
+                if (words.length && self.playAll.play) {
+                    self.word = words.pop();
+                    playWord();
+                } else {
+                    cleanup();
+                }
+            }
+
+            playWord();
+            async function playWord() {
+                playAllAudioControl.files = [...self.word.audio_file];
+
+                if (self.playAll.play) {
+                    map.flyTo({
+                        center: [self.word.lng, self.word.lat],
+                        zoom: 7,
+                        bearing: 0
+                    });
+                } else {
+                    cleanup();
+                }
+            }
+
+            function cleanup() {
+                self.centerMap();
+                map.off("moveend", renderPopupAndPlayAudio);
+                self.$store.commit("setPlayAll", false);
+            }
+
+            function sleep(time) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve();
+                    }, time);
+                });
+            }
         }
     }
 };

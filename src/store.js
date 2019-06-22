@@ -42,6 +42,9 @@ const configuration = {
         },
         show(state, payload) {
             state.show = payload;
+        },
+        setPlayAll(state, payload) {
+            state.playAll = { play: payload };
         }
     },
     actions: {
@@ -63,6 +66,7 @@ function reset() {
         words: [],
         languages: [],
         selectedLanguage: undefined,
-        selectedWord: undefined
+        selectedWord: undefined,
+        playAll: true
     };
 }
