@@ -131,9 +131,9 @@ export default {
     }
     .style-firstlang-logo-container {
         position: relative;
-        top: calc(100vh - 150px);
-        left: calc(100vw - 304px);
-        width: 120px;
+        top: calc(100vh - 270px);
+        left: calc(100vw - 181px);
+        width: 118px;
     }
 }
 </style>
