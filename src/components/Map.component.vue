@@ -295,47 +295,22 @@ export default {
             this.playAllAudioControl.enable = true;
             await sleep(100);
             const map = this.map;
-            const popup = this.popup;
+            let popup = this.popup;
             const playAllAudioControl = this.playAllAudioControl;
             const audioElement = this.$refs.audioElement;
             const words = [...this.$store.state.selectedWord];
             const self = this;
+
+            // wire up event handlers
+            map.on("moveend", renderPopupAndPlayAudio);
+            audioElement.addEventListener("canplay", audioLoadedHandler);
+            audioElement.addEventListener("ended", audioEndedHandler);
+
+            // kick off
             self.word = words.pop();
-
-            self.map.on("moveend", renderPopupAndPlayAudio);
-
-            async function renderPopupAndPlayAudio() {
-                if (!self.playAll.play) cleanup();
-                const RenderWordClass = Vue.extend(RenderWordComponent);
-                const popup = new mapboxgl.Popup()
-                    .setLngLat([self.word.lng, self.word.lat])
-                    .setHTML('<div id="vue-popup-content"></div>')
-                    .addTo(map);
-                const popupInstance = new RenderWordClass({
-                    propsData: {
-                        layout: "popup",
-                        word: self.word
-                    }
-                });
-                popupInstance.$mount("#vue-popup-content");
-                popup._update();
-                await sleep(1000);
-                audioElement.load();
-                audioElement.play();
-                await sleep(2000);
-                popup.remove();
-                if (words.length && self.playAll.play) {
-                    self.word = words.pop();
-                    playWord();
-                } else {
-                    cleanup();
-                }
-            }
-
             playWord();
-            async function playWord() {
-                playAllAudioControl.files = [...self.word.audio_file];
 
+            async function playWord() {
                 if (self.playAll.play) {
                     map.flyTo({
                         center: [self.word.lng, self.word.lat],
@@ -347,9 +322,50 @@ export default {
                 }
             }
 
+            async function renderPopupAndPlayAudio() {
+                if (!self.playAll.play) cleanup();
+                const RenderWordClass = Vue.extend(RenderWordComponent);
+                popup = new mapboxgl.Popup()
+                    .setLngLat([self.word.lng, self.word.lat])
+                    .setHTML('<div id="vue-popup-content"></div>')
+                    .addTo(map);
+                const popupInstance = new RenderWordClass({
+                    propsData: {
+                        layout: "popup",
+                        word: self.word
+                    }
+                });
+                popupInstance.$mount("#vue-popup-content");
+                popup._update();
+                // console.log("loading the audio");
+                playAllAudioControl.files = [...self.word.audio_file];
+                audioElement.load();
+            }
+
+            async function audioLoadedHandler() {
+                // console.log("audio ready to play");
+                await sleep(1000);
+                audioElement.play();
+            }
+
+            async function audioEndedHandler() {
+                // console.log("finished playing");
+                await sleep(1000);
+                popup.remove();
+                if (words.length && self.playAll.play) {
+                    // console.log("next word");
+                    self.word = words.pop();
+                    playWord();
+                } else {
+                    cleanup();
+                }
+            }
+
             function cleanup() {
                 self.centerMap();
                 map.off("moveend", renderPopupAndPlayAudio);
+                audioElement.removeEventListener("canplay", audioLoadedHandler);
+                audioElement.removeEventListener("ended", audioEndedHandler);
                 self.$store.commit("setPlayAll", false);
             }
 
