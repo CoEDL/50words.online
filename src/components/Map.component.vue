@@ -305,6 +305,7 @@ export default {
             map.on("moveend", renderPopupAndPlayAudio);
             audioElement.addEventListener("canplay", audioLoadedHandler);
             audioElement.addEventListener("ended", audioEndedHandler);
+            audioElement.addEventListener("error", audioErrorHandler);
 
             // kick off
             self.word = words.pop();
@@ -339,7 +340,12 @@ export default {
                 popup._update();
                 // console.log("loading the audio");
                 playAllAudioControl.files = [...self.word.audio_file];
-                audioElement.load();
+                if (self.word.audio_file.length) {
+                    audioElement.load();
+                } else {
+                    await sleep(3000);
+                    nextWord();
+                }
             }
 
             async function audioLoadedHandler() {
@@ -351,6 +357,14 @@ export default {
             async function audioEndedHandler() {
                 // console.log("finished playing");
                 await sleep(1000);
+                nextWord();
+            }
+
+            function audioErrorHandler() {
+                nextWord();
+            }
+
+            function nextWord() {
                 popup.remove();
                 if (words.length && self.playAll.play) {
                     // console.log("next word");
@@ -367,6 +381,7 @@ export default {
                 map.off("moveend", renderPopupAndPlayAudio);
                 audioElement.removeEventListener("canplay", audioLoadedHandler);
                 audioElement.removeEventListener("ended", audioEndedHandler);
+                audioElement.removeEventListener("error", audioErrorHandler);
                 self.$store.commit("setPlayAll", false);
             }
 
