@@ -314,7 +314,7 @@ export default {
                 if (self.playAll.play) {
                     map.flyTo({
                         center: [self.word.lng, self.word.lat],
-                        zoom: 7,
+                        zoom: window.innerwidth < 768 ? 8 : 6,
                         bearing: 0
                     });
                 } else {
@@ -362,6 +362,7 @@ export default {
             }
 
             function cleanup() {
+                popup.remove();
                 self.centerMap();
                 map.off("moveend", renderPopupAndPlayAudio);
                 audioElement.removeEventListener("canplay", audioLoadedHandler);
@@ -432,8 +433,8 @@ export default {
 
 .mapboxgl-popup-content {
     text-align: center;
-    min-width: 500px;
-    font-size: 1.5em;
+    min-width: 250px;
+    font-size: 0.8em;
     background-color: $primary-color;
 }
 
@@ -449,11 +450,23 @@ export default {
     .mapboxgl-ctrl-top-right {
         margin: 10px 0 0 0;
     }
+    .mapboxgl-popup-content {
+        text-align: center;
+        min-width: 400px;
+        font-size: 1.2em;
+        background-color: $primary-color;
+    }
 }
 
 @media (min-width: 1024px) {
     .mapboxgl-ctrl-top-right {
         margin: 10px 10px 0 0;
+    }
+    .mapboxgl-popup-content {
+        text-align: center;
+        min-width: 500px;
+        font-size: 1.5em;
+        background-color: $primary-color;
     }
 }
 </style>
