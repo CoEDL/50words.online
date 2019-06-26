@@ -29,8 +29,8 @@ export default {
         },
         word: function() {
             return this.$store.state.selectedWord
-                ? this.$store.state.selectedWord[0].english
-                : this.$store.state.selectedWord;
+                ? this.$store.state.selectedWord[0].properties.english
+                : undefined;
         }
     },
     methods: {

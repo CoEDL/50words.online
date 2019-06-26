@@ -8,22 +8,22 @@
                             type="text"
                             class="style-button px-3 style-audio-control"
                             @click="playWord"
-                            v-if="word.audio_file.length"
+                            v-if="word.properties.audio_file.length"
                         >
                             <i class="fas fa-volume-up fa-2x"></i>
                         </el-button>
                         <audio-player-control
-                            :files="word.audio_file"
+                            :files="word.properties.audio_file"
                             :play="play"
                             v-on:ready="ready"
                             v-on:finished-playing="stopPlaying"
                         />
-                        <span class="style-english">{{word.language}}</span>
+                        <span class="style-english">{{word.properties.language.name}}</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <span class="style-indigenous">{{word.indigenous}}</span>
+                        <span class="style-indigenous">{{word.properties.indigenous}}</span>
                     </div>
                 </div>
             </span>
@@ -83,7 +83,9 @@ export default {
             play: [false]
         };
     },
-
+    mounted() {
+        // console.log(JSON.stringify(this.word, null, 2));
+    },
     methods: {
         ready() {
             this.playDisabled = false;

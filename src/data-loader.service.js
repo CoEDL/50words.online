@@ -8,11 +8,6 @@ export async function loadData({ store }) {
     store.commit(`setWords`, { words });
     let languages = (await get(mapRepositoryRoot("/repository/languages.json")))
         .languages;
-    // languages = compact(
-    //     languages.map(l => {
-    //         return l.words ? l : undefined;
-    //     })
-    // );
     store.commit(`setLanguages`, { languages });
 
     async function get(path) {
@@ -37,7 +32,7 @@ export async function loadLanguageData({ code }) {
         throw new Error(response);
     }
     let data = await response.json();
-    data.words = data.words.map(w => {
+    data.words = data.properties.words.map(w => {
         return {
             ...w,
             audio_file: mapRepositoryRoot(w.audio_file)
@@ -54,14 +49,31 @@ export async function loadWordData({ word, words }) {
     if (response.status !== 200) {
         throw new Error(response);
     }
-    word = orderBy(await response.json(), "language");
+    word = await response.json();
     word = word.map(w => {
         return {
             ...w,
-            audio_file: mapRepositoryRoot(w.audio_file)
+            audio_file: mapRepositoryRoot(w.properties.audio_file)
         };
     });
     return word;
+}
+
+export async function loadProcessingData() {
+    let response = await fetch(mapRepositoryRoot(`/repository/errors.json`));
+    if (response.status !== 200) {
+        throw new Error(response);
+    }
+    const errors = await response.json();
+
+    response = await fetch(
+        mapRepositoryRoot(`/repository/gambay-additions.json`)
+    );
+    if (response.status !== 200) {
+        throw new Error(response);
+    }
+    const additions = await response.json();
+    return { errors, additions };
 }
 
 export function mapRepositoryRoot(path) {

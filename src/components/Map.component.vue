@@ -24,7 +24,7 @@ Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
     "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2p2NGhzMzFkMnFsbzQwandhNmJ2MWI2eCJ9.qxu6U_HfPFd-4BZ85eNCvw";
-import { throttle, map } from "lodash";
+import { throttle, map, orderBy } from "lodash";
 
 export default {
     components: {
@@ -111,10 +111,13 @@ export default {
                     .setLngLat(e.lngLat)
                     .setHTML('<div id="vue-popup-content"></div>')
                     .addTo(this.map);
+                const properties = e.features[0].properties;
+                properties.audio_file = JSON.parse(properties.audio_file);
+                properties.language = JSON.parse(properties.language);
                 const popupInstance = new RenderWordClass({
                     propsData: {
                         layout: "popup",
-                        word: e.features[0].properties
+                        word: { properties }
                     }
                 });
                 popupInstance.$mount("#vue-popup-content");
@@ -152,20 +155,7 @@ export default {
             );
 
             function renderLanguagesWithData({ languages, map }) {
-                languages = languages.filter(l => l.words);
-                let features = languages.map(language => {
-                    return {
-                        type: "Feature",
-                        properties: {
-                            ...language
-                        },
-                        geometry: {
-                            type: "Point",
-                            coordinates: [language.lng, language.lat]
-                        }
-                    };
-                });
-                // console.log(JSON.stringify(features, null, 2));
+                const features = languages.filter(l => l.properties.words);
                 if (!map.getLayer("languages")) {
                     map.addLayer({
                         id: "languages",
@@ -193,20 +183,7 @@ export default {
             }
 
             function renderLanguagesWithoutData({ languages, map }) {
-                languages = languages.filter(l => !l.words);
-                let features = languages.map(language => {
-                    return {
-                        type: "Feature",
-                        properties: {
-                            ...language
-                        },
-                        geometry: {
-                            type: "Point",
-                            coordinates: [language.lng, language.lat]
-                        }
-                    };
-                });
-                // console.log(JSON.stringify(features, null, 2));
+                const features = languages.filter(l => !l.properties.words);
                 if (!map.getLayer("languagesWithoutData")) {
                     map.addLayer({
                         id: "languagesWithoutData",
@@ -243,24 +220,11 @@ export default {
                 "none"
             );
             if (!this.words) return;
-            const features = this.words.map(word => {
-                return {
-                    type: "Feature",
-                    properties: {
-                        ...word
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [word.lng, word.lat]
-                    }
-                };
-            });
-            // console.log(JSON.stringify(features, null, 2));
 
             if (!this.map.getLayer("words")) {
                 this.map.addSource("words", {
                     type: "geojson",
-                    data: { type: "FeatureCollection", features }
+                    data: { type: "FeatureCollection", features: this.words }
                 });
                 this.map.addLayer({
                     id: "words",
@@ -284,9 +248,10 @@ export default {
                     }
                 });
             } else {
-                this.map
-                    .getSource("words")
-                    .setData({ type: "FeatureCollection", features });
+                this.map.getSource("words").setData({
+                    type: "FeatureCollection",
+                    features: this.words
+                });
             }
             this.map.setLayoutProperty("words", "visibility", "visible");
         },
@@ -298,7 +263,10 @@ export default {
             let popup = this.popup;
             const playAllAudioControl = this.playAllAudioControl;
             const audioElement = this.$refs.audioElement;
-            const words = [...this.$store.state.selectedWord];
+            const words = orderBy(
+                [...this.$store.state.selectedWord],
+                "properties.language.code"
+            );
             const self = this;
 
             // wire up event handlers
@@ -314,7 +282,7 @@ export default {
             async function playWord() {
                 if (self.playAll.play) {
                     map.flyTo({
-                        center: [self.word.lng, self.word.lat],
+                        center: self.word.geometry.coordinates,
                         zoom: window.innerwidth < 768 ? 8 : 6,
                         bearing: 0
                     });
@@ -327,7 +295,7 @@ export default {
                 if (!self.playAll.play) cleanup();
                 const RenderWordClass = Vue.extend(RenderWordComponent);
                 popup = new mapboxgl.Popup()
-                    .setLngLat([self.word.lng, self.word.lat])
+                    .setLngLat(self.word.geometry.coordinates)
                     .setHTML('<div id="vue-popup-content"></div>')
                     .addTo(map);
                 const popupInstance = new RenderWordClass({

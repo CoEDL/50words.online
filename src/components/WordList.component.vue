@@ -50,8 +50,10 @@ export default {
             this.$store.dispatch("loadWord", { word });
         },
         styleWord(word) {
-            let selectedWord = this.selectedWord ? this.selectedWord[0] : {};
-            return word === selectedWord.english;
+            let selectedWord = this.selectedWord
+                ? this.selectedWord[0]
+                : undefined;
+            if (selectedWord) return word === selectedWord.properties.english;
         }
     }
 };
