@@ -309,6 +309,7 @@ class DataExtractor:
             return os.path.join(path, os.path.splitext(os.path.basename(file))[0]) + ext
 
         def transcode(item, target, format):
+
             if not os.path.exists(target):
                 log.info(f"Transcoding {item} to {format}")
                 subprocess.run(
@@ -327,6 +328,16 @@ class DataExtractor:
                         "msg": f"'{audio_file}' is not a 'wav' file. I'll work with this but you should provide 'wav' files as input",
                     }
                 )
+
+            if not os.path.exists(audio_file):
+                self.errors.append(
+                    {
+                        "type": "Audio file missing",
+                        "level": "error",
+                        "msg": f"{audio_file} not found",
+                    }
+                )
+                return
             try:
                 transcode(
                     audio_file, get_target_name(item_path, audio_file, ".webm"), "webm"
