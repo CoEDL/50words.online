@@ -134,7 +134,20 @@ class DataExtractor:
         for (language_name, language) in self.gambay_geographies.items():
             language["properties"]["source"] = "Gambay"
             if "code" in language["properties"]:
-                self.data[language["properties"]["code"]] = language
+                code = language["properties"]["code"]
+                if code.upper() != language["properties"]["code"]:
+                    self.errors.append(
+                        {
+                            "type": "Gambay code lowercased",
+                            "level": "error",
+                            "msg": f"Gambay code for {language['properties']['name']} is lowercase: '{code}'. Should be {code.upper()}",
+                        }
+                    )
+                    self.data[code.upper()] = language
+                    self.data[code.upper()]["properties"]["code"] = code.upper()
+                else:
+                    self.data[code] = language
+
             else:
                 if language_name in self.aiatsis_geographies:
                     if self.aiatsis_geographies[language_name]["code"]:
@@ -154,34 +167,6 @@ class DataExtractor:
                                 "msg": f"Gambay language '{language_name}' found in Austlang but no code was present - language excluded",
                             }
                         )
-            # self.errors.append(
-            #     {
-            #         "type": "Gambay language excluded",
-            #         "level": "error",
-            #         "msg": f"Gambay language '{language_name}' has not been included",
-            #     }
-            # )
-            # else:
-            #     self.errors.append(
-            #         {
-            #             "type": "Gambay name not found in Austlang",
-            #             "level": "error",
-            #             "msg": f"'{language_name}' not found in AIATSIS-geographies.xlsx - language excluded",
-            #         }
-            #     )
-            # self.errors.append(
-            #     {
-            #         "type": "Gambay language excluded",
-            #         "level": "error",
-            #         "msg": f"Gambay language '{language_name}' has not been include",
-            #     }
-            # )
-
-        # self.data = {}
-        # for language in languages:
-        #         self.data[language["properties"]["code"]] = language
-        # for data in self.data.items():
-        #     print(data)
 
     def extract_language_data(self):
         def parse_row(row):
@@ -277,7 +262,7 @@ class DataExtractor:
                                 {
                                     "type": "Using Austlang data",
                                     "level": "warning",
-                                    "msg": f"Using AIATAIS data for '{sheet['code']}' '{sheet['language']['name']}'",
+                                    "msg": f"Using Austlang data for '{sheet['code']}' '{sheet['language']['name']}'",
                                 }
                             )
                     except KeyError as e:
