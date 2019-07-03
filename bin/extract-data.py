@@ -316,8 +316,15 @@ class DataExtractor:
                     ["ffmpeg", "-hide_banner", "-loglevel", "panic", "-i", item, target]
                 )
 
-        def transcode_and_copy_to_repository(item_path, audio_file):
+        def transcode_and_copy_to_repository(item, item_path, audio_file):
             if not audio_file:
+                self.errors.append(
+                    {
+                        "type": "Audio file missing",
+                        "level": "error",
+                        "msg": f"Audio file was not provided: '{item_path}' '{item}'",
+                    }
+                )
                 return []
 
             if "wav" not in audio_file:
@@ -337,7 +344,7 @@ class DataExtractor:
                         "msg": f"{audio_file} not found",
                     }
                 )
-                return
+                return []
             try:
                 transcode(
                     audio_file, get_target_name(item_path, audio_file, ".webm"), "webm"
@@ -404,7 +411,7 @@ class DataExtractor:
                 item["properties"]["speaker"][
                     "audio_file"
                 ] = transcode_and_copy_to_repository(
-                    item_path, item_properties.speaker["audio_file"]
+                    "speaker", item_path, item_properties.speaker["audio_file"]
                 )
                 # pp.pprint(item["properties"]["speaker"])
 
@@ -412,7 +419,7 @@ class DataExtractor:
                 item["properties"]["language"][
                     "audio_file"
                 ] = transcode_and_copy_to_repository(
-                    item_path, item_properties.language["audio_file"]
+                    "language", item_path, item_properties.language["audio_file"]
                 )
                 # pp.pprint(item["properties"]["language"])
 
@@ -420,7 +427,7 @@ class DataExtractor:
                 words = []
                 for word in item_properties.words:
                     word["audio_file"] = transcode_and_copy_to_repository(
-                        item_path, word["audio_file"]
+                        word["english"], item_path, word["audio_file"]
                     )
                     push_to_words(word, item)
                     words.append(word)
