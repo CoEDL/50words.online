@@ -23,7 +23,7 @@
                         <a
                             href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
                         >
-                            <img :src="logo" class="style-logo py-2">
+                            <img :src="logo" class="style-logo py-2" />
                         </a>
                     </div>
                 </div>
@@ -44,6 +44,8 @@
                             All words, audio and video recordings are provided by
                             language speakers and are included here with permission. Australian Indigenous languages
                             have many thousands of words but we are displaying just some on this site, with audio or video.
+                            Once you select a language (in orange) on this page you will get a link to "See more
+                            information about" that language.
                         </p>
                         <p>
                             <a href @click.prevent="toggleMoreInformation" class="mt-2">
@@ -111,7 +113,7 @@
                     </div>
                 </span>
                 <span v-else>
-                    <render-language-information :data="languageData"/>
+                    <render-language-information :data="languageData" />
                 </span>
             </div>
         </div>
