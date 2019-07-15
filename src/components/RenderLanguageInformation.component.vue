@@ -20,7 +20,7 @@
                             :src="file"
                             v-for="(file, idx) of data.properties.language.audio_file"
                             :key="idx"
-                        >Your browser does not support the
+                        />Your browser does not support the
                         <code>audio</code> element.
                     </audio>
                 </h2>
@@ -50,7 +50,7 @@
                         :src="file"
                         v-for="(file, idx) of data.properties.speaker.audio_file"
                         :key="idx"
-                    >Your browser does not support the
+                    />Your browser does not support the
                     <code>audio</code> element.
                 </audio>
             </div>
@@ -65,7 +65,7 @@
             <div class="col">Date received: {{dateReceived}}</div>
         </div>
         <span v-for="(word, idx) of data.properties.words" :key="idx">
-            <render-word-component :word="word" v-if="word.indigenous"/>
+            <render-word-component :word="word" v-if="word.indigenous" />
         </span>
     </div>
 </template>
@@ -88,9 +88,7 @@ export default {
     },
     computed: {
         aiatsisLink: function() {
-            return `https://collection.aiatsis.gov.au/austlang/language/${
-                this.data.code
-            }`;
+            return `https://collection.aiatsis.gov.au/austlang/language/${this.data.properties.code}`;
         },
         dateReceived: function() {
             return moment(
