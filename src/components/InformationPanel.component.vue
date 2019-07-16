@@ -90,6 +90,7 @@
                             <a
                                 class="style-link"
                                 href="https://collection.aiatsis.gov.au/austlang/search"
+                                target="_blank"
                             >Austlang</a>.
                         </p>
                         <p>
@@ -99,6 +100,7 @@
                             <a
                                 class="style-link"
                                 href="http://indiglang.arts.unimelb.edu.au"
+                                target="_blank"
                             >http://indiglang.arts.unimelb.edu.au</a>
                         </p>
                     </div>
