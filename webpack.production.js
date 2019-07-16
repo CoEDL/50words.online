@@ -3,11 +3,9 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
     target: "web",
@@ -16,39 +14,33 @@ module.exports = {
     entry: ["./src/vendor.js", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[hash].bundle.js"
+        filename: "[name].[contenthash].bundle.js"
     },
     optimization: {
+        moduleIds: "hashed",
+        runtimeChunk: "single",
         splitChunks: {
             cacheGroups: {
                 vendor: {
-                    test: /node_modules/,
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendors",
                     chunks: "all"
                 }
             }
-        },
-        minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})]
+        }
     },
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: "[name].css",
-            chunkFilename: "[id].css"
-        }),
-        new CleanWebpackPlugin(["dist/*.js", "dist/*.css"], {
-            watch: true,
-            root: __dirname
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"]
         }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css"
         }),
         new HtmlWebpackPlugin({
-            title: "Inteja",
+            title: "50words",
             template: "./src/index.html"
         }),
-        new VueLoaderPlugin(),
-        new webpack.ProvidePlugin({
-            introJs: ["intro.js", "introJs"]
-        })
+        new VueLoaderPlugin()
     ],
     module: {
         rules: [

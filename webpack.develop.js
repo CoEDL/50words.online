@@ -3,7 +3,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -16,22 +16,6 @@ module.exports = {
         path: path.resolve(__dirname, "dist"),
         filename: "[name].[hash].bundle.js"
     },
-
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /node_modules/,
-                    chunks: "all"
-                }
-            }
-        }
-    },
-    watch: true,
-    watchOptions: {
-        poll: 1000,
-        ignored: ["git", "node_modules"]
-    },
     devServer: {
         contentBase: path.join(__dirname, "dist"),
         compress: true,
@@ -41,15 +25,14 @@ module.exports = {
         watchContentBase: true
     },
     plugins: [
-        new CleanWebpackPlugin(["dist/*.js", "dist/*.css"], {
-            watch: true,
-            root: __dirname
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"]
         }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css"
         }),
         new HtmlWebpackPlugin({
-            title: "PARADISEC Collection Viewer",
+            title: "50words",
             template: "./src/index.html"
         }),
         new VueLoaderPlugin()
