@@ -1,12 +1,12 @@
 # 50 Words
 
-- [50 Words](#50-Words)
-  - [Updating the production dataset](#Updating-the-production-dataset)
-  - [Developing the application](#Developing-the-application)
-    - [Producing a data repository to work from in development](#Producing-a-data-repository-to-work-from-in-development)
-  - [Creating the repository data for the application](#Creating-the-repository-data-for-the-application)
-  - [Building production distributable](#Building-production-distributable)
-  - [Rebuilding and restarting the web container](#Rebuilding-and-restarting-the-web-container)
+- [50 Words](#50-words)
+  - [Updating the production dataset](#updating-the-production-dataset)
+  - [Developing the application](#developing-the-application)
+    - [Producing a data repository to work from in development](#producing-a-data-repository-to-work-from-in-development)
+  - [Creating the repository data for the application](#creating-the-repository-data-for-the-application)
+  - [Building production distributable](#building-production-distributable)
+  - [Rebuilding and restarting the web container](#rebuilding-and-restarting-the-web-container)
 
 This project aims to provide fifty words in every Indigenous language of Australia. We hope that this will be a useful resource for schools and educational organisations to learn 50 words in their local languages, and for the general public to discover the diversity of languages around Australia.
 
@@ -60,6 +60,9 @@ data files that the application works from. The process is roughly as follows:
     -   in the data folder create a folder for each language that contains the xls file and the audio / video files
 -   run at the shell: `./bin/update-data.sh --dev`
     -   this will start a docker container that will process the data in the data folder and create a 'repository' structure in the 'dist' folder
+
+By default, the script won't re-transcode files so that updates happen quickly. If you need to force
+it (because you've updated the source audio files) then run at the shell: `./bin/update-data.sh --dev --update-all`
 
 ## Building production distributable
 

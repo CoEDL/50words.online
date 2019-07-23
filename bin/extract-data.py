@@ -294,11 +294,19 @@ class DataExtractor:
             return os.path.join(path, os.path.splitext(os.path.basename(file))[0]) + ext
 
         def transcode(item, target, format):
-
-            if not os.path.exists(target):
+            if os.environ["UPDATE_ALL"] == "true" or not os.path.exists(target):
                 log.info(f"Transcoding {item} to {format}")
                 subprocess.run(
-                    ["ffmpeg", "-hide_banner", "-loglevel", "panic", "-i", item, target]
+                    [
+                        "ffmpeg",
+                        "-hide_banner",
+                        "-loglevel",
+                        "panic",
+                        "-y",
+                        "-i",
+                        item,
+                        target,
+                    ]
                 )
 
         def transcode_and_copy_to_repository(item, item_path, audio_file):

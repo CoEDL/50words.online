@@ -3,6 +3,8 @@ services:
     data-processor:
         image: python:3-stretch
         tty: true
+        environment:
+            - UPDATE_ALL=$UPDATE_ALL
         volumes:
             - $DATA_50WORDS:/srv/data
             - $REPOSITORY_50WORDS:/srv/dist
