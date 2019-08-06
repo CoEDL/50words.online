@@ -4,21 +4,31 @@
             <span v-if="layout === 'popup'">
                 <div class="row">
                     <div class="col-12">
-                        <el-button
-                            type="text"
-                            class="style-button px-3 style-audio-control"
-                            @click="playWord"
-                            v-if="word.properties.audio_file.length"
-                        >
-                            <i class="fas fa-volume-up fa-2x"></i>
-                        </el-button>
-                        <audio-player-control
-                            :files="word.properties.audio_file"
-                            :play="play"
-                            v-on:ready="ready"
-                            v-on:finished-playing="stopPlaying"
-                        />
+                        <span v-if="word.properties.audio">
+                            <el-button
+                                type="text"
+                                class="style-button px-3 style-audio-control"
+                                @click="playWord"
+                            >
+                                <i class="fas fa-volume-up fa-2x"></i>
+                            </el-button>
+                            <audio-player-control
+                                :files="word.properties.audio"
+                                :play="play"
+                                v-on:ready="ready"
+                                v-on:finished-playing="stopPlaying"
+                            />
+                        </span>
                         <span class="style-english">{{word.properties.language.name}}</span>
+                        <div v-if="word.properties.video">
+                            <video-player-control
+                                class="style-video-popup"
+                                :files="word.properties.video"
+                                :play="play"
+                                v-on:ready="ready"
+                                v-on:finished-playing="stopPlaying"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -31,21 +41,22 @@
                 <div class="my-4">
                     <div class="row">
                         <div class="col-2">
-                            <el-button
-                                type="text"
-                                class="style-button px-3 style-audio-control"
-                                @click="playWord"
-                                :disabled="playDisabled"
-                                v-if="word.audio_file.length"
-                            >
-                                <i class="fas fa-volume-up fa-2x"></i>
-                            </el-button>
-                            <audio-player-control
-                                :files="word.audio_file"
-                                :play="play"
-                                v-on:ready="ready"
-                                v-on:finished-playing="stopPlaying"
-                            />
+                            <span v-if="word.audio">
+                                <el-button
+                                    type="text"
+                                    class="style-button px-3 style-audio-control"
+                                    @click="playWord"
+                                    :disabled="playDisabled"
+                                >
+                                    <i class="fas fa-volume-up fa-2x"></i>
+                                </el-button>
+                                <audio-player-control
+                                    :files="word.audio"
+                                    :play="play"
+                                    v-on:ready="ready"
+                                    v-on:finished-playing="stopPlaying"
+                                />
+                            </span>
                         </div>
                         <div class="col-10">
                             <div class="row style-row">
@@ -58,6 +69,14 @@
                                     class="col-12 style-indigenous text-lowercase"
                                 >{{ word.indigenous }}</div>
                             </div>
+                            <div class="row" v-if="word.video">
+                                <video-player-control
+                                    :files="word.video"
+                                    :play="play"
+                                    v-on:ready="ready"
+                                    v-on:finished-playing="stopPlaying"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -68,10 +87,12 @@
 
 <script>
 import AudioPlayerControl from "./AudioPlayerControl.component.vue";
+import VideoPlayerControl from "./VideoPlayerControl.component.vue";
 
 export default {
     components: {
-        AudioPlayerControl
+        AudioPlayerControl,
+        VideoPlayerControl
     },
     props: {
         layout: String,
@@ -119,5 +140,10 @@ export default {
 
 .style-row {
     border-bottom: 1px solid #000;
+}
+
+.style-video-popup {
+    width: 300px;
+    max-width: 300px;
 }
 </style>
