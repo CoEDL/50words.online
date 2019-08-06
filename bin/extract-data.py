@@ -170,11 +170,12 @@ class DataExtractor:
 
     def extract_language_data(self):
         def parse_row(row):
-            data = {
-                "english": row[0],
-                "indigenous": row[1].lower(),
-                "audio_file": row[2],
-            }
+            data = {"english": row[0], "indigenous": row[1].lower()}
+            if ".mov" in row[2]:
+                data["video_file"] = row[2]
+            elif ".wav" in row[2]:
+                data["audio_file"] = row[2]
+
             if len(row) == 4 and row[3]:
                 data["english_alternate"] = row[3]
             return data
@@ -277,10 +278,10 @@ class DataExtractor:
 
                 for r in range(8, sh.nrows):
                     data = parse_row(sh.row_values(r))
-                    if data["audio_file"]:
+                    if "audio_file" in data:
                         data["audio_file"] = os.path.join(root, data["audio_file"])
-                    else:
-                        data["audio_file"] = data["audio_file"]
+                    elif "video_file" in data:
+                        data["video_file"] = os.path.join(root, data["video_file"])
 
                     sheet["words"].append(data)
 
@@ -309,36 +310,79 @@ class DataExtractor:
                     ]
                 )
 
-        def transcode_and_copy_to_repository(item, item_path, audio_file):
-            if not audio_file:
+        def transcode_and_copy_to_repository(item, item_path):
+            if "audio_file" not in item and "video_file" not in item:
                 self.errors.append(
                     {
-                        "type": "Audio file missing",
+                        "type": "Audio or Video file missing",
                         "level": "error",
-                        "msg": f"Audio file was not provided: '{item_path}' '{item}'",
+                        "msg": f"Neither an audio or a video file was provided: '{item_path}' '{item}'",
                     }
                 )
-                return []
+                return item
 
-            if "wav" not in audio_file:
-                self.errors.append(
-                    {
-                        "type": "Incorrect audio format",
-                        "level": "warning",
-                        "msg": f"'{audio_file}' is not a 'wav' file. I'll work with this but you should provide 'wav' files as input",
-                    }
+            if "video_file" in item:
+                video_file = item["video_file"]
+                if not os.path.exists(video_file):
+                    self.errors.append(
+                        {
+                            "type": "Video file missing",
+                            "level": "error",
+                            "msg": f"{video_file} not found",
+                        }
+                    )
+                    item["video_file"] = []
+                    return item
+
+                transcode(
+                    video_file, get_target_name(item_path, video_file, ".webm"), "webm"
+                )
+                transcode(
+                    video_file, get_target_name(item_path, video_file, ".mp4"), "mp4"
+                )
+                video_files = [
+                    get_target_name(item_path, video_file, ".webm").replace(
+                        "/srv/dist", ""
+                    ),
+                    get_target_name(item_path, video_file, ".mp4").replace(
+                        "/srv/dist", ""
+                    ),
+                ]
+                copyfile(
+                    video_file, os.path.join(item_path, os.path.basename(video_file))
+                )
+                video_files.append(
+                    os.path.join(item_path, os.path.basename(video_file)).replace(
+                        "/srv/dist", ""
+                    )
                 )
 
-            if not os.path.exists(audio_file):
-                self.errors.append(
-                    {
-                        "type": "Audio file missing",
-                        "level": "error",
-                        "msg": f"{audio_file} not found",
-                    }
-                )
-                return []
-            try:
+                item["video"] = video_files
+                del item["video_file"]
+                return item
+
+            if "audio_file" in item:
+                audio_file = item["audio_file"]
+                # if "wav" not in audio_file:
+                #     self.errors.append(
+                #         {
+                #             "type": "Incorrect audio format",
+                #             "level": "warning",
+                #             "msg": f"'{audio_file}' is not a 'wav' file. I'll work with this but you should provide 'wav' files as input",
+                #         }
+                #     )
+
+                if not os.path.exists(audio_file):
+                    self.errors.append(
+                        {
+                            "type": "Audio file missing",
+                            "level": "error",
+                            "msg": f"{audio_file} not found",
+                        }
+                    )
+                    item["audio_file"] = []
+                    return item
+
                 transcode(
                     audio_file, get_target_name(item_path, audio_file, ".webm"), "webm"
                 )
@@ -363,24 +407,15 @@ class DataExtractor:
                             "/srv/dist", ""
                         )
                     )
-                return audio_files
 
-            except FileNotFoundError:
-                self.errors.append(
-                    {
-                        "type": "Audio file missing",
-                        "level": "error",
-                        "msg": f"{audio_file} not found",
-                    }
-                )
+                item["audio"] = audio_files
+                del item["audio_file"]
+                return item
 
         def push_to_words(word, item):
             item = {**item}
             if word["english"] not in self.words:
                 self.words[word["english"]] = []
-            # item["word"] = word
-            # if "words" in item["properties"]:
-            #     del item["properties"]["words"]
             word["language"] = {
                 "code": item["properties"]["code"],
                 "name": item["properties"]["name"],
@@ -401,30 +436,24 @@ class DataExtractor:
             self.languages[item_properties.code] = item
 
             if "speaker" in item["properties"]:
-                item["properties"]["speaker"][
-                    "audio_file"
-                ] = transcode_and_copy_to_repository(
-                    "speaker", item_path, item_properties.speaker["audio_file"]
+                item["properties"]["speaker"] = transcode_and_copy_to_repository(
+                    item_properties.speaker, item_path
                 )
                 # pp.pprint(item["properties"]["speaker"])
 
             if "language" in item["properties"]:
-                item["properties"]["language"][
-                    "audio_file"
-                ] = transcode_and_copy_to_repository(
-                    "language", item_path, item_properties.language["audio_file"]
+                item["properties"]["language"] = transcode_and_copy_to_repository(
+                    item_properties.language, item_path
                 )
                 # pp.pprint(item["properties"]["language"])
 
             if "words" in item["properties"]:
                 words = []
                 for word in item_properties.words:
-                    word["audio_file"] = transcode_and_copy_to_repository(
-                        word["english"], item_path, word["audio_file"]
-                    )
+                    word = transcode_and_copy_to_repository(word, item_path)
+                    # pp.pprint(word)
                     push_to_words(word, item)
                     words.append(word)
-                    # pp.pprint(word)
                 item["properties"]["words"] = words
                 # pp.pprint(item["properties"]["words"])
 
