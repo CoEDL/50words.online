@@ -7,7 +7,7 @@
             </el-button>
         </div>
         <audio ref="audioElement" v-if="playAllAudioControl.enable">
-            <source v-for="(file, idx) of playAllAudioControl.files" :src="file" :key="idx">Your browser does not support the
+            <source v-for="(file, idx) of playAllAudioControl.files" :src="file" :key="idx" />Your browser does not support the
             <code>audio</code> element.
         </audio>
     </div>
@@ -107,12 +107,15 @@ export default {
             this.map.on("click", "words", e => {
                 if (this.popup) this.popup.remove();
                 const RenderWordClass = Vue.extend(RenderWordComponent);
-                this.popup = new mapboxgl.Popup()
+                this.popup = new mapboxgl.Popup({ maxWidth: "none" })
                     .setLngLat(e.lngLat)
                     .setHTML('<div id="vue-popup-content"></div>')
                     .addTo(this.map);
                 const properties = e.features[0].properties;
-                properties.audio_file = JSON.parse(properties.audio_file);
+                if (properties.audio)
+                    properties.audio = JSON.parse(properties.audio);
+                if (properties.video)
+                    properties.video = JSON.parse(properties.video);
                 properties.language = JSON.parse(properties.language);
                 const popupInstance = new RenderWordClass({
                     propsData: {
@@ -416,9 +419,10 @@ export default {
 
 .mapboxgl-popup-content {
     text-align: center;
-    min-width: 250px;
+    padding: 15px 25px;
     font-size: 0.8em;
     background-color: $primary-color;
+    white-space: nowrap;
 }
 
 .mapboxgl-popup-close-button {
@@ -435,7 +439,6 @@ export default {
     }
     .mapboxgl-popup-content {
         text-align: center;
-        min-width: 400px;
         font-size: 1.2em;
         background-color: $primary-color;
     }
@@ -447,7 +450,6 @@ export default {
     }
     .mapboxgl-popup-content {
         text-align: center;
-        min-width: 500px;
         font-size: 1.5em;
         background-color: $primary-color;
     }
