@@ -4,17 +4,18 @@
             <span v-if="layout === 'popup'">
                 <div class="row">
                     <div class="col-12">
+                        <el-button
+                            type="text"
+                            class="style-button px-3 style-audio-control"
+                            @click="playWord"
+                        >
+                            <i class="fas fa-volume-up fa-2x"></i>
+                        </el-button>
                         <span v-if="word.properties.audio">
-                            <el-button
-                                type="text"
-                                class="style-button px-3 style-audio-control"
-                                @click="playWord"
-                            >
-                                <i class="fas fa-volume-up fa-2x"></i>
-                            </el-button>
                             <audio-player-control
                                 :files="word.properties.audio"
                                 :play="play"
+                                :store="store"
                                 v-on:ready="ready"
                                 v-on:finished-playing="stopPlaying"
                             />
@@ -25,6 +26,7 @@
                                 class="style-video-popup"
                                 :files="word.properties.video"
                                 :play="play"
+                                :store="store"
                                 v-on:ready="ready"
                                 v-on:finished-playing="stopPlaying"
                             />
@@ -41,15 +43,15 @@
                 <div class="my-4">
                     <div class="row">
                         <div class="col-2">
+                            <el-button
+                                type="text"
+                                class="style-button px-3 style-audio-control"
+                                @click="playWord"
+                                :disabled="playDisabled"
+                            >
+                                <i class="fas fa-volume-up fa-2x"></i>
+                            </el-button>
                             <span v-if="word.audio">
-                                <el-button
-                                    type="text"
-                                    class="style-button px-3 style-audio-control"
-                                    @click="playWord"
-                                    :disabled="playDisabled"
-                                >
-                                    <i class="fas fa-volume-up fa-2x"></i>
-                                </el-button>
                                 <audio-player-control
                                     :files="word.audio"
                                     :play="play"
@@ -59,7 +61,7 @@
                             </span>
                         </div>
                         <div class="col-10">
-                            <div class="row style-row">
+                            <div class="row" :class="{ 'style-row': word.audio }">
                                 <div
                                     class="col-12 style-english"
                                     v-if="word.english_alternate"
@@ -69,7 +71,7 @@
                                     class="col-12 style-indigenous text-lowercase"
                                 >{{ word.indigenous }}</div>
                             </div>
-                            <div class="row" v-if="word.video">
+                            <div class="row" :class="{ 'style-row': word.video }" v-if="word.video">
                                 <video-player-control
                                     :files="word.video"
                                     :play="play"
@@ -96,7 +98,8 @@ export default {
     },
     props: {
         layout: String,
-        word: Object
+        word: Object,
+        store: Object | undefined
     },
     data() {
         return {
@@ -110,6 +113,7 @@ export default {
     methods: {
         ready() {
             this.playDisabled = false;
+            if (this.layout === "popup") setTimeout(this.playWord, 500);
         },
         playWord() {
             this.play = [true];

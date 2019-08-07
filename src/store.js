@@ -44,7 +44,7 @@ const configuration = {
             state.show = payload;
         },
         setPlayAll(state, payload) {
-            state.playAll = { play: payload };
+            state.playAll = { ...payload };
         }
     },
     actions: {
@@ -67,6 +67,6 @@ function reset() {
         languages: [],
         selectedLanguage: undefined,
         selectedWord: undefined,
-        playAll: true
+        playAll: { play: false, word: undefined, state: "stoppped" }
     };
 }

@@ -1,5 +1,5 @@
 <template>
-    <video ref="videoElement" controls>
+    <video ref="videoElement">
         <source v-for="(file, idx) of videoFiles" :src="file" :key="idx" />Your browser does not support the
         <code>video</code> element.
     </video>
@@ -15,7 +15,8 @@ export default {
         play: {
             type: Boolean | undefined,
             required: true
-        }
+        },
+        store: Object | undefined
     },
     data() {
         return {
@@ -30,12 +31,18 @@ export default {
         this.watchers.play = this.$watch("play", (n, o) => {
             this.playWord();
         });
-        this.watchers.audio = this.$watch("files", this.load);
+        this.watchers.files = this.$watch("files", this.load);
         this.load();
+
+        this.$refs.videoElement.addEventListener("ended", this.endedHandler);
+        this.$refs.videoElement.addEventListener("error", this.endedHandler);
     },
     beforeDestroy() {
-        if (this.watchers.audio) this.watchers.audio();
+        if (this.watchers.files) this.watchers.files();
         this.watchers.play();
+
+        this.$refs.videoElement.removeEventListener("ended", this.endedHandler);
+        this.$refs.videoElement.removeEventListener("error", this.endedHandler);
     },
     methods: {
         load() {
@@ -49,6 +56,15 @@ export default {
         playWord() {
             if (this.play[0]) this.$refs.videoElement.play();
             this.$emit("finished playing");
+        },
+        endedHandler() {
+            if (!this.store) return;
+            const playAll = this.store.state.playAll;
+            this.store.commit("setPlayAll", {
+                play: true,
+                word: undefined,
+                state: "next"
+            });
         }
     }
 };

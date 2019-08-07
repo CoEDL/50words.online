@@ -8,17 +8,14 @@
                         type="text"
                         class="style-button px-3 style-audio-control"
                         @click="playLanguage"
-                        v-if="data.properties.language.audio_file.length"
+                        v-if="data.properties.language.audio.length"
                     >
                         <i class="fas fa-volume-up fa-2x"></i>
                     </el-button>
-                    <audio
-                        ref="languageAudioElement"
-                        v-if="data.properties.language.audio_file.length"
-                    >
+                    <audio ref="languageAudioElement" v-if="data.properties.language.audio.length">
                         <source
                             :src="file"
-                            v-for="(file, idx) of data.properties.language.audio_file"
+                            v-for="(file, idx) of data.properties.language.audio"
                             :key="idx"
                         />Your browser does not support the
                         <code>audio</code> element.
@@ -41,14 +38,14 @@
                     type="text"
                     class="style-button px-3 style-audio-control"
                     @click="playSpeaker"
-                    v-if="data.properties.speaker.audio_file.length"
+                    v-if="data.properties.speaker.audio.length"
                 >
                     <i class="fas fa-volume-up fa-2x"></i>
                 </el-button>
-                <audio ref="speakerAudioElement" v-if="data.properties.speaker.audio_file.length">
+                <audio ref="speakerAudioElement" v-if="data.properties.speaker.audio.length">
                     <source
                         :src="file"
-                        v-for="(file, idx) of data.properties.speaker.audio_file"
+                        v-for="(file, idx) of data.properties.speaker.audio"
                         :key="idx"
                     />Your browser does not support the
                     <code>audio</code> element.
@@ -100,14 +97,14 @@ export default {
     mounted() {
         // console.log(JSON.stringify(this.data, null, 2));
         this.watchers.language = this.$watch(
-            "data.properties.language.audio_file",
+            "data.properties.language.audio",
             () => {
                 if (this.$refs.languageAudioElement)
                     this.$refs.languageAudioElement.load();
             }
         );
         this.watchers.speaker = this.$watch(
-            "data.properties.speaker.audio_file",
+            "data.properties.speaker.audio",
             () => {
                 if (this.$refs.speakerAudioElement)
                     this.$refs.speakerAudioElement.load();

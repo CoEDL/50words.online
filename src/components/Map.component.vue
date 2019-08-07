@@ -6,10 +6,14 @@
                 <i class="fas fa-crosshairs style-reset-button-image"></i>
             </el-button>
         </div>
-        <audio ref="audioElement" v-if="playAllAudioControl.enable">
-            <source v-for="(file, idx) of playAllAudioControl.files" :src="file" :key="idx" />Your browser does not support the
+        <!-- <audio ref="audioElement" v-if="mediaElement.audio">
+            <source v-for="(file, idx) of mediaElement.files" :src="file" :key="idx" />Your browser does not support the
             <code>audio</code> element.
         </audio>
+        <video ref="videoElement" v-if="mediaElement.video">
+            <source v-for="(file, idx) of mediaElement.files" :src="file" :key="idx" />Your browser does not support the
+            <code>video</code> element.
+        </video>-->
     </div>
 </template>
 
@@ -36,8 +40,9 @@ export default {
             watchers: {},
             map: undefined,
             popup: undefined,
-            playAllAudioControl: {
-                enable: false,
+            mediaElement: {
+                audio: false,
+                video: false,
                 files: []
             }
         };
@@ -259,109 +264,51 @@ export default {
             this.map.setLayoutProperty("words", "visibility", "visible");
         },
         async playAllWords() {
-            if (!this.playAll.play) return;
-            this.playAllAudioControl.enable = true;
-            await sleep(100);
-            const map = this.map;
-            let popup = this.popup;
-            const playAllAudioControl = this.playAllAudioControl;
-            const audioElement = this.$refs.audioElement;
-            const words = orderBy(
-                [...this.$store.state.selectedWord],
-                "properties.language.code"
-            );
-            const self = this;
-
-            // wire up event handlers
-            map.on("moveend", renderPopupAndPlayAudio);
-            audioElement.addEventListener("canplay", audioLoadedHandler);
-            audioElement.addEventListener("ended", audioEndedHandler);
-            audioElement.addEventListener("error", audioErrorHandler);
+            var self = this;
+            if (!self.$store.state.playAll.play) cleanup();
 
             // kick off
-            self.word = words.pop();
-            playWord();
-
-            async function playWord() {
-                if (self.playAll.play) {
-                    map.flyTo({
-                        center: self.word.geometry.coordinates,
-                        zoom: window.innerwidth < 768 ? 8 : 6,
-                        bearing: 0
-                    });
-                } else {
-                    cleanup();
-                }
+            if (
+                self.$store.state.playAll.play &&
+                self.$store.state.playAll.word
+            ) {
+                self.map.once("moveend", renderPopup);
+                flyToWord({ word: self.$store.state.playAll.word });
             }
 
-            async function renderPopupAndPlayAudio() {
-                if (!self.playAll.play) cleanup();
+            async function flyToWord({ word }) {
+                if (self.popup) self.popup.remove();
+                console.log(`Flying to: ${word.properties.indigenous}`);
+                self.map.flyTo({
+                    center: word.geometry.coordinates,
+                    zoom: window.innerwidth < 768 ? 8 : 6,
+                    bearing: 0
+                });
+            }
+
+            async function cleanup() {
+                console.log("cleanup");
+                self.popup.remove();
+                self.centerMap();
+            }
+
+            async function renderPopup() {
+                console.log("render popup");
+                const word = self.$store.state.playAll.word;
                 const RenderWordClass = Vue.extend(RenderWordComponent);
-                popup = new mapboxgl.Popup()
-                    .setLngLat(self.word.geometry.coordinates)
+                self.popup = new mapboxgl.Popup({ maxWidth: "none" })
+                    .setLngLat(word.geometry.coordinates)
                     .setHTML('<div id="vue-popup-content"></div>')
-                    .addTo(map);
+                    .addTo(self.map);
                 const popupInstance = new RenderWordClass({
                     propsData: {
                         layout: "popup",
-                        word: self.word
+                        word: word,
+                        store: self.$store
                     }
                 });
                 popupInstance.$mount("#vue-popup-content");
-                popup._update();
-                // console.log("loading the audio");
-                playAllAudioControl.files = [...self.word.audio_file];
-                if (self.word.audio_file.length) {
-                    audioElement.load();
-                } else {
-                    await sleep(3000);
-                    nextWord();
-                }
-            }
-
-            async function audioLoadedHandler() {
-                // console.log("audio ready to play");
-                await sleep(1000);
-                audioElement.play();
-            }
-
-            async function audioEndedHandler() {
-                // console.log("finished playing");
-                await sleep(1000);
-                nextWord();
-            }
-
-            function audioErrorHandler() {
-                nextWord();
-            }
-
-            function nextWord() {
-                popup.remove();
-                if (words.length && self.playAll.play) {
-                    // console.log("next word");
-                    self.word = words.pop();
-                    playWord();
-                } else {
-                    cleanup();
-                }
-            }
-
-            function cleanup() {
-                popup.remove();
-                self.centerMap();
-                map.off("moveend", renderPopupAndPlayAudio);
-                audioElement.removeEventListener("canplay", audioLoadedHandler);
-                audioElement.removeEventListener("ended", audioEndedHandler);
-                audioElement.removeEventListener("error", audioErrorHandler);
-                self.$store.commit("setPlayAll", false);
-            }
-
-            function sleep(time) {
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve();
-                    }, time);
-                });
+                self.popup._update();
             }
         }
     }
@@ -419,6 +366,7 @@ export default {
 
 .mapboxgl-popup-content {
     text-align: center;
+    width: unset;
     padding: 15px 25px;
     font-size: 0.8em;
     background-color: $primary-color;
