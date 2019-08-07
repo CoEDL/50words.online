@@ -331,7 +331,8 @@ class DataExtractor:
                             "msg": f"{video_file} not found",
                         }
                     )
-                    item["video_file"] = []
+                    del item["video_file"]
+                    item["video"] = []
                     return item
 
                 transcode(
@@ -380,7 +381,8 @@ class DataExtractor:
                             "msg": f"{audio_file} not found",
                         }
                     )
-                    item["audio_file"] = []
+                    del item["audio_file"]
+                    item["audio"] = []
                     return item
 
                 transcode(
