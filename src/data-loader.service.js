@@ -35,7 +35,7 @@ export async function loadLanguageData({ code }) {
     data.words = data.properties.words.map(w => {
         return {
             ...w,
-            audio_file: mapRepositoryRoot(w.audio_file)
+            audio: mapRepositoryRoot(w.audio)
         };
     });
     return data;
@@ -53,7 +53,7 @@ export async function loadWordData({ word, words }) {
     word = word.map(w => {
         return {
             ...w,
-            audio_file: mapRepositoryRoot(w.properties.audio_file)
+            audio: mapRepositoryRoot(w.properties.audio)
         };
     });
     return word;
