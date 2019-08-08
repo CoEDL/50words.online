@@ -73,6 +73,7 @@
                             </div>
                             <div class="row" :class="{ 'style-row': word.video }" v-if="word.video">
                                 <video-player-control
+                                    class="style-video"
                                     :files="word.video"
                                     :play="play"
                                     v-on:ready="ready"
@@ -155,5 +156,9 @@ export default {
         width: 300px;
         max-width: 300px;
     }
+}
+
+.style-video {
+    width: 100%;
 }
 </style>
