@@ -293,8 +293,9 @@ export default {
             }
 
             async function renderPopup() {
-                console.log("render popup");
+                // console.log("render popup");
                 const word = self.$store.state.playAll.word;
+
                 const RenderWordClass = Vue.extend(RenderWordComponent);
                 self.popup = new mapboxgl.Popup({ maxWidth: "none" })
                     .setLngLat(word.geometry.coordinates)

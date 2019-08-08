@@ -110,6 +110,15 @@ export default {
     },
     mounted() {
         // console.log(JSON.stringify(this.word, null, 2));
+        setTimeout(() => {
+            if (!this.word.properties.audio && !this.word.properties.video) {
+                this.store.commit("setPlayAll", {
+                    play: true,
+                    word: undefined,
+                    state: "next"
+                });
+            }
+        }, 2000);
     },
     methods: {
         ready() {
