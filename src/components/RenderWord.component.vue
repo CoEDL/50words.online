@@ -147,7 +147,13 @@ export default {
 }
 
 .style-video-popup {
-    width: 300px;
-    max-width: 300px;
+    width: 150px;
+    max-width: 150px;
+}
+@media (min-width: 768px) {
+    .style-video-popup {
+        width: 300px;
+        max-width: 300px;
+    }
 }
 </style>
