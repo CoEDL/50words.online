@@ -1,7 +1,7 @@
 <template>
     <div v-if="word">
         <div class="style-selected-word text-right">
-            <el-button type="text" @click="play" class="style-button">
+            <el-button type="text" @click="play" class="style-button" v-if="!disablePlayAllOnIOS">
                 <span v-show="!isPlaying">
                     <i class="fas fa-play fa-2x fa-fw"></i>
                     &nbsp;
@@ -16,6 +16,7 @@
                 type="text"
                 @click="loop =! loop"
                 :class="{ 'style-button': loop, 'style-button-deselected': !loop }"
+                v-if="!disablePlayAllOnIOS"
             >
                 <span v-show="!loop">
                     <i class="fal fa-repeat fa-2x fa-fw"></i>
@@ -39,7 +40,8 @@ export default {
         return {
             watchers: [],
             isPlaying: false,
-            loop: false
+            loop: false,
+            disablePlayAllOnIOS: !!navigator.platform.match(/iPhone|iPod|iPad/)
         };
     },
 
