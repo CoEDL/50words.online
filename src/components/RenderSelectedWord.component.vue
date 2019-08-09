@@ -1,32 +1,33 @@
 <template>
     <div v-if="word">
-        <div class="style-selected-word text-right">
-            <el-button type="text" @click="play" class="style-button" v-if="!disablePlayAllOnIOS">
+        <div class="text-right">
+            <div class="style-selected-word">{{word}}</div>
+            <el-button circle @click="play" class="style-button" v-if="!disablePlayAllOnIOS">
                 <span v-show="!isPlaying">
-                    <i class="fas fa-play fa-2x fa-fw"></i>
-                    &nbsp;
+                    <i class="fas fa-play fa-fw"></i>
                 </span>
                 <span v-show="isPlaying">
-                    <i class="fas fa-stop fa-2x fa-fw"></i>
-                    &nbsp;
+                    <i class="fas fa-stop fa-fw"></i>
                 </span>
             </el-button>
-            {{word}}
             <el-button
-                type="text"
+                circle
+                @click="pause"
+                class="style-button"
+                :class="{ 'style-button-deselected': isPaused}"
+                v-if="!disablePlayAllOnIOS && isPlaying"
+            >
+                <i class="fas fa-pause fa-fw"></i>
+            </el-button>
+            <el-button
+                circle
                 @click="loop =! loop"
+                class="style-button"
                 :class="{ 'style-button': loop, 'style-button-deselected': !loop }"
                 v-if="!disablePlayAllOnIOS"
             >
-                <span v-show="!loop">
-                    <i class="fal fa-repeat fa-2x fa-fw"></i>
-                    &nbsp;
-                </span>
-                <span v-show="loop">
-                    <i class="fas fa-repeat fa-2x fa-fw"></i>
-                    &nbsp;
-                </span>
-            </el-button>
+                <i class="fas fa-repeat fa-fw"></i>
+            </el-button>&nbsp;
         </div>
     </div>
 </template>
@@ -34,12 +35,14 @@
 <script>
 import { orderBy, shuffle } from "lodash";
 import { randomBytes } from "crypto";
+import { stringify } from "querystring";
 
 export default {
     data() {
         return {
             watchers: [],
             isPlaying: false,
+            isPaused: false,
             loop: false,
             disablePlayAllOnIOS: !!navigator.platform.match(/iPhone|iPod|iPad/)
         };
@@ -56,7 +59,73 @@ export default {
         }
     },
     mounted() {
-        this.watchers.playAll = this.$watch("playAll", (n, o) => {
+        this.watchers.playAll = this.$watch("playAll", this.continue);
+        this.watchers.word = this.$watch("word", () => {
+            this.isPlaying = false;
+            this.isPaused = false;
+            this.$store.commit("setPlayAll", {
+                play: false,
+                word: undefined,
+                state: "stopped"
+            });
+        });
+    },
+    beforeDestroy() {
+        this.watchers.playAll();
+        this.watchers.word();
+    },
+    methods: {
+        play() {
+            this.isPlaying = !this.isPlaying;
+            if (this.isPlaying) {
+                this.playedWords = [];
+                this.words = orderBy(
+                    [...this.$store.state.selectedWord],
+                    "properties.language.code"
+                );
+                let word = this.words.pop();
+                this.playedWords.push(word.properties.english);
+
+                this.$store.commit("setPlayAll", {
+                    play: true,
+                    word,
+                    state: "playing"
+                });
+            } else {
+                this.$store.commit("setPlayAll", {
+                    play: false,
+                    word: undefined,
+                    state: "stopped"
+                });
+            }
+        },
+        pause() {
+            if (this.playAll.state === "paused") {
+                this.$store.commit("setPlayAll", {
+                    play: true,
+                    word: undefined,
+                    state: "next"
+                });
+                this.isPaused = false;
+            } else {
+                this.$store.commit("setPlayAll", {
+                    play: true,
+                    word: undefined,
+                    state: "paused"
+                });
+                this.isPaused = true;
+            }
+        },
+        continue(n, o) {
+            if (
+                (!this.playAll.play && this.playAll.state === "stopped") ||
+                !this.isPlaying
+            ) {
+                this.isPaused = false;
+                this.isPlaying = false;
+                this.loop = false;
+                return;
+            }
             if (n.state === "next" && !this.words.length) {
                 if (this.loop && n.play) {
                     let words = this.$store.state.words.filter(
@@ -104,35 +173,6 @@ export default {
                     });
                 }, 2000);
             }
-        });
-    },
-    beforeDestroy() {
-        this.watchers.playAll();
-    },
-    methods: {
-        play() {
-            this.isPlaying = !this.isPlaying;
-            if (this.isPlaying) {
-                this.playedWords = [];
-                this.words = orderBy(
-                    [...this.$store.state.selectedWord],
-                    "properties.language.code"
-                );
-                let word = this.words.pop();
-                this.playedWords.push(word.properties.english);
-
-                this.$store.commit("setPlayAll", {
-                    play: true,
-                    word,
-                    state: "playing"
-                });
-            } else {
-                this.$store.commit("setPlayAll", {
-                    play: false,
-                    word: undefined,
-                    state: "stopped"
-                });
-            }
         }
     }
 };
@@ -142,11 +182,13 @@ export default {
 @import "assets/variables.scss";
 
 .style-button {
+    border-color: black;
+    background-color: black;
     color: $text-color;
 }
 
 .style-button-deselected {
-    color: #ccc;
+    color: $primary-color;
 }
 
 .style-selected-word {
@@ -156,6 +198,7 @@ export default {
 @media (min-width: 1024px) {
     .style-selected-word {
         color: $text-color;
+        padding-top: 10px;
     }
 }
 </style>
