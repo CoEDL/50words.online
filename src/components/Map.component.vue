@@ -6,14 +6,6 @@
                 <i class="fas fa-crosshairs style-reset-button-image"></i>
             </el-button>
         </div>
-        <!-- <audio ref="audioElement" v-if="mediaElement.audio">
-            <source v-for="(file, idx) of mediaElement.files" :src="file" :key="idx" />Your browser does not support the
-            <code>audio</code> element.
-        </audio>
-        <video ref="videoElement" v-if="mediaElement.video">
-            <source v-for="(file, idx) of mediaElement.files" :src="file" :key="idx" />Your browser does not support the
-            <code>video</code> element.
-        </video>-->
     </div>
 </template>
 
@@ -288,13 +280,14 @@ export default {
 
             async function cleanup() {
                 console.log("cleanup");
-                self.popup.remove();
+                if (self.popup) self.popup.remove();
                 self.centerMap();
             }
 
             async function renderPopup() {
                 // console.log("render popup");
                 const word = self.$store.state.playAll.word;
+                if (!word) return;
 
                 const RenderWordClass = Vue.extend(RenderWordComponent);
                 self.popup = new mapboxgl.Popup({ maxWidth: "none" })
