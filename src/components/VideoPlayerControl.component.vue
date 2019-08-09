@@ -60,6 +60,7 @@ export default {
         endedHandler() {
             if (!this.store) return;
             const playAll = this.store.state.playAll;
+            if (["stopped", "paused"].includes(playAll.state)) return;
             this.store.commit("setPlayAll", {
                 play: true,
                 word: undefined,
