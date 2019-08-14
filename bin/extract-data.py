@@ -41,16 +41,18 @@ class SheetVerifier:
         self.check(3, 1)
         self.check(4, 0, "Permission form received (Y/N)?")
         self.check(4, 1)
-        self.check(5, 0, "Source")
-        self.check(5, 1)
         self.check(6, 0, "Date received")
         self.check(6, 1)
-        self.check(7, 1, "Word")
-        self.check(7, 2, "Audio filename")
         for i in range(8, 65):
-            self.check(i, 0)
-            self.check(i, 1)
-            self.check(i, 2)
+            if self.sheet.row_values(i)[1] and not self.sheet.row_values(i)[2]:
+                self.errors.append(
+                    {
+                        "type": "Missing media file for word",
+                        "level": "warning",
+                        "msg": f"'{self.sheet_name}': No media file for '{self.sheet.row_values(i)[1]}'.",
+                    }
+                )
+
         return self.errors
 
     def check(self, row, column, value=None):
