@@ -92,6 +92,7 @@ class DataExtractor:
         self.extract_aiatsis_geographies()
         self.extract_gambay_geographies()
         self.map_gambay_and_aiatsis_geographies()
+        self.apply_aiatsis_overrides()
         self.extract_language_data()
         self.build_repository()
         self.write_master_indices()
@@ -103,10 +104,10 @@ class DataExtractor:
                 "name": row[1],
                 "lat": row[3],
                 "lng": row[4],
-                "glottoid": row[6],
+                "override": row[7],
             }
 
-        print("Extracting geography data")
+        print("Extracting AIATSIS geography data")
         with xlrd.open_workbook(f"{self.data_path}/AIATSIS-geography.xlsx") as wb:
             sh = wb.sheet_by_index(0)
             for r in range(1, sh.nrows):
@@ -116,6 +117,7 @@ class DataExtractor:
         #     pp.pprint(item)
 
     def extract_gambay_geographies(self):
+        print("Extracting Gambay geography data")
         with open(self.gambay_geographies_geojson, "r") as f:
             gambay_data = json.load(f)
 
@@ -169,6 +171,45 @@ class DataExtractor:
                                 "msg": f"Gambay language '{language_name}' found in Austlang but no code was present - language excluded",
                             }
                         )
+
+    def apply_aiatsis_overrides(self):
+        for key, item in self.aiatsis_geographies.items():
+            if item["override"]:
+                if item["name"] not in self.data:
+                    self.data[item["code"].upper()] = {
+                        "type": "Feature",
+                        "geometry": {
+                            "coordinates": [item["lng"], item["lat"]],
+                            "type": "Point",
+                        },
+                        "properties": {
+                            "code": item["code"],
+                            "name": item["name"],
+                            "source": "Austlang",
+                            "selected": False,
+                        },
+                    }
+                else:
+                    self.data[item["code"].upper()]["geometry"]["coordinates"] = [
+                        item["lng"],
+                        item["lat"],
+                    ]
+                    self.data[item["code"].upper()]["properties"]["name"] = item["name"]
+                    self.data[item["code"].upper()]["properties"]["source"] = "Austlang"
+            if "#" in item["code"]:
+                self.data[item["code"].upper()] = {
+                    "type": "Feature",
+                    "geometry": {
+                        "coordinates": [item["lng"], item["lat"]],
+                        "type": "Point",
+                    },
+                    "properties": {
+                        "code": item["code"],
+                        "name": item["name"],
+                        "source": "Austlang",
+                        "selected": False,
+                    },
+                }
 
     def extract_language_data(self):
         def parse_row(row):
