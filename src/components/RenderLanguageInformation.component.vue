@@ -85,7 +85,9 @@ export default {
     },
     computed: {
         aiatsisLink: function() {
-            return `https://collection.aiatsis.gov.au/austlang/language/${this.data.properties.code}`;
+            return `https://collection.aiatsis.gov.au/austlang/language/${this.data.properties.code.trimRight(
+                "#"
+            )}`;
         },
         dateReceived: function() {
             return moment(
