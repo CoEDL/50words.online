@@ -1,5 +1,7 @@
 # 50 Words
 
+> This application is no longer being developed in this repository. Please see https://github.com/CoEDL/50words.online
+
 - [50 Words](#50-words)
   - [Updating the production dataset](#updating-the-production-dataset)
   - [Developing the application](#developing-the-application)
