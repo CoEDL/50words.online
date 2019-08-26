@@ -1,7 +1,4 @@
 
-> # Development of this application has moved to https://github.com/CoEDL/50words.online. 
-> ## Issues raised here will be ignored.
-
 # 50 Words
 - [50 Words](#50-words)
   - [Updating the production dataset](#updating-the-production-dataset)
