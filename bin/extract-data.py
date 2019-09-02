@@ -174,29 +174,52 @@ class DataExtractor:
 
     def apply_aiatsis_overrides(self):
         for key, item in self.aiatsis_geographies.items():
-            if item["override"]:
-                if item["name"] not in self.data:
-                    self.data[item["code"].upper()] = {
-                        "type": "Feature",
-                        "geometry": {
-                            "coordinates": [item["lng"], item["lat"]],
-                            "type": "Point",
-                        },
-                        "properties": {
-                            "code": item["code"],
-                            "name": item["name"],
-                            "source": "Austlang",
-                            "selected": False,
-                        },
+            if item["code"] not in self.data:
+                if not item["name"] or (not item["lng"] and item["lat"]):
+                    continue
+                self.errors.append(
+                    {
+                        "type": "Language not found in Gambay",
+                        "level": "warning",
+                        "msg": f"{item['name']} ({item['code']}) not found in Gambay. Using data from Austlang.",
                     }
-                else:
-                    self.data[item["code"].upper()]["geometry"]["coordinates"] = [
-                        item["lng"],
-                        item["lat"],
-                    ]
-                    self.data[item["code"].upper()]["properties"]["name"] = item["name"]
-                    self.data[item["code"].upper()]["properties"]["source"] = "Austlang"
+                )
+
+                self.data[item["code"].upper()] = {
+                    "type": "Feature",
+                    "geometry": {
+                        "coordinates": [item["lng"], item["lat"]],
+                        "type": "Point",
+                    },
+                    "properties": {
+                        "code": item["code"],
+                        "name": item["name"],
+                        "source": "Austlang",
+                        "selected": False,
+                    },
+                }
+            if item["override"]:
+                self.errors.append(
+                    {
+                        "type": "Override data in Gambay",
+                        "level": "warning",
+                        "msg": f"Using Austlang data to override the Gambday data for {item['name']} ({item['code']}).",
+                    }
+                )
+                self.data[item["code"].upper()]["geometry"]["coordinates"] = [
+                    item["lng"],
+                    item["lat"],
+                ]
+                self.data[item["code"].upper()]["properties"]["name"] = item["name"]
+                self.data[item["code"].upper()]["properties"]["source"] = "Austlang"
             if "#" in item["code"]:
+                self.errors.append(
+                    {
+                        "type": "Adding language from Austlang",
+                        "level": "warning",
+                        "msg": f"Using Austlang data for {item['name']} ({item['code']}).",
+                    }
+                )
                 self.data[item["code"].upper()] = {
                     "type": "Feature",
                     "geometry": {
