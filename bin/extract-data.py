@@ -381,7 +381,7 @@ class DataExtractor:
                 self.errors.append(
                     {
                         "type": "Audio or Video file missing",
-                        "level": "error",
+                        "level": "warning",
                         "msg": f"Neither an audio or a video file was provided: '{item_path}' '{item}'",
                     }
                 )
@@ -389,12 +389,24 @@ class DataExtractor:
 
             if "video_file" in item:
                 video_file = item["video_file"]
+                if not video_file:
+                    self.errors.append(
+                        {
+                            "type": "Video file not specified",
+                            "level": "warning",
+                            "msg": f"Video file not specified. '{item_path}' '{item}'",
+                        }
+                    )
+                    del item["video_file"]
+                    item["video"] = []
+                    return item
+
                 if not os.path.exists(video_file):
                     self.errors.append(
                         {
                             "type": "Video file missing",
                             "level": "error",
-                            "msg": f"{video_file} not found",
+                            "msg": f"'{video_file}' not found",
                         }
                     )
                     del item["video_file"]
@@ -430,21 +442,24 @@ class DataExtractor:
 
             if "audio_file" in item:
                 audio_file = item["audio_file"]
-                # if "wav" not in audio_file:
-                #     self.errors.append(
-                #         {
-                #             "type": "Incorrect audio format",
-                #             "level": "warning",
-                #             "msg": f"'{audio_file}' is not a 'wav' file. I'll work with this but you should provide 'wav' files as input",
-                #         }
-                #     )
+                if not audio_file:
+                    self.errors.append(
+                        {
+                            "type": "Audio file not specified",
+                            "level": "warning",
+                            "msg": f"Audio file not specified. '{item_path}' '{item}'",
+                        }
+                    )
+                    del item["audio_file"]
+                    item["audio"] = []
+                    return item
 
                 if not os.path.exists(audio_file):
                     self.errors.append(
                         {
                             "type": "Audio file missing",
                             "level": "error",
-                            "msg": f"{audio_file} not found",
+                            "msg": f"'{audio_file}'' not found",
                         }
                     )
                     del item["audio_file"]
