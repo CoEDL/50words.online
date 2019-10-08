@@ -231,6 +231,16 @@ class DataExtractor:
             if root == "/srv/data":
                 continue
             log.info(f"Processing: {root}")
+            if len(sheet) == 0:
+                self.errors.append(
+                    {
+                        "type": "No spreadsheet",
+                        "level": "error",
+                        "msg": f"No spreadsheet in '{root}'. Skipping this folder.",
+                    }
+                )
+                continue
+
             if len(sheet) > 1:
                 self.errors.append(
                     {
