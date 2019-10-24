@@ -22,7 +22,11 @@ module.exports = {
         host: "0.0.0.0",
         port: 9001,
         historyApiFallback: true,
-        watchContentBase: true
+        watchOptions: {
+            watch: true,
+            poll: 1000,
+            ignored: ["node_modules", "dist"]
+        }
     },
     plugins: [
         new CleanWebpackPlugin({
