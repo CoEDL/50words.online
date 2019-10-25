@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col style-heading text-center">50 words</div>
+            <div class="col style-heading text-center">About 50 words</div>
         </div>
         <div class="text-center my-2">
             <img :src="view50words" class="style-screenshot" />
