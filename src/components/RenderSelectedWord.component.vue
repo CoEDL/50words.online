@@ -21,7 +21,7 @@
             </el-button>
             <el-button
                 circle
-                @click="loop =! loop"
+                @click="loop = !loop"
                 class="style-button"
                 :class="{ 'style-button': loop, 'style-button-deselected': !loop }"
                 v-if="!disablePlayAllOnIOS"
@@ -59,120 +59,48 @@ export default {
         }
     },
     mounted() {
-        this.watchers.playAll = this.$watch("playAll", this.continue);
-        this.watchers.word = this.$watch("word", () => {
-            this.isPlaying = false;
-            this.isPaused = false;
-            this.$store.commit("setPlayAll", {
-                play: false,
-                word: undefined,
-                state: "stopped"
-            });
-        });
+        this.watchers.playAll = this.$watch("playAll", this.updateState);
     },
     beforeDestroy() {
         this.watchers.playAll();
-        this.watchers.word();
     },
     methods: {
         play() {
             this.isPlaying = !this.isPlaying;
             if (this.isPlaying) {
-                this.playedWords = [];
-                this.words = orderBy(
-                    [...this.$store.state.selectedWord],
-                    "properties.language.code"
-                );
-                let word = this.words.pop();
-                this.playedWords.push(word.properties.english);
-
                 this.$store.commit("setPlayAll", {
-                    play: true,
-                    word,
-                    state: "playing"
+                    state: "next",
+                    loop: this.loop
                 });
+                this.isPaused = false;
             } else {
                 this.$store.commit("setPlayAll", {
-                    play: false,
-                    word: undefined,
-                    state: "stopped"
+                    state: "stopped",
+                    loop: this.loop
                 });
+                this.isPaused = false;
             }
         },
         pause() {
-            if (this.playAll.state === "paused") {
+            if (this.isPaused) {
                 this.$store.commit("setPlayAll", {
-                    play: true,
-                    word: undefined,
                     state: "next"
                 });
-                this.isPaused = false;
             } else {
                 this.$store.commit("setPlayAll", {
-                    play: true,
-                    word: undefined,
                     state: "paused"
                 });
-                this.isPaused = true;
             }
+            this.isPaused = !this.isPaused;
         },
-        continue(n, o) {
-            if (
-                (!this.playAll.play && this.playAll.state === "stopped") ||
-                !this.isPlaying
-            ) {
-                this.isPaused = false;
+        setLoopAll() {
+            this.$store.commit("setPlayAll", {
+                loop: this.loop
+            });
+        },
+        updateState() {
+            if (this.$store.state.playAll.state === "ready")
                 this.isPlaying = false;
-                this.loop = false;
-                return;
-            }
-            if (n.state === "next" && !this.words.length) {
-                if (this.loop && n.play) {
-                    let words = this.$store.state.words.filter(
-                        word => !this.playedWords.includes(word.name)
-                    );
-                    console.log("words left to play", words.length);
-                    if (!words.length) {
-                        this.playedWords = [];
-                        words = this.$store.state.words.filter(
-                            word => !this.playedWords.includes(word.name)
-                        );
-                    }
-                    let word = shuffle(words).pop();
-                    this.$store.dispatch("loadWord", { word: word.name });
-                    setTimeout(() => {
-                        this.words = orderBy(
-                            [...this.$store.state.selectedWord],
-                            "properties.language.code"
-                        );
-                        let word = this.words.pop();
-                        this.playedWords.push(word.properties.english);
-                        this.$store.commit("setPlayAll", {
-                            play: true,
-                            word,
-                            state: "playing"
-                        });
-                    }, 1000);
-                } else {
-                    setTimeout(() => {
-                        this.$store.commit("setPlayAll", {
-                            play: false,
-                            word: undefined,
-                            state: "stopped"
-                        });
-                        this.isPlaying = false;
-                    }, 2000);
-                }
-            }
-            if (n.state === "next" && n.play === true && this.words.length) {
-                setTimeout(() => {
-                    this.$store.commit("setPlayAll", {
-                        play: true,
-                        word: this.words.pop(),
-                        state: "playing"
-                    });
-                }, 2000);
-            }
         }
     }
 };

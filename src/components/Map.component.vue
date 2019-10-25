@@ -20,7 +20,7 @@ Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
     "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2p2NGhzMzFkMnFsbzQwandhNmJ2MWI2eCJ9.qxu6U_HfPFd-4BZ85eNCvw";
-import { throttle, map, orderBy } from "lodash";
+import { throttle, map, orderBy, shuffle, uniq } from "lodash";
 
 export default {
     components: {
@@ -30,6 +30,10 @@ export default {
     data() {
         return {
             watchers: {},
+            played: {
+                thisWord: [],
+                allWords: []
+            },
             map: undefined,
             popup: undefined,
             mediaElement: {
@@ -67,7 +71,6 @@ export default {
         });
         this.watchers.words = this.$watch("playAll", this.playAllWords);
     },
-
     beforeMount() {
         window.addEventListener("resize", throttle(this.centerMap, 300));
     },
@@ -257,22 +260,71 @@ export default {
         },
         async playAllWords() {
             var self = this;
-            if (!self.$store.state.playAll.play) cleanup();
-
-            // kick off
-            if (
-                self.$store.state.playAll.play &&
-                self.$store.state.playAll.word
-            ) {
-                self.map.once("moveend", renderPopup);
-                flyToWord({ word: self.$store.state.playAll.word });
+            var nextWord;
+            if (["ready", "paused"].includes(self.$store.state.playAll.state))
+                return;
+            if (self.$store.state.playAll.state === "stopped") {
+                cleanup();
+                return;
             }
 
-            async function flyToWord({ word }) {
+            // kick off
+            if (self.$store.state.playAll.state === "next") {
+                flyToWord();
+            }
+
+            async function flyToWord() {
                 if (self.popup) self.popup.remove();
-                console.log(`Flying to: ${word.properties.indigenous}`);
+                const selectedWord = [...self.$store.state.selectedWord].filter(
+                    w => !self.played.thisWord.includes(w.properties.indigenous)
+                );
+
+                console.log("Entries remaining:", selectedWord.length);
+
+                nextWord = selectedWord.pop();
+                if (!nextWord) {
+                    if (self.$store.state.playAll.loop) {
+                        console.log("Words played", self.played.allWords);
+                        console.log("Looping to next word");
+                        let words = self.$store.state.words.filter(word => {
+                            // console.log(word.name);
+                            return !self.played.allWords.includes(word.name);
+                        });
+                        console.log("Words left to play", words.length);
+                        if (!words.length) {
+                            self.$store.commit("setPlayAll", {
+                                state: "stopped",
+                                loop: false
+                            });
+                        }
+                        let word = shuffle(words).pop();
+                        self.$store.dispatch("loadWord", {
+                            word: word.name,
+                            triggerPlayAll: true
+                        });
+                    } else {
+                        self.played = {
+                            thisWord: [],
+                            allWords: []
+                        };
+                        self.$store.commit("setPlayAll", {
+                            state: "stopped",
+                            loop: false
+                        });
+                    }
+                    return;
+                }
+                self.played.allWords = uniq([
+                    ...self.played.allWords,
+                    nextWord.properties.english
+                ]);
+                self.played.thisWord.push(nextWord.properties.indigenous);
+                // console.log(This word played", self.played.thisWord);
+
+                self.map.once("moveend", renderPopup);
+                console.log(`Flying to: ${nextWord.properties.indigenous}`);
                 self.map.flyTo({
-                    center: word.geometry.coordinates,
+                    center: nextWord.geometry.coordinates,
                     zoom: window.innerwidth < 768 ? 8 : 6,
                     bearing: 0
                 });
@@ -282,22 +334,25 @@ export default {
                 console.log("cleanup");
                 if (self.popup) self.popup.remove();
                 self.centerMap();
+                self.$store.commit("setPlayAll", {
+                    state: "ready",
+                    loop: false
+                });
             }
 
             async function renderPopup() {
                 // console.log("render popup");
-                const word = self.$store.state.playAll.word;
-                if (!word) return;
+                if (!nextWord) return;
 
                 const RenderWordClass = Vue.extend(RenderWordComponent);
                 self.popup = new mapboxgl.Popup({ maxWidth: "none" })
-                    .setLngLat(word.geometry.coordinates)
+                    .setLngLat(nextWord.geometry.coordinates)
                     .setHTML('<div id="vue-popup-content"></div>')
                     .addTo(self.map);
                 const popupInstance = new RenderWordClass({
                     propsData: {
                         layout: "popup",
-                        word: word,
+                        word: nextWord,
                         store: self.$store
                     }
                 });

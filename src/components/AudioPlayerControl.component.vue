@@ -54,18 +54,19 @@ export default {
             this.$refs.audioElement.load();
         },
         playWord() {
+            // console.log("play audio");
             if (this.play[0]) this.$refs.audioElement.play();
             this.$emit("finished playing");
         },
         endedHandler() {
             if (!this.store) return;
             const playAll = this.store.state.playAll;
-            if (["stopped", "paused"].includes(playAll.state)) return;
-            this.store.commit("setPlayAll", {
-                play: true,
-                word: undefined,
-                state: "next"
-            });
+            // if (["stopped", "paused"].includes(playAll.state)) return;
+            // console.log("audio played");
+            if (!["paused", "stopped"].includes(this.store.state.playAll.state))
+                this.store.commit("setPlayAll", {
+                    state: "next"
+                });
         }
     }
 };

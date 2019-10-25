@@ -44,15 +44,28 @@ const configuration = {
             state.show = payload;
         },
         setPlayAll(state, payload) {
-            state.playAll = { ...payload };
+            // console.log(
+            //     `old state: ${state.playAll.state}, new state: ${payload.state}`
+            // );
+            state.playAll = {
+                ...state.playAll,
+                ...payload
+            };
         }
     },
     actions: {
         async loadWord({ state, commit }, payload) {
+            // console.log("loadWord", JSON.stringify(payload, null, true));
             const word = await loadWordData({
                 words: state.words,
                 word: payload.word
             });
+            console.log("Loaded data for word:", payload.word);
+            if (payload.triggerPlayAll) {
+                commit("setPlayAll", {
+                    state: "next"
+                });
+            }
             commit("setSelectedWord", { word });
         }
     },
@@ -67,6 +80,6 @@ function reset() {
         languages: [],
         selectedLanguage: undefined,
         selectedWord: undefined,
-        playAll: { play: false, word: undefined, state: "stoppped" }
+        playAll: { state: "ready", loop: false }
     };
 }
