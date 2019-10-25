@@ -60,10 +60,12 @@ export default {
         endedHandler() {
             if (!this.store) return;
             const playAll = this.store.state.playAll;
-            if (!["paused", "stopped"].includes(this.store.state.playAll.state))
-                this.store.commit("setPlayState", {
-                    state: "next"
-                });
+            setTimeout(() => {
+                if (this.store.state.playAll.state === "next")
+                    this.store.commit("setPlayState", {
+                        state: "next"
+                    });
+            }, 1000);
         }
     }
 };

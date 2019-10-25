@@ -72,6 +72,10 @@ export default {
         this.renderMap();
         this.watchers.words = this.$watch("words", d => {
             if (d) {
+                this.played = {
+                    allWords: [],
+                    thisWord: []
+                };
                 this.renderWordLayer();
             } else {
                 this.renderLanguageLayer();
@@ -350,12 +354,14 @@ export default {
 
             async function cleanup() {
                 console.log("cleanup");
-                if (self.popup) self.popup.remove();
-                self.centerMap();
                 self.$store.commit("setPlayState", {
                     state: "ready",
                     loop: false
                 });
+                setTimeout(() => {
+                    if (self.popup) self.popup.remove();
+                    self.centerMap();
+                }, 2000);
             }
 
             async function renderPopup() {
