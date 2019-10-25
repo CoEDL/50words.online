@@ -1,6 +1,6 @@
 <template>
-    <div class="row text-xl-center">
-        <div class="col-12 py-2 col-md-6 col-xl-5">
+    <div class="row">
+        <div class="col-12 py-2 col-md-6 col-xl-6">
             <a
                 href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
             >
@@ -13,15 +13,15 @@
                 </div>
             </a>
         </div>
-        <div class="col-12 py-2 col-md-4 col-xl-3 ">
+        <div class="col-12 py-2 col-md-4 col-xl-3">
             <a href="https://www.firstlanguages.org.au" target="_blank">
                 <img :src="firstLangLogo" class="style-logo" />
             </a>
         </div>
         <div class="col-12 py-2 col-md-2 col-xl-3">
-                <a href="https://www.unimelb.edu.au" target="_blank">
-                    <img :src="uomLogo" class="style-logo" />
-                </a>
+            <a href="https://www.unimelb.edu.au" target="_blank" class="float-md-right">
+                <img :src="uomLogo" class="style-logo" />
+            </a>
         </div>
     </div>
 </template>
@@ -72,7 +72,7 @@ export default {
 @media (min-width: 1024px) {
     .style-logo {
         display: inline-block;
-        height: 80px;
+        height: 100px;
     }
     .style-logo-text {
         width: 300px;
