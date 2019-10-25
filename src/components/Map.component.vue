@@ -358,6 +358,10 @@ export default {
                     state: "ready",
                     loop: false
                 });
+                self.played = {
+                    allWords: [],
+                    thisWord: []
+                };
                 setTimeout(() => {
                     if (self.popup) self.popup.remove();
                     self.centerMap();

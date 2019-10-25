@@ -17,7 +17,6 @@
                                 :play="play"
                                 :store="store"
                                 v-on:ready="ready"
-                                v-on:finished-playing="stopPlaying"
                             />
                         </span>
                         <span class="style-english">{{word.properties.language.name}}</span>
@@ -28,7 +27,6 @@
                                 :play="play"
                                 :store="store"
                                 v-on:ready="ready"
-                                v-on:finished-playing="stopPlaying"
                             />
                         </div>
                     </div>
@@ -56,7 +54,6 @@
                                     :files="word.audio"
                                     :play="play"
                                     v-on:ready="ready"
-                                    v-on:finished-playing="stopPlaying"
                                 />
                             </span>
                         </div>
@@ -77,7 +74,6 @@
                                     :files="word.video"
                                     :play="play"
                                     v-on:ready="ready"
-                                    v-on:finished-playing="stopPlaying"
                                 />
                             </div>
                         </div>
@@ -108,28 +104,16 @@ export default {
             play: [false]
         };
     },
-    mounted() {
-        // console.log(JSON.stringify(this.word, null, 2));
-        setTimeout(() => {
-            if (!this.word.properties.audio && !this.word.properties.video) {
-                this.store.commit("setPlayAll", {
-                    play: true,
-                    word: undefined,
-                    state: "next"
-                });
-            }
-        }, 2000);
-    },
     methods: {
         ready() {
             this.playDisabled = false;
-            if (this.layout === "popup") setTimeout(this.playWord, 500);
+            if (this.layout === "popup")
+                setTimeout(() => {
+                    this.playWord();
+                }, 500);
         },
         playWord() {
             this.play = [true];
-        },
-        stopPlaying() {
-            this.play = [false];
         }
     }
 };

@@ -54,8 +54,7 @@ export default {
             this.$refs.audioElement.load();
         },
         playWord() {
-            if (this.play[0]) this.$refs.audioElement.play();
-            this.$emit("finished playing");
+            this.$refs.audioElement.play();
         },
         async endedHandler() {
             if (!this.store) return;

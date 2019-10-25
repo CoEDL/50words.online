@@ -55,7 +55,6 @@ export default {
         },
         playWord() {
             if (this.play[0]) this.$refs.videoElement.play();
-            this.$emit("finished playing");
         },
         endedHandler() {
             if (!this.store) return;
