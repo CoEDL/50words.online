@@ -44,6 +44,15 @@ const configuration = {
             state.show = payload;
         },
         setPlayState(state, payload) {
+            if (state.playAll.state === "ready" && payload.state !== "next")
+                return;
+            if (
+                state.playAll.state === "next" &&
+                !["next", "paused", "stopped"].includes(payload.state)
+            )
+                return;
+            if (state.playAll.state === "stopped" && payload.state !== "ready")
+                return;
             // console.log(
             //     `old state: ${state.playAll.state}, new state: ${payload.state}`
             // );
