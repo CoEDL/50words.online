@@ -11,7 +11,7 @@ import AboutComponent from "components/About.component.vue";
 
 export const router = new VueRouter({
     mode: "history",
-    base: process.env.NODE_ENV === "development" ? "/" : "/50words",
+    base: "/",
     routes: [
         { path: "*", name: "404", component: BadRequestComponent },
         {
