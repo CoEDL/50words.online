@@ -37,3 +37,11 @@ a:active {
 .style-audio-control {
     color: $text-color;
 }
+
+.el-autocomplete-suggestion li.highlighted,
+.el-autocomplete-suggestion li:hover {
+    background-color: $primary-color;
+    color: $text-color;
+    font-size: 25px;
+    line-height: 40px;
+}

@@ -1,6 +1,11 @@
 <template>
     <div>
         <div id="map" class="style-map"></div>
+        <zoom-to-language-component
+            v-if="!selectedWord && showZoomToLanguage"
+            class="style-language-finder"
+            v-on:zoom-to-language="zoomToLanguage"
+        />
         <div class="style-map-reset">
             <el-button type="default" @click="centerMap" size="mini" class="style-reset-button">
                 <i class="fas fa-crosshairs style-reset-button-image"></i>
@@ -15,7 +20,7 @@ import Vue from "vue";
 import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
 import RenderWordComponent from "components/RenderWord.component.vue";
-import AudioPlayerControl from "./AudioPlayerControl.component.vue";
+import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
 Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
@@ -25,7 +30,7 @@ import { throttle, map, orderBy, shuffle, uniq } from "lodash";
 export default {
     components: {
         RenderWordComponent,
-        AudioPlayerControl
+        ZoomToLanguageComponent
     },
     data() {
         return {
@@ -58,6 +63,9 @@ export default {
         },
         playAll: function() {
             return this.$store.state.playAll;
+        },
+        showZoomToLanguage: function() {
+            return window.innerWidth < 768 ? false : true;
         }
     },
     mounted() {
@@ -369,6 +377,13 @@ export default {
                 popupInstance.$mount("#vue-popup-content");
                 self.popup._update();
             }
+        },
+        zoomToLanguage(language) {
+            this.map.flyTo({
+                center: language.geometry.coordinates,
+                zoom: 6,
+                bearing: 0
+            });
         }
     }
 };
@@ -397,6 +412,13 @@ export default {
 
 .style-reset-button-image {
     margin-left: -6px;
+}
+
+.style-language-finder {
+    position: fixed;
+    width: 330px;
+    top: 80px;
+    left: calc(100vw - 400px);
 }
 
 @media (min-width: 768px) {
