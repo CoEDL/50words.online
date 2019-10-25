@@ -43,7 +43,7 @@ const configuration = {
         show(state, payload) {
             state.show = payload;
         },
-        setPlayAll(state, payload) {
+        setPlayState(state, payload) {
             // console.log(
             //     `old state: ${state.playAll.state}, new state: ${payload.state}`
             // );
@@ -56,17 +56,23 @@ const configuration = {
     actions: {
         async loadWord({ state, commit }, payload) {
             // console.log("loadWord", JSON.stringify(payload, null, true));
-            const word = await loadWordData({
+            let word = await loadWordData({
                 words: state.words,
                 word: payload.word
             });
             console.log("Loaded data for word:", payload.word);
+            word = word.filter(
+                w =>
+                    (w.properties.audio && w.properties.audio.length) ||
+                    (w.properties.video && w.properties.video.length)
+            );
+            // console.log(word);
+            commit("setSelectedWord", { word });
             if (payload.triggerPlayAll) {
-                commit("setPlayAll", {
+                commit("setPlayState", {
                     state: "next"
                 });
             }
-            commit("setSelectedWord", { word });
         }
     },
     getters: {}

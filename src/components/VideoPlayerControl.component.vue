@@ -61,7 +61,7 @@ export default {
             if (!this.store) return;
             const playAll = this.store.state.playAll;
             if (!["paused", "stopped"].includes(this.store.state.playAll.state))
-                this.store.commit("setPlayAll", {
+                this.store.commit("setPlayState", {
                     state: "next"
                 });
         }

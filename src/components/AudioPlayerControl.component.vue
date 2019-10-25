@@ -64,7 +64,7 @@ export default {
             // if (["stopped", "paused"].includes(playAll.state)) return;
             // console.log("audio played");
             if (!["paused", "stopped"].includes(this.store.state.playAll.state))
-                this.store.commit("setPlayAll", {
+                this.store.commit("setPlayState", {
                     state: "next"
                 });
         }

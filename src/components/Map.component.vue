@@ -281,8 +281,7 @@ export default {
 
                 console.log("Entries remaining:", selectedWord.length);
 
-                nextWord = selectedWord.pop();
-                if (!nextWord) {
+                if (!selectedWord.length) {
                     if (self.$store.state.playAll.loop) {
                         console.log("Words played", self.played.allWords);
                         console.log("Looping to next word");
@@ -292,12 +291,22 @@ export default {
                         });
                         console.log("Words left to play", words.length);
                         if (!words.length) {
-                            self.$store.commit("setPlayAll", {
-                                state: "stopped",
-                                loop: false
+                            self.played = {
+                                allWords: [],
+                                thisWord: []
+                            };
+                            words = self.$store.state.words.filter(word => {
+                                return !self.played.allWords.includes(
+                                    word.name
+                                );
                             });
                         }
                         let word = shuffle(words).pop();
+                        self.played.thisWord = [];
+                        self.played.allWords = uniq([
+                            ...self.played.allWords,
+                            word.name
+                        ]);
                         self.$store.dispatch("loadWord", {
                             word: word.name,
                             triggerPlayAll: true
@@ -307,13 +316,14 @@ export default {
                             thisWord: [],
                             allWords: []
                         };
-                        self.$store.commit("setPlayAll", {
+                        self.$store.commit("setPlayState", {
                             state: "stopped",
                             loop: false
                         });
                     }
                     return;
                 }
+                nextWord = selectedWord.pop();
                 self.played.allWords = uniq([
                     ...self.played.allWords,
                     nextWord.properties.english
@@ -334,7 +344,7 @@ export default {
                 console.log("cleanup");
                 if (self.popup) self.popup.remove();
                 self.centerMap();
-                self.$store.commit("setPlayAll", {
+                self.$store.commit("setPlayState", {
                     state: "ready",
                     loop: false
                 });

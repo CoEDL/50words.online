@@ -21,7 +21,7 @@
             </el-button>
             <el-button
                 circle
-                @click="loop = !loop"
+                @click="setLoopState"
                 class="style-button"
                 :class="{ 'style-button': loop, 'style-button-deselected': !loop }"
                 v-if="!disablePlayAllOnIOS"
@@ -53,7 +53,8 @@ export default {
             return this.$store.state.playAll;
         },
         word: function() {
-            return this.$store.state.selectedWord
+            return this.$store.state.selectedWord &&
+                this.$store.state.selectedWord.length
                 ? this.$store.state.selectedWord[0].properties.english
                 : undefined;
         }
@@ -68,13 +69,13 @@ export default {
         play() {
             this.isPlaying = !this.isPlaying;
             if (this.isPlaying) {
-                this.$store.commit("setPlayAll", {
+                this.$store.commit("setPlayState", {
                     state: "next",
                     loop: this.loop
                 });
                 this.isPaused = false;
             } else {
-                this.$store.commit("setPlayAll", {
+                this.$store.commit("setPlayState", {
                     state: "stopped",
                     loop: this.loop
                 });
@@ -83,18 +84,19 @@ export default {
         },
         pause() {
             if (this.isPaused) {
-                this.$store.commit("setPlayAll", {
+                this.$store.commit("setPlayState", {
                     state: "next"
                 });
             } else {
-                this.$store.commit("setPlayAll", {
+                this.$store.commit("setPlayState", {
                     state: "paused"
                 });
             }
             this.isPaused = !this.isPaused;
         },
-        setLoopAll() {
-            this.$store.commit("setPlayAll", {
+        setLoopState() {
+            this.loop = !this.loop;
+            this.$store.commit("setPlayState", {
                 loop: this.loop
             });
         },
