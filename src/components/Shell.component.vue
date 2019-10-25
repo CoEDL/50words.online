@@ -1,10 +1,10 @@
 <template>
     <div>
-        <information-panel-component/>
-        <map-component/>
-        <data-selector-component class="style-data-selector"/>
-        <render-selected-word-component class="style-selected-word"/>
-        <render-main-logo-component class="style-logo-container"/>
+        <information-panel-component />
+        <map-component />
+        <data-selector-component class="style-data-selector" />
+        <render-selected-word-component class="style-selected-word" />
+        <render-main-logo-component class="style-logo-container" />
     </div>
 </template>
 

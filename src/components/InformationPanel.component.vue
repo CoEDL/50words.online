@@ -47,61 +47,8 @@
                             Once you select a language (in orange) on this page you will get a link to "See more
                             information about" that language.
                         </p>
-                        <p>
-                            <a href @click.prevent="toggleMoreInformation" class="mt-2">
-                                <span v-if="!showMore">show more</span>
-                                <span v-if="showMore">show less</span>
-                            </a>
-                        </p>
-                    </div>
-
-                    <div v-if="showMore" class="col-12 style-more-information text-justify">
-                        <p>
-                            The words included here are just a small sample to give an idea of what
-                            Australian languages sound like. In some languages, words are more specific, for example,
-                            you have to say if a grey kangaroo is male or female in Murrinhpatha, so we have included
-                            only the word for the male grey kangaroo in that list. In some languages, the word for
-                            'thigh' is the same as the word for 'leg' so they are both shown in those lists.
-                        </p>
-                        <p>
-                            When you listen to these words you will notice that Australian languages have many
-                            sounds that are not found in English, and these can be tricky for English speakers to pronounce.
-                            For an explanation of these sounds, and help in pronouncing them we recommend you watch the
-                            short video series we put online at the
-                            <a
-                                class="style-link"
-                                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/training/australian-indigenous-languages/sounds-of-aboriginal-languages"
-                                target="_blank"
-                            >RUIL website.</a>
-                        </p>
-                        <p>
-                            For more information about Australian Indigenous languages, see our pages
-                            <a
-                                class="style-link"
-                                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/training/australian-indigenous-languages"
-                                target="_blank"
-                            >here</a>
-                            and also
-                            <a
-                                class="style-link"
-                                href="https://www.firstlanguages.org.au"
-                                target="_blank"
-                            >First Languages Australia</a> or
-                            <a
-                                class="style-link"
-                                href="https://collection.aiatsis.gov.au/austlang/search"
-                                target="_blank"
-                            >Austlang</a>.
-                        </p>
-                        <p>
-                            The 50-word project is led by the Research Unit for Indigenous Language at the University of
-                            Melbourne, funded by the Duncan Leary Trust for Australian Indigenous Languages.
-                            For further information see:
-                            <a
-                                class="style-link"
-                                href="http://indiglang.arts.unimelb.edu.au"
-                                target="_blank"
-                            >http://indiglang.arts.unimelb.edu.au</a>
+                        <p class="text-center">
+                            <router-link to="/about">find out more about this site</router-link>
                         </p>
                     </div>
                 </div>
@@ -139,8 +86,7 @@ export default {
             showContent: false,
             showLanguageData: false,
             languageData: {},
-            logo: require("src/assets/logo.png"),
-            showMore: false
+            logo: require("src/assets/logo.png")
         };
     },
     computed: {
@@ -182,9 +128,6 @@ export default {
                 this.$store.commit("setSelectedLanguage", undefined);
             }
             this.isCollapsed = !this.isCollapsed;
-        },
-        toggleMoreInformation() {
-            this.showMore = !this.showMore;
         },
         collapseInformationPanel() {
             if (window.innerWidth < 768) {

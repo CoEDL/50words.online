@@ -1,25 +1,25 @@
 <template>
     <div>
-        <div class="style-logo-text-background"></div>
+        <div class="styleBackground"></div>
         <a
             href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
         >
             <div class="style-logo-container">
-                <img :src="logo" class="style-logo">
+                <img :src="logo" class="style-logo" />
             </div>
             <div class="style-logo-text">
                 RESEARCH UNIT FOR
-                <br>INDIGENOUS LANGUAGE
+                <br />INDIGENOUS LANGUAGE
             </div>
         </a>
         <div class="style-firstlang-logo-container">
             <a href="https://www.firstlanguages.org.au" target="_blank">
-                <img :src="firstLangLogo" class="style-logo">
+                <img :src="firstLangLogo" class="style-logo" />
             </a>
         </div>
         <div class="style-uom-logo-container">
             <a href="https://www.unimelb.edu.au" target="_blank">
-                <img :src="uomLogo" class="style-logo">
+                <img :src="uomLogo" class="style-logo" />
             </a>
         </div>
     </div>
@@ -27,6 +27,11 @@
 
 <script>
 export default {
+    props: {
+        styleBackground: {
+            type: Boolean
+        }
+    },
     data() {
         return {
             logo: require("src/assets/logo-image.png"),
@@ -120,7 +125,7 @@ export default {
         width: 310px;
         top: 0px;
         left: 110px;
-        font-size: 1.8em;
+        font-size: 1.4em;
         color: white;
     }
     .style-uom-logo-container {

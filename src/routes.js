@@ -7,6 +7,7 @@ Vue.use(VueRouter);
 import ShellComponent from "components/Shell.component.vue";
 import BadRequestComponent from "components/BadRequest.component.vue";
 import AdminComponent from "components/Admin.component.vue";
+import AboutComponent from "components/About.component.vue";
 
 export const router = new VueRouter({
     mode: "history",
@@ -17,6 +18,10 @@ export const router = new VueRouter({
             path: "/",
             component: ShellComponent,
             children: []
+        },
+        {
+            path: "/about",
+            component: AboutComponent
         },
         {
             path: "/admin",
