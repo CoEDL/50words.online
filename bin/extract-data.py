@@ -241,7 +241,6 @@ class DataExtractor:
             geo = item["geometry"]["coordinates"]
             if geo[0] != "" and geo[1] != "":
                 data[key] = item
-                print(item)
         self.data = data
 
     def extract_language_data(self):
