@@ -3,10 +3,11 @@
         v-model="query"
         :fetch-suggestions="findLanguage"
         placeholder="locate language"
-        :highlight-first-item="true"
         @select="zoomToLanguage"
     >
-        <template slot-scope="{ item }">{{item.properties.name}}</template>
+        <template slot-scope="{ item }">
+            <span :class="{ 'style-has-words': item.properties.words} ">{{item.properties.name}}</span>
+        </template>
     </el-autocomplete>
 </template>
 
@@ -24,9 +25,13 @@ export default {
     },
     methods: {
         findLanguage(query, cb) {
+            if (!query || query.length < 2) {
+                cb([]);
+                return;
+            }
             const regexp = new RegExp(query, "gi");
             const languages = this.languages.filter(l => {
-                return l.properties.name.match(regexp) && l.properties.words;
+                return l.properties.name.match(regexp);
             });
             cb(languages);
         },
@@ -38,4 +43,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "assets/variables.scss";
+
+.style-has-words {
+    color: $text-color;
+    font-size: 25px;
+    line-height: 40px;
+}
 </style>

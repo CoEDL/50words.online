@@ -391,7 +391,7 @@ export default {
         zoomToLanguage(language) {
             this.map.flyTo({
                 center: language.geometry.coordinates,
-                zoom: 6,
+                zoom: 11,
                 bearing: 0
             });
         }

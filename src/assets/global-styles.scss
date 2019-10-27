@@ -41,7 +41,6 @@ a:active {
 .el-autocomplete-suggestion li.highlighted,
 .el-autocomplete-suggestion li:hover {
     background-color: $primary-color;
-    color: $text-color;
-    font-size: 25px;
-    line-height: 40px;
+    font-size: 20px;
+    line-height: 35px;
 }
