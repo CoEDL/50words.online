@@ -424,18 +424,17 @@ export default {
     margin-left: -6px;
 }
 
-.style-language-finder {
-    position: fixed;
-    width: 330px;
-    top: 80px;
-    left: calc(100vw - 400px);
-}
-
 @media (min-width: 768px) {
     .style-map-reset {
         position: fixed;
         top: 90px;
         left: calc(100vw - 41px);
+    }
+    .style-language-finder {
+        position: fixed;
+        width: 200px;
+        top: 65px;
+        left: calc(100vw - 250px);
     }
 }
 
@@ -444,6 +443,12 @@ export default {
         position: fixed;
         top: 90px;
         left: calc(100vw - 51px);
+    }
+    .style-language-finder {
+        position: fixed;
+        width: 290px;
+        top: 80px;
+        left: calc(100vw - 364px);
     }
 }
 </style>
