@@ -114,7 +114,7 @@
 
                 <p class="my-4">
                     This research project has been approved by the Human Research Ethics
-                    Committee of The University of Melbourne. Project number:1853186.1
+                    Committee of The University of Melbourne. Project number:1853186.2
                 </p>
             </div>
         </div>
