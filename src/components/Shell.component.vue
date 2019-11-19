@@ -36,13 +36,13 @@ export default {
 <style scoped lang="scss">
 .style-data-selector {
     position: fixed;
-    top: 70px;
+    top: 50px;
     left: calc(100vw - 260px);
 }
 
 .style-selected-word {
     position: fixed;
-    top: 110px;
+    top: 90px;
     width: 300px;
     left: calc(100vw - 370px);
 }
@@ -51,6 +51,16 @@ export default {
     position: absolute;
     top: 5px;
     left: 55px;
+}
+@media (min-width: 400px) {
+    .style-data-selector {
+        position: fixed;
+        top: 10px;
+        left: calc(100vw - 250px);
+    }
+    .style-selected-word {
+        top: 50px;
+    }
 }
 @media (min-width: 768px) {
     .style-data-selector {
@@ -61,7 +71,7 @@ export default {
 
     .style-selected-word {
         position: fixed;
-        top: 55px;
+        top: 50px;
         width: 420px;
         left: calc(100vw - 500px);
     }
@@ -81,7 +91,7 @@ export default {
 
     .style-selected-word {
         position: fixed;
-        top: 80px;
+        top: 50px;
         width: 420px;
         left: calc(100vw - 500px);
     }

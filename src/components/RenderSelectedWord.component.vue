@@ -1,8 +1,13 @@
 <template>
     <div v-if="word">
         <div class="text-right">
-            <div class="style-selected-word">{{word}}</div>
-            <el-button circle @click="play" class="style-button" v-if="!disablePlayAllOnIOS">
+            <div class="style-selected-word">{{ word }}</div>
+            <el-button
+                circle
+                @click="play"
+                class="style-button"
+                v-if="!disablePlayAllOnIOS"
+            >
                 <span v-show="!isPlaying">
                     <i class="fas fa-play fa-fw"></i>
                 </span>
@@ -14,7 +19,7 @@
                 circle
                 @click="pause"
                 class="style-button"
-                :class="{ 'style-button-deselected': isPaused}"
+                :class="{ 'style-button-deselected': isPaused }"
                 v-if="!disablePlayAllOnIOS && isPlaying"
             >
                 <i class="fas fa-pause fa-fw"></i>
@@ -23,11 +28,14 @@
                 circle
                 @click="setLoopState"
                 class="style-button"
-                :class="{ 'style-button': loop, 'style-button-deselected': !loop }"
+                :class="{
+                    'style-button': loop,
+                    'style-button-deselected': !loop
+                }"
                 v-if="!disablePlayAllOnIOS"
             >
-                <i class="fas fa-repeat fa-fw"></i>
-            </el-button>&nbsp;
+                <i class="fas fa-repeat fa-fw"></i> </el-button
+            >&nbsp;
         </div>
     </div>
 </template>
@@ -122,15 +130,14 @@ export default {
 }
 
 .style-selected-word {
-    font-size: 1.5em;
+    font-size: 1.3em;
     color: $text-color;
 }
 @media (min-width: 1024px) {
     .style-selected-word {
+        font-size: 1.5em;
         color: $text-color;
         padding-top: 10px;
     }
 }
 </style>
-
-

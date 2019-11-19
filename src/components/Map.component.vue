@@ -7,7 +7,12 @@
             v-on:zoom-to-language="zoomToLanguage"
         />
         <div class="style-map-reset">
-            <el-button type="default" @click="centerMap" size="mini" class="style-reset-button">
+            <el-button
+                type="default"
+                @click="centerMap"
+                size="mini"
+                class="style-reset-button"
+            >
                 <i class="fas fa-crosshairs style-reset-button-image"></i>
             </el-button>
         </div>
@@ -93,7 +98,10 @@ export default {
     methods: {
         centerMap() {
             if (this.popup) this.popup.remove();
-            this.map.fitBounds([[96, -45], [168, -8]]);
+            this.map.fitBounds([
+                [96, -45],
+                [168, -8]
+            ]);
         },
         renderMap() {
             this.map = new mapboxgl.Map({
@@ -411,8 +419,8 @@ export default {
 
 .style-map-reset {
     position: fixed;
-    top: 130px;
-    left: calc(100vw - 51px);
+    top: 80px;
+    left: calc(100vw - 45px);
 }
 
 .style-reset-button {
@@ -427,7 +435,7 @@ export default {
 @media (min-width: 768px) {
     .style-map-reset {
         position: fixed;
-        top: 90px;
+        top: 80px;
         left: calc(100vw - 41px);
     }
     .style-language-finder {
@@ -441,8 +449,8 @@ export default {
 @media (min-width: 1024px) {
     .style-map-reset {
         position: fixed;
-        top: 90px;
-        left: calc(100vw - 51px);
+        top: 80px;
+        left: calc(100vw - 41px);
     }
     .style-language-finder {
         position: fixed;
@@ -474,12 +482,12 @@ export default {
 }
 
 .mapboxgl-ctrl-top-right {
-    margin: 55px 10px 0 0;
+    margin: 0px 5px 0 0;
 }
 
 @media (min-width: 768px) {
     .mapboxgl-ctrl-top-right {
-        margin: 10px 0 0 0;
+        margin: 0px 0 0 0;
     }
     .mapboxgl-popup-content {
         text-align: center;
@@ -490,7 +498,7 @@ export default {
 
 @media (min-width: 1024px) {
     .mapboxgl-ctrl-top-right {
-        margin: 10px 10px 0 0;
+        margin: 0px 0px 0 0;
     }
     .mapboxgl-popup-content {
         text-align: center;
@@ -499,4 +507,3 @@ export default {
     }
 }
 </style>
-
