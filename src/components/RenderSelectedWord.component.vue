@@ -52,7 +52,10 @@ export default {
             isPlaying: false,
             isPaused: false,
             loop: false,
-            disablePlayAllOnIOS: !!navigator.platform.match(/iPhone|iPod|iPad/)
+            disablePlayAllOnIOS:
+                !!navigator.platform.match(/iPhone|iPod|iPad/) ||
+                (navigator.platform === "MacIntel" &&
+                    navigator.maxTouchPoints > 1)
         };
     },
 
