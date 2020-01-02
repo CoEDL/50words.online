@@ -5,7 +5,11 @@
                 href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
             >
                 <div class="style-logo-container">
-                    <img :src="logo" class="style-logo" />
+                    <img
+                        :src="logo"
+                        class="style-logo"
+                        alt="Research Unit for Indigenous Languages, Aboriginal Languages, Australian Languages"
+                    />
                 </div>
                 <div class="py-2 style-logo-text text-left">
                     RESEARCH UNIT FOR
@@ -15,7 +19,11 @@
         </div>
         <div class="col-12 py-2 col-md-4 col-xl-3">
             <a href="https://www.firstlanguages.org.au" target="_blank">
-                <img :src="firstLangLogo" class="style-logo" />
+                <img
+                    :src="firstLangLogo"
+                    class="style-logo"
+                    alt="First Languages Australia, First Nations Languages"
+                />
             </a>
         </div>
         <div class="col-12 py-2 col-md-2 col-xl-3">
