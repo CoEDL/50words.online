@@ -121,4 +121,3 @@ export default {
     color: $text-color;
 }
 </style>
-

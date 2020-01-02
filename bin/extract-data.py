@@ -93,6 +93,7 @@ class DataExtractor:
         self.extract_gambay_geographies()
         self.map_gambay_and_aiatsis_geographies()
         self.apply_aiatsis_overrides()
+        self.remove_languages_without_geo_data()
         self.extract_language_data()
         self.build_repository()
         self.write_master_indices()
@@ -233,6 +234,14 @@ class DataExtractor:
                         "selected": False,
                     },
                 }
+
+    def remove_languages_without_geo_data(self):
+        data = {}
+        for (key, item) in self.data.items():
+            geo = item["geometry"]["coordinates"]
+            if geo[0] != "" and geo[1] != "":
+                data[key] = item
+        self.data = data
 
     def extract_language_data(self):
         def parse_row(row):

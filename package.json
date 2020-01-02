@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "develop": "npm install --no-progress && node_modules/.bin/webpack-dev-server --config webpack.develop.js --hot --inline",
-        "build": "npm install --no-progress && node_modules/.bin/webpack --config webpack.production.js",
+        "build:production": "npm install --no-progress && node_modules/.bin/webpack --config webpack.production.js",
         "unitTests": "npm install && node_modules/mocha/bin/mocha -w -r jsdom-global/register 'src/**/*.spec.js'"
     },
     "repository": {
@@ -48,8 +48,10 @@
         "mini-css-extract-plugin": "^0.7.0",
         "mocha": "^6.1.4",
         "node-sass": "^4.12.0",
+        "optimize-css-assets-webpack-plugin": "^5.0.3",
         "raw-loader": "^3.0.0",
         "sass-loader": "^7.1.0",
+        "terser-webpack-plugin": "^2.2.1",
         "uglifyjs-webpack-plugin": "^2.1.3",
         "vue-loader": "^15.6.2",
         "vue-template-compiler": "^2.5.22",

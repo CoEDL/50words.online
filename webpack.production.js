@@ -6,6 +6,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
     target: "web",
@@ -27,11 +29,12 @@ module.exports = {
                     chunks: "all"
                 }
             }
-        }
+        },
+        minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})]
     },
     plugins: [
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"]
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css", "*.LICENSE"]
         }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css"
@@ -60,7 +63,7 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                use: ["vue-style-loader", "css-loader", "sass-loader"]
+                use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
             },
             {
                 test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif)?$/,

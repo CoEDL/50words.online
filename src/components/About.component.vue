@@ -114,7 +114,7 @@
 
                 <p class="my-4">
                     This research project has been approved by the Human Research Ethics
-                    Committee of The University of Melbourne. Project number:1853186.1
+                    Committee of The University of Melbourne. Project number:1853186.2
                 </p>
             </div>
         </div>
@@ -149,11 +149,12 @@ export default {
 }
 
 .style-heading {
-    font-size: 50px;
+    font-size: 30px;
 }
 
 .style-screenshot {
-    width: 80vw;
+    max-width: 80vw;
+    max-height: 500px;
 }
 .style-content-container {
     font-size: 16px;
@@ -161,13 +162,11 @@ export default {
 }
 @media (min-width: 768px) {
     .style-content-container {
-        font-size: 20px;
         padding: 10px;
     }
 }
 @media (min-width: 1024px) {
     .style-content-container {
-        font-size: 22px;
         padding: 20px;
     }
 }

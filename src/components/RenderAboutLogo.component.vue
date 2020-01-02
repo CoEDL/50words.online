@@ -27,7 +27,11 @@
             </a>
         </div>
         <div class="col-12 py-2 col-md-2 col-xl-3">
-            <a href="https://www.unimelb.edu.au" target="_blank" class="float-md-right">
+            <a
+                href="https://www.unimelb.edu.au"
+                target="_blank"
+                class="float-md-right"
+            >
                 <img :src="uomLogo" class="style-logo" />
             </a>
         </div>
@@ -88,5 +92,3 @@ export default {
     }
 }
 </style>
-
-

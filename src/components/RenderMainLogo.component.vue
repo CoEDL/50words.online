@@ -16,7 +16,7 @@
                 <br />INDIGENOUS LANGUAGE
             </div>
         </a>
-        <div class="style-firstlang-logo-container">
+        <div class="style-firstlang-logo-container" v-if="!smallDevice">
             <a href="https://www.firstlanguages.org.au" target="_blank">
                 <img
                     :src="firstLangLogo"
@@ -25,7 +25,7 @@
                 />
             </a>
         </div>
-        <div class="style-uom-logo-container">
+        <div class="style-uom-logo-container" v-if="!smallDevice">
             <a href="https://www.unimelb.edu.au" target="_blank">
                 <img :src="uomLogo" class="style-logo" />
             </a>
@@ -46,6 +46,11 @@ export default {
             uomLogo: require("src/assets/UOMLogo.jpg"),
             firstLangLogo: require("src/assets/firstlanguages.png")
         };
+    },
+    computed: {
+        smallDevice: function() {
+            return window.innerWidth < 700 ? true : false;
+        }
     }
 };
 </script>
@@ -53,7 +58,7 @@ export default {
 <style lang="scss" scoped>
 .style-logo-container {
     position: relative;
-    width: 70px;
+    width: 50px;
 }
 .style-uom-logo-container {
     position: relative;
@@ -87,9 +92,9 @@ export default {
     position: absolute;
     font-family: times, serif;
     top: 0px;
-    width: 210px;
-    left: 80px;
-    font-size: 1.2em;
+    width: 150px;
+    left: 60px;
+    font-size: 0.8em;
     color: white;
 }
 @media (min-width: 768px) {
@@ -150,5 +155,3 @@ export default {
     }
 }
 </style>
-
-
