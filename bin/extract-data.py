@@ -39,8 +39,6 @@ class SheetVerifier:
         self.check(2, 2)
         self.check(3, 0, "Other people who helped to get the list produced")
         self.check(3, 1)
-        self.check(4, 0, "Permission form received (Y/N)?")
-        self.check(4, 1)
         self.check(6, 0, "Date received")
         self.check(6, 1)
         for i in range(8, 65):
@@ -314,6 +312,7 @@ class DataExtractor:
                     },
                     "date_received": sh.row_values(6)[1],
                     "code": sh.row_values(1)[1].strip(),
+                    "weblink": sh.row_values(5)[1].strip(),
                     "words": [],
                     "speaker": {
                         "name": sh.row_values(2)[1].strip(),
