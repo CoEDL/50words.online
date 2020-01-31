@@ -26,7 +26,7 @@
         <div class="row my-3">
             <div class="col">
                 <a
-                    :href="aiatsisLink"
+                    :href="weblink"
                     target="_blank"
                 >See more information about {{data.properties.language.name}} here.</a>
             </div>
@@ -84,10 +84,14 @@ export default {
         };
     },
     computed: {
-        aiatsisLink: function() {
-            return `https://collection.aiatsis.gov.au/austlang/language/${this.data.properties.code.trimRight(
-                "#"
-            )}`;
+        weblink: function() {
+            if (this.data.properties.weblink) {
+                return this.data.properties.weblink;
+            } else {
+                return `https://collection.aiatsis.gov.au/austlang/language/${this.data.properties.code.trimRight(
+                    "#"
+                )}`;
+            }
         },
         dateReceived: function() {
             return moment(
@@ -97,7 +101,6 @@ export default {
         }
     },
     mounted() {
-        // console.log(JSON.stringify(this.data, null, 2));
         this.watchers.language = this.$watch(
             "data.properties.language.audio",
             () => {
