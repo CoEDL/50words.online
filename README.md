@@ -1,12 +1,12 @@
-
 # 50 Words
-- [50 Words](#50-words)
-  - [Updating the production dataset](#updating-the-production-dataset)
-  - [Developing the application](#developing-the-application)
-    - [Producing a data repository to work from in development](#producing-a-data-repository-to-work-from-in-development)
-  - [Creating the repository data for the application](#creating-the-repository-data-for-the-application)
-  - [Building production distributable](#building-production-distributable)
-  - [Rebuilding and restarting the web container](#rebuilding-and-restarting-the-web-container)
+
+-   [50 Words](#50-words)
+    -   [Updating the production dataset](#updating-the-production-dataset)
+    -   [Developing the application](#developing-the-application)
+        -   [Producing a data repository to work from in development](#producing-a-data-repository-to-work-from-in-development)
+    -   [Creating the repository data for the application](#creating-the-repository-data-for-the-application)
+    -   [Building production distributable](#building-production-distributable)
+    -   [Rebuilding and restarting the web container](#rebuilding-and-restarting-the-web-container)
 
 This project aims to provide fifty words in every Indigenous language of Australia. We hope that this will be a useful resource for schools and educational organisations to learn 50 words in their local languages, and for the general public to discover the diversity of languages around Australia.
 
@@ -73,19 +73,15 @@ update source
 > cd /srv/pdsc-50-words
 > git pull
 
-build distributable
-> npm run build
+# build distributable
+> npm run build:production
 
-archive current version (just in case)
+# archive current version (just in case)
 > \sudo rsync -av --exclude repository /srv/50words.online /srv/50words.online-$(date +%Y%m%d)
 
-update application
+# update application
 > \sudo rsync -av --delete *.js --delete *.html --delete *.css dist/ /srv/50words.online/
-```
 
-## Rebuilding and restarting the web container
-
-```
-docker build --rm=true --tag "pdsc/50words.online" .
+# restart the containers
 docker service update 50words_web --force
 ```

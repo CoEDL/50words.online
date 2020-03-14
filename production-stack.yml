@@ -9,7 +9,7 @@ networks:
 
 services:
     web:
-        image: pdsc/50words.online
+        image: nginx:1.15.2-alpine
         deploy:
             replicas: 2
             restart_policy:
@@ -21,5 +21,6 @@ services:
             - "80:80"
         volumes:
             - /srv/50words.online:/var/www/50words.online
+            - $PWD/50words.online.nginx.conf:/etc/nginx/conf.d/50words.online.nginx.conf
         networks:
             - pdscnet
