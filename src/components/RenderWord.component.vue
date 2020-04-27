@@ -1,17 +1,19 @@
 <template>
     <div>
         <div v-if="layout === 'popup'">
-            <div class="flex flex-row cursor-pointer" @click="playWord">
-                <div class="mr-2 pt-4 style-audio-control">
-                    <i class="fas fa-volume-up fa-2x"></i>
-                </div>
-                <div class="flex flex-col">
-                    <div class="text-lg opacity-75">
-                        {{ word.properties.language.name }}
+            <div class="flex flex-col">
+                <div class="flex flex-row cursor-pointer" @click="playWord">
+                    <div class="mr-2 pt-4 style-audio-control">
+                        <i class="fas fa-volume-up fa-2x"></i>
                     </div>
+                    <div class="flex flex-col">
+                        <div class="text-lg opacity-75">
+                            {{ word.properties.language.name }}
+                        </div>
 
-                    <div class="text-3xl my-2">
-                        {{ word.properties.indigenous }}
+                        <div class="text-3xl my-2">
+                            {{ word.properties.indigenous }}
+                        </div>
                     </div>
                 </div>
                 <audio-player-control
@@ -21,7 +23,7 @@
                     v-if="word.properties.audio"
                 />
                 <video-player-control
-                    class="style-video-popup"
+                    class="style-video-popup py-2"
                     :files="word.properties.video"
                     :play="play"
                     :store="store"

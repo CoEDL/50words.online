@@ -1,5 +1,5 @@
 <template>
-    <video ref="videoElement" v-if="videoFiles.length">
+    <video ref="videoElement">
         <source v-for="(file, idx) of videoFiles" :src="file" :key="idx" />
         Your browser does not support the <code>video</code> element.
     </video>
@@ -26,7 +26,7 @@ export default {
     },
     watch: {
         play: function() {
-            this.load();
+            if (n.includes(true)) this.load();
         },
     },
     methods: {
@@ -41,6 +41,7 @@ export default {
                 this.$refs.videoElement.addEventListener(
                     "canplaythrough",
                     () => {
+                        console.log("can play through");
                         if (this.loading) this.playWord();
                     }
                 );
@@ -58,17 +59,11 @@ export default {
         playWord() {
             this.$emit("loaded");
             this.loading = false;
-            if (this.play[0]) this.$refs.videoElement.play();
+            this.$refs.videoElement.play();
         },
-        endedHandler() {
-            if (!this.store) return;
-            const playAll = this.store.state.playAll;
-            setTimeout(() => {
-                if (this.store.state.playAll.state === "next")
-                    this.store.commit("setPlayState", {
-                        state: "next",
-                    });
-            }, 1000);
+        async endedHandler() {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            this.$emit("finishedPlaying");
         },
     },
 };

@@ -53,13 +53,23 @@
                 <i class="fas fa-times fa-2x"></i>
             </div>
         </div>
-        <audio-player-control
-            v-if="playAll.selectedWord"
-            :files="playAll.selectedWord.audio"
-            :play="playAll.play"
-            @loaded="loading = false"
-            @finishedPlaying="flyToWord"
-        />
+        <span v-if="playAll.selectedWord">
+            <audio-player-control
+                v-if="playAll.selectedWord.audio"
+                :files="playAll.selectedWord.audio"
+                :play="playAll.play"
+                @loaded="loading = false"
+                @finishedPlaying="flyToWord"
+            />
+            <video-player-control
+                v-if="playAll.selectedWord.video"
+                class="w-64"
+                :files="playAll.selectedWord.video"
+                :play="playAll.play"
+                @loaded="loading = false"
+                @finishedPlaying="flyToWord"
+            />
+        </span>
     </div>
 </template>
 
@@ -68,6 +78,7 @@ import { orderBy, shuffle, uniq } from "lodash";
 import { randomBytes } from "crypto";
 import { stringify } from "querystring";
 import AudioPlayerControl from "./AudioPlayerControl.component.vue";
+import VideoPlayerControl from "./VideoPlayerControl.component.vue";
 import Vue from "vue";
 import RenderWordComponent from "./RenderWord.component.vue";
 import mapboxgl from "mapbox-gl";
@@ -81,6 +92,7 @@ export default {
     },
     components: {
         AudioPlayerControl,
+        VideoPlayerControl,
     },
     data() {
         return {
@@ -125,6 +137,9 @@ export default {
                 this.isPlaying = false;
                 this.$emit("center-map");
                 return;
+            }
+            if (word.properties.video) {
+                setTimeout(this.flyToWord, 3000);
             }
 
             this.playAll.playedWords.push(word.properties.english);
