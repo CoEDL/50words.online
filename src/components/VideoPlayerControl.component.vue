@@ -29,28 +29,9 @@ export default {
             this.load();
         },
     },
-    mounted() {
-        this.$refs.videoElement.addEventListener("canplay", () => {
-            this.$emit("ready");
-        });
-        this.watchers.play = this.$watch("play", (n, o) => {
-            this.playWord();
-        });
-        this.watchers.files = this.$watch("files", this.load);
-        this.load();
-
-        this.$refs.videoElement.addEventListener("ended", this.endedHandler);
-        this.$refs.videoElement.addEventListener("error", this.endedHandler);
-    },
-    beforeDestroy() {
-        if (this.watchers.files) this.watchers.files();
-        this.watchers.play();
-
-        this.$refs.videoElement.removeEventListener("ended", this.endedHandler);
-        this.$refs.videoElement.removeEventListener("error", this.endedHandler);
-    },
     methods: {
         load() {
+            this.loading = true;
             if (typeof this.files === "string" && this.files) {
                 this.videoFiles = JSON.parse(this.files);
             } else {
