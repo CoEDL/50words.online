@@ -1,69 +1,68 @@
 <template>
     <div>
         <div
-            class="style-panel style-collapsed-panel"
-            :class="{'style-collapsed-panel': isCollapsed, 'style-open-panel': !isCollapsed}"
+            class="style-panel flex flex-col pt-2 md:pt-1"
+            :class="{
+                'style-collapsed-panel': isCollapsed,
+                'w-full style-open-panel': !isCollapsed,
+            }"
         >
-            <div class="row">
-                <div class="col">
-                    <el-button type="text" class="px-2 style-button" @click="toggleCollapse">
+            <div class="flex flex-row mb-4">
+                <div class="lg:pt-2">
+                    <el-button
+                        type="text"
+                        class="text-white pl-3 -mt-2 md:-mt-1"
+                        @click="toggleCollapse"
+                    >
                         <span v-show="isCollapsed">
                             <i class="fal fa-info-circle fa-2x"></i>
                         </span>
-                        <span v-show="!isCollapsed" class="px-2">
+                        <span v-show="!isCollapsed">
                             <i class="fal fa-arrow-left fa-2x"></i>
                         </span>
                     </el-button>
                 </div>
-            </div>
 
-            <div class="px-4 style-content-section" v-if="showContent">
-                <div class="row">
-                    <div class="col">
-                        <a
-                            href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
-                        >
-                            <img :src="logo" class="style-logo py-2" />
-                        </a>
-                    </div>
+                <div class="" v-if="showContent">
+                    <a
+                        href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+                    >
+                        <img :src="logo" class="h-16 lg:pt-2" />
+                    </a>
                 </div>
-                <div class="row">
-                    <div class="col text-center">
-                        <h1 class="style-heading">50 Words</h1>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 style-more-information text-justify">
-                        <p>
-                            This project aims to provide fifty words in every Indigenous language of Australia.
-                            We hope that this will be a useful resource for schools and educational organisations to
-                            learn 50 words in their local languages, and for the general public to discover the diversity of
-                            languages around Australia.
-                        </p>
-                        <p>
-                            All words, audio and video recordings are provided by
-                            language speakers and are included here with permission. Australian Indigenous languages
-                            have many thousands of words but we are displaying just some on this site, with audio or video.
-                            Once you select a language (in orange) on this page you will get a link to "See more
-                            information about" that language.
-                        </p>
-                        <p class="text-center">
-                            <router-link to="/about">find out more about this site</router-link>
-                        </p>
-                    </div>
-                </div>
-                <span v-if="!showLanguageData">
-                    <div class="row">
-                        <div class="col">
-                            <word-list-component
-                                v-on:collapse-information-panel="collapseInformationPanel"
-                            />
-                        </div>
-                    </div>
-                </span>
-                <span v-else>
-                    <render-language-information :data="languageData" />
-                </span>
+            </div>
+            <div
+                class="flex flex-col mx-4 style-content-section"
+                v-if="showContent"
+            >
+                <div class="text-3xl text-center">50 Words</div>
+                <p class="my-2">
+                    This project aims to provide fifty words in every Indigenous
+                    language of Australia. We hope that this will be a useful
+                    resource for schools and educational organisations to learn
+                    50 words in their local languages, and for the general
+                    public to discover the diversity of languages around
+                    Australia.
+                </p>
+                <p class="my-2">
+                    All words, audio and video recordings are provided by
+                    language speakers and are included here with permission.
+                    Australian Indigenous languages have many thousands of words
+                    but we are displaying just some on this site, with audio or
+                    video. Once you select a language (in orange) on this page
+                    you will get a link to "See more information about" that
+                    language.
+                </p>
+                <p class="text-center my-2 text-xl">
+                    <router-link to="/about" class="hover:text-orange-200"
+                        >find out more about this site</router-link
+                    >
+                </p>
+                <word-list-component
+                    v-if="!showLanguageData"
+                    v-on:collapse-information-panel="collapseInformationPanel"
+                />
+                <render-language-information :data="languageData" v-else />
             </div>
         </div>
     </div>
@@ -77,7 +76,7 @@ import { loadLanguageData } from "src/data-loader.service.js";
 export default {
     components: {
         RenderLanguageInformation,
-        WordListComponent
+        WordListComponent,
     },
     data() {
         return {
@@ -86,7 +85,7 @@ export default {
             showContent: false,
             showLanguageData: false,
             languageData: {},
-            logo: require("src/assets/logo.png")
+            logo: require("src/assets/logo.png"),
         };
     },
     computed: {
@@ -94,7 +93,7 @@ export default {
             if (!this.$store.state.selectedLanguage)
                 this.showLanguageData = false;
             return this.$store.state.selectedLanguage;
-        }
+        },
     },
     mounted() {
         this.watchers.selectedLanguage = this.$watch(
@@ -107,7 +106,7 @@ export default {
                         this.showContent = true;
                     }, 400);
                     this.languageData = await loadLanguageData({
-                        code: this.selectedLanguage.code
+                        code: this.selectedLanguage.code,
                     });
                 }
             }
@@ -134,21 +133,19 @@ export default {
                 this.isCollapsed = true;
                 this.showContent = false;
             }
-        }
-    }
+        },
+    },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "assets/variables.scss";
-
 .style-panel {
     position: fixed;
     z-index: 2;
     top: 0;
     left: 0;
     height: 100vh;
-    background-color: $primary-color;
     transition: 0.3s;
 }
 
@@ -158,36 +155,17 @@ export default {
 }
 
 .style-open-panel {
-    width: 100vw;
+    background-color: $primary-color;
 }
-@media only screen and (min-width: 600px) {
+
+@media only screen and (min-width: 768px) {
     .style-open-panel {
         width: calc(100vw * 0.5);
-        max-width: 500px;
         transition-timing-function: ease-in;
     }
 }
 .style-content-section {
-    height: calc(100vh - 100px);
+    height: calc(100vh - 110px);
     overflow: scroll;
 }
-
-.style-logo {
-    width: 100%;
-}
-
-.style-button {
-    color: #000;
-}
-
-.style-more-information {
-    padding: 15px;
-    font-size: 1.2em;
-}
-
-.style-link {
-    color: $text-color;
-}
 </style>
-
-

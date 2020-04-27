@@ -16,7 +16,7 @@ module.exports = {
     entry: ["./src/vendor.js", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[contenthash].bundle.js"
+        filename: "[name].[contenthash].bundle.js",
     },
     optimization: {
         moduleIds: "hashed",
@@ -26,50 +26,59 @@ module.exports = {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
                     name: "vendors",
-                    chunks: "all"
-                }
-            }
+                    chunks: "all",
+                },
+            },
         },
-        minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})]
+        minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})],
     },
     plugins: [
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ["*.js", "*.css", "*.LICENSE"]
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css", "*.LICENSE"],
         }),
         new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css"
+            filename: "[name].[contenthash].css",
         }),
         new HtmlWebpackPlugin({
             title: "50words",
-            template: "./src/index.html"
+            template: "./src/index.html",
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
     ],
     module: {
         rules: [
             {
                 test: /\.vue$/,
-                loader: "vue-loader"
+                loader: "vue-loader",
             },
             {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                query: { compact: false }
+                query: { compact: false },
             },
             {
                 test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, "css-loader"]
+                use: [
+                    "vue-style-loader",
+                    { loader: "css-loader", options: { importLoaders: 1 } },
+                    "postcss-loader",
+                ],
             },
             {
                 test: /\.scss$/,
-                use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+                use: [
+                    "vue-style-loader",
+                    { loader: "css-loader", options: { importLoaders: 1 } },
+                    "postcss-loader",
+                    "sass-loader",
+                ],
             },
             {
                 test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif)?$/,
-                loader: "file-loader?name=res/[name].[ext]?[hash]"
-            }
-        ]
+                loader: "file-loader?name=res/[name].[ext]?[hash]",
+            },
+        ],
     },
     resolve: {
         alias: {
@@ -80,7 +89,7 @@ module.exports = {
             directives: path.resolve(__dirname, "src/directives"),
             routes: path.resolve(__dirname, "src/routes/"),
             services: path.resolve(__dirname, "src/services"),
-            store: path.resolve(__dirname, "src/store")
-        }
-    }
+            store: path.resolve(__dirname, "src/store"),
+        },
+    },
 };

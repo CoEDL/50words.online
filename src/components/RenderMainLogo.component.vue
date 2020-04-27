@@ -1,33 +1,35 @@
 <template>
     <div>
-        <div class="styleBackground"></div>
-        <a
-            href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
-        >
-            <div class="style-logo-container">
-                <img
-                    :src="logo"
-                    class="style-logo"
-                    alt="Research Unit for Indigenous Languages, Aboriginal Languages, Australian Languages"
-                />
-            </div>
-            <div class="style-logo-text">
-                RESEARCH UNIT FOR
-                <br />INDIGENOUS LANGUAGE
-            </div>
-        </a>
-        <div class="style-firstlang-logo-container" v-if="!smallDevice">
+        <div class="style-ruil-logo-container style-background mt-2">
+            <a
+                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+            >
+                <div class="flex flex-row">
+                    <img
+                        :src="logo"
+                        class="my-auto h-8 md:h-16 lg:h-20"
+                        alt="Research Unit for Indigenous Languages, Aboriginal Languages, Australian Languages"
+                    />
+                    <div
+                        class="pl-1 style-logo-text text-xs md:text-xl lg:text-2xl text-white"
+                    >
+                        RESEARCH UNIT FOR
+                        <br />INDIGENOUS LANGUAGE
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="hidden md:block style-firstlang-logo-container">
             <a href="https://www.firstlanguages.org.au" target="_blank">
                 <img
                     :src="firstLangLogo"
-                    class="style-logo"
                     alt="First Languages Australia, First Nations Languages"
                 />
             </a>
         </div>
-        <div class="style-uom-logo-container" v-if="!smallDevice">
+        <div class="hidden md:block style-uom-logo-container">
             <a href="https://www.unimelb.edu.au" target="_blank">
-                <img :src="uomLogo" class="style-logo" />
+                <img :src="uomLogo" />
             </a>
         </div>
     </div>
@@ -37,120 +39,55 @@
 export default {
     props: {
         styleBackground: {
-            type: Boolean
-        }
+            type: Boolean,
+        },
     },
     data() {
         return {
             logo: require("src/assets/logo-image.png"),
             uomLogo: require("src/assets/UOMLogo.jpg"),
-            firstLangLogo: require("src/assets/firstlanguages.png")
+            firstLangLogo: require("src/assets/firstlanguages.png"),
         };
     },
-    computed: {
-        smallDevice: function() {
-            return window.innerWidth < 700 ? true : false;
-        }
-    }
 };
 </script>
 
 <style lang="scss" scoped>
-.style-logo-container {
-    position: relative;
-    width: 50px;
-}
-.style-uom-logo-container {
-    position: relative;
-    top: calc(100vh - 210px);
-    left: calc(100vw - 138px);
-    width: 80px;
-}
-
-.style-firstlang-logo-container {
-    position: relative;
-    top: calc(100vh - 210px);
-    left: calc(100vw - 138px);
-    width: 80px;
-}
-
-.style-logo {
-    display: inline;
-    width: 100%;
-}
-
-.style-logo-text-background {
-    position: absolute;
+.style-background {
     background-color: #191a1a;
-    width: 280px;
-    height: 48px;
-    top: 0px;
-    left: 0px;
+}
+
+.style-ruil-logo-container {
+    position: fixed;
+    left: 55px;
 }
 
 .style-logo-text {
-    position: absolute;
     font-family: times, serif;
-    top: 0px;
-    width: 150px;
-    left: 60px;
-    font-size: 0.8em;
-    color: white;
 }
+// @media (min-width: 768px) {
+//     .style-uom-logo-container {
+//         position: fixed;
+//         top: calc(100vh - 180px);
+//         left: calc(100vw - 90px);
+//     }
+//     .style-firstlang-logo-container {
+//         position: fixed;
+//         top: calc(100vh - 200px);
+//         left: calc(100vw - 90px);
+//     }
+// }
 @media (min-width: 768px) {
     .style-uom-logo-container {
-        position: relative;
-        top: calc(100vh - 190px);
-        left: calc(100vw - 140px);
-        width: 80px;
-    }
-    .style-firstlang-logo-container {
-        position: relative;
-        top: calc(100vh - 190px);
-        left: calc(100vw - 140px);
-        width: 80px;
-    }
-}
-@media (min-width: 1024px) {
-    .style-logo-container {
-        position: relative;
-        width: 100px;
-    }
-
-    .style-logo {
-        display: inline;
-        width: 100%;
-    }
-
-    .style-logo-text-background {
-        position: absolute;
-        background-color: #191a1a;
-        width: 420px;
-        height: 75px;
-        top: 0px;
-        left: 0px;
-        opacity: 0.5;
-    }
-
-    .style-logo-text {
-        position: absolute;
-        font-family: times, serif;
-        width: 310px;
-        top: 0px;
-        left: 110px;
-        font-size: 1.4em;
-        color: white;
-    }
-    .style-uom-logo-container {
-        position: relative;
-        top: calc(100vh - 269px);
-        left: calc(100vw - 182px);
+        position: fixed;
+        top: calc(100vh - 150px);
+        left: calc(100vw - 130px);
         width: 120px;
     }
     .style-firstlang-logo-container {
-        position: relative;
-        top: calc(100vh - 270px);
-        left: calc(100vw - 181px);
+        position: fixed;
+        top: calc(100vh - 200px);
+        left: calc(100vw - 130px);
         width: 118px;
     }
 }

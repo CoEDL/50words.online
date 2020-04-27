@@ -14,7 +14,7 @@ module.exports = {
     entry: ["./src/vendor.js", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[hash].bundle.js"
+        filename: "[name].[hash].bundle.js",
     },
     devServer: {
         contentBase: path.join(__dirname, "dist"),
@@ -25,47 +25,56 @@ module.exports = {
         watchOptions: {
             watch: true,
             poll: 1000,
-            ignored: ["node_modules", "dist"]
-        }
+            ignored: ["node_modules", "dist"],
+        },
     },
     plugins: [
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"]
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"],
         }),
         new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css"
+            filename: "[name].[contenthash].css",
         }),
         new HtmlWebpackPlugin({
             title: "50words",
-            template: "./src/index.html"
+            template: "./src/index.html",
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
     ],
     module: {
         rules: [
             {
                 test: /\.vue$/,
-                loader: "vue-loader"
+                loader: "vue-loader",
             },
             {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                query: { compact: false }
+                query: { compact: false },
             },
             {
                 test: /\.css$/,
-                use: ["vue-style-loader", "css-loader"]
+                use: [
+                    "vue-style-loader",
+                    { loader: "css-loader", options: { importLoaders: 1 } },
+                    "postcss-loader",
+                ],
             },
             {
                 test: /\.scss$/,
-                use: ["vue-style-loader", "css-loader", "sass-loader"]
+                use: [
+                    "vue-style-loader",
+                    { loader: "css-loader", options: { importLoaders: 1 } },
+                    "postcss-loader",
+                    "sass-loader",
+                ],
             },
             {
                 test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif)?$/,
-                loader: "file-loader?name=res/[name].[ext]?[hash]"
-            }
-        ]
+                loader: "file-loader?name=res/[name].[ext]?[hash]",
+            },
+        ],
     },
     resolve: {
         alias: {
@@ -76,7 +85,7 @@ module.exports = {
             directives: path.resolve(__dirname, "src/directives"),
             routes: path.resolve(__dirname, "src/routes/"),
             services: path.resolve(__dirname, "src/services"),
-            store: path.resolve(__dirname, "src/store")
-        }
-    }
+            store: path.resolve(__dirname, "src/store"),
+        },
+    },
 };

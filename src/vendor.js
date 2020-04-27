@@ -2,7 +2,6 @@
 
 import "element-ui/lib/theme-chalk/index.css";
 import "mapbox-gl/dist/mapbox-gl.css";
-import "bootstrap/dist/css/bootstrap.css";
 import "assets/global-styles.scss";
 
 import mapboxgl from "mapbox-gl";

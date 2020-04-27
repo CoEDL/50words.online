@@ -13,62 +13,59 @@ export default {
             required: true
         },
         play: {
-            type: Boolean | undefined,
+            type: Array,
             required: true
         },
         store: Object | undefined
     },
     data() {
         return {
-            watchers: {},
-            audioFiles: []
+            audioFiles: [],
+            loading: false
         };
     },
-    mounted() {
-        this.$refs.audioElement.addEventListener("canplay", () => {
-            this.$emit("ready");
-        });
-        this.watchers.play = this.$watch("play", (n, o) => {
-            this.playWord();
-        });
-        this.watchers.files = this.$watch("files", this.load);
-        this.load();
-
-        this.$refs.audioElement.addEventListener("ended", this.endedHandler);
-        this.$refs.audioElement.addEventListener("error", this.endedHandler);
-    },
-    beforeDestroy() {
-        if (this.watchers.files) this.watchers.files();
-        this.watchers.play();
-
-        this.$refs.audioElement.removeEventListener("ended", this.endedHandler);
-        this.$refs.audioElement.removeEventListener("error", this.endedHandler);
+    watch: {
+        play: function(n, o) {
+            if (n.includes(true)) this.load();
+        }
     },
     methods: {
         load() {
+            this.loading = true;
             if (typeof this.files === "string" && this.files) {
                 this.audioFiles = JSON.parse(this.files);
             } else {
                 this.audioFiles = [...this.files];
             }
-            this.$refs.audioElement.load();
+            setTimeout(() => {
+                this.$refs.audioElement.addEventListener(
+                    "canplaythrough",
+                    () => {
+                        if (this.loading) this.playWord();
+                    }
+                );
+                this.$refs.audioElement.addEventListener(
+                    "ended",
+                    this.endedHandler
+                );
+                this.$refs.audioElement.addEventListener(
+                    "error",
+                    this.endedHandler
+                );
+                this.$refs.audioElement.load();
+            }, 200);
         },
         playWord() {
+            this.$emit("loaded");
+            this.loading = false;
             this.$refs.audioElement.play();
         },
         async endedHandler() {
-            if (!this.store) return;
-            const playAll = this.store.state.playAll;
-            setTimeout(() => {
-                if (this.store.state.playAll.state === "next")
-                    this.store.commit("setPlayState", {
-                        state: "next"
-                    });
-            }, 1000);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            this.$emit("finishedPlaying");
         }
     }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

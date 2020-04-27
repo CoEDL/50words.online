@@ -4,6 +4,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 Vue.use(Vuex);
 import { loadWordData } from "./data-loader.service";
+import { cloneDeep } from "lodash";
 
 const configuration = {
     strict: process.env.NODE_ENV !== "production",
@@ -22,15 +23,15 @@ const configuration = {
             state.selectedLanguage = payload;
         },
         setSelectedWord(state, payload) {
-            state.selectedWord = payload.word.map(w => {
+            state.selectedWord = payload.word.map((w) => {
                 const language = state.languages.filter(
-                    l => l.code === w.code
+                    (l) => l.code === w.code
                 )[0];
                 return {
                     ...w,
                     language: language.name,
                     lat: language.lat,
-                    lng: language.lng
+                    lng: language.lng,
                 };
             });
         },
@@ -43,35 +44,17 @@ const configuration = {
         show(state, payload) {
             state.show = payload;
         },
-        setPlayState(state, payload) {
-            if (state.playAll.state === "ready" && payload.state !== "next")
-                return;
-            if (
-                state.playAll.state === "next" &&
-                !["next", "paused", "stopped"].includes(payload.state)
-            )
-                return;
-            if (state.playAll.state === "stopped" && payload.state !== "ready")
-                return;
-            // console.log(
-            //     `old state: ${state.playAll.state}, new state: ${payload.state}`
-            // );
-            state.playAll = {
-                ...state.playAll,
-                ...payload
-            };
-        }
     },
     actions: {
         async loadWord({ state, commit }, payload) {
             // console.log("loadWord", JSON.stringify(payload, null, true));
             let word = await loadWordData({
                 words: state.words,
-                word: payload.word
+                word: payload.word,
             });
             console.log("Loaded data for word:", payload.word);
             word = word.filter(
-                w =>
+                (w) =>
                     (w.properties.audio && w.properties.audio.length) ||
                     (w.properties.video && w.properties.video.length)
             );
@@ -79,12 +62,19 @@ const configuration = {
             commit("setSelectedWord", { word });
             if (payload.triggerPlayAll) {
                 commit("setPlayState", {
-                    state: "next"
+                    state: "next",
                 });
             }
-        }
+        },
     },
-    getters: {}
+    getters: {
+        getWordList: (state) => () => {
+            return cloneDeep(state.words);
+        },
+        getSelectedWord: (state) => () => {
+            return cloneDeep(state.selectedWord);
+        },
+    },
 };
 export const store = new Vuex.Store(configuration);
 
@@ -95,6 +85,5 @@ function reset() {
         languages: [],
         selectedLanguage: undefined,
         selectedWord: undefined,
-        playAll: { state: "ready", loop: false }
     };
 }

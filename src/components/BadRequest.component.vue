@@ -1,11 +1,7 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center fullscreen">
-        <div class="row space-bottom">
-            <div class="col text-center">
-                <div class="row">
-                    <div class="col">Well this is awkward... something went wrong!</div>
-                </div>
-            </div>
+    <div class="flex flex-col w-full my-64 justify-center items-center">
+        <div class="text-2xl">
+            Well this is awkward... something went wrong!
         </div>
     </div>
 </template>
@@ -14,7 +10,7 @@
 export default {
     data() {
         return {};
-    }
+    },
 };
 </script>
 

@@ -1,85 +1,76 @@
 <template>
     <div>
-        <div class="style-word-row">
-            <span v-if="layout === 'popup'">
-                <div class="row">
-                    <div class="col-12">
-                        <el-button
-                            type="text"
-                            class="style-button px-3 style-audio-control"
-                            @click="playWord"
-                        >
-                            <i class="fas fa-volume-up fa-2x"></i>
-                        </el-button>
-                        <span v-if="word.properties.audio">
-                            <audio-player-control
-                                :files="word.properties.audio"
-                                :play="play"
-                                :store="store"
-                                v-on:ready="ready"
-                            />
-                        </span>
-                        <span class="style-english">{{word.properties.language.name}}</span>
-                        <div v-if="word.properties.video">
-                            <video-player-control
-                                class="style-video-popup"
-                                :files="word.properties.video"
-                                :play="play"
-                                :store="store"
-                                v-on:ready="ready"
-                            />
-                        </div>
+        <div v-if="layout === 'popup'">
+            <div class="flex flex-row cursor-pointer" @click="playWord">
+                <div class="mr-2 pt-4 style-audio-control">
+                    <i class="fas fa-volume-up fa-2x"></i>
+                </div>
+                <div class="flex flex-col">
+                    <div class="text-lg opacity-75">
+                        {{ word.properties.language.name }}
+                    </div>
+
+                    <div class="text-3xl my-2">
+                        {{ word.properties.indigenous }}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <span class="style-indigenous">{{word.properties.indigenous}}</span>
+                <audio-player-control
+                    :files="word.properties.audio"
+                    :play="play"
+                    :store="store"
+                    v-if="word.properties.audio"
+                />
+                <video-player-control
+                    class="style-video-popup"
+                    :files="word.properties.video"
+                    :play="play"
+                    :store="store"
+                    v-if="word.properties.video"
+                />
+            </div>
+        </div>
+        <div v-if="layout !== 'popup'">
+            <div
+                class="flex flex-row border-b border-gray-600 md:py-2 cursor-pointer"
+                @click="playWord"
+            >
+                <div
+                    class="mr-2 pt-4 md:pt-6 style-audio-control"
+                    :class="{
+                        'transition duration-500 ease-in-out blinking ': loading,
+                    }"
+                >
+                    <i class="fas fa-volume-up fa-2x"></i>
+                </div>
+                <div class="flex flex-col py-2">
+                    <div
+                        class="text-xs md:text-base text-gray-700"
+                        v-if="word.english_alternate"
+                    >
+                        {{ word.english_alternate }}
+                    </div>
+                    <div class="text-xs  md:text-base text-gray-700" v-else>
+                        {{ word.english }}
+                    </div>
+                    <div class="text-lg md:text-2xl text-lowercase">
+                        {{ word.indigenous }}
+                    </div>
+                    <audio-player-control
+                        :files="word.audio"
+                        :play="play"
+                        v-if="word.audio"
+                        @loaded="loading = false"
+                    />
+                    <div :class="{ 'style-row': word.video }" v-if="word.video">
+                        <video-player-control
+                            class="style-video"
+                            :files="word.video"
+                            :play="play"
+                            @loaded="loading = false"
+                        />
                     </div>
                 </div>
-            </span>
-            <span v-if="layout !== 'popup'">
-                <div class="my-4">
-                    <div class="row">
-                        <div class="col-2">
-                            <el-button
-                                type="text"
-                                class="style-button px-3 style-audio-control"
-                                @click="playWord"
-                                :disabled="playDisabled"
-                            >
-                                <i class="fas fa-volume-up fa-2x"></i>
-                            </el-button>
-                            <span v-if="word.audio">
-                                <audio-player-control
-                                    :files="word.audio"
-                                    :play="play"
-                                    v-on:ready="ready"
-                                />
-                            </span>
-                        </div>
-                        <div class="col-10">
-                            <div class="row" :class="{ 'style-row': word.audio }">
-                                <div
-                                    class="col-12 style-english"
-                                    v-if="word.english_alternate"
-                                >{{ word.english_alternate }}</div>
-                                <div class="col-12 style-english" v-else>{{ word.english}}</div>
-                                <div
-                                    class="col-12 style-indigenous text-lowercase"
-                                >{{ word.indigenous }}</div>
-                            </div>
-                            <div class="row" :class="{ 'style-row': word.video }" v-if="word.video">
-                                <video-player-control
-                                    class="style-video"
-                                    :files="word.video"
-                                    :play="play"
-                                    v-on:ready="ready"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </span>
+            </div>
         </div>
     </div>
 </template>
@@ -91,55 +82,42 @@ import VideoPlayerControl from "./VideoPlayerControl.component.vue";
 export default {
     components: {
         AudioPlayerControl,
-        VideoPlayerControl
+        VideoPlayerControl,
     },
     props: {
-        layout: String,
-        word: Object,
-        store: Object | undefined
+        layout: {
+            type: String,
+        },
+        word: {
+            type: Object,
+        },
+        store: {
+            type: Object | undefined,
+        },
+        playOnMount: { type: Boolean, default: true },
     },
     data() {
         return {
-            playDisabled: true,
-            play: [false]
+            play: [false],
+            loading: false,
         };
     },
-    methods: {
-        ready() {
-            this.playDisabled = false;
-            if (this.layout === "popup")
-                setTimeout(() => {
-                    this.playWord();
-                }, 500);
-        },
-        playWord() {
-            this.play = [true];
+    mounted() {
+        if (this.layout === "popup" && this.playOnMount) {
+            this.playWord();
         }
-    }
+    },
+    methods: {
+        playWord() {
+            this.loading = true;
+            this.play = [true];
+        },
+    },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "assets/variables.scss";
-
-.style-word-row {
-    line-height: 40px;
-}
-
-.style-english {
-    opacity: 0.8;
-    font-size: 1.3em;
-}
-
-.style-indigenous {
-    // border-bottom: 1px solid #000;
-    font-size: 2em;
-}
-
-.style-row {
-    border-bottom: 1px solid #000;
-}
-
 .style-video-popup {
     width: 150px;
     max-width: 150px;
@@ -153,5 +131,14 @@ export default {
 
 .style-video {
     width: 100%;
+}
+
+.blinking {
+    animation: blinkingBackground 0.8s infinite;
+}
+@keyframes blinkingBackground {
+    0% {
+        @apply text-orange-400;
+    }
 }
 </style>

@@ -1,39 +1,45 @@
 <template>
-    <div>
-        <div class="row my-4">
-            <div class="col">
-                <el-select
-                    v-model="filterErrorType"
-                    clearable
-                    placeholder="Show only the following error types"
-                    class="style-select"
-                    @change="filterErrors"
-                >
-                    <el-option
-                        v-for="(item, idx) in errorTypes"
-                        :key="idx"
-                        :label="item"
-                        :value="item"
-                    ></el-option>
-                </el-select>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <el-table
-                    :data="errors.errors"
-                    :height="tableHeight"
-                    :default-sort="{ prop: 'level', order: 'ascending'}"
-                    :row-style="setRowColour"
-                >
-                    <el-table-column type="index" width="50"></el-table-column>
+    <div class="flex flex-col">
+        <el-select
+            v-model="filterErrorType"
+            clearable
+            placeholder="Show only the following error types"
+            class="style-select"
+            @change="filterErrors"
+        >
+            <el-option
+                v-for="(item, idx) in errorTypes"
+                :key="idx"
+                :label="item"
+                :value="item"
+            ></el-option>
+        </el-select>
+        <el-table
+            :data="errors"
+            :height="tableHeight"
+            :default-sort="{ prop: 'level', order: 'ascending' }"
+            :row-style="setRowColour"
+        >
+            <el-table-column type="index" width="50"></el-table-column>
 
-                    <el-table-column prop="type" label="Type" width="300" sortable></el-table-column>
-                    <el-table-column prop="level" label="Level" width="100" sortable></el-table-column>
-                    <el-table-column prop="msg" label="Message" sortable></el-table-column>
-                </el-table>
-            </div>
-        </div>
+            <el-table-column
+                prop="type"
+                label="Type"
+                width="300"
+                sortable
+            ></el-table-column>
+            <el-table-column
+                prop="level"
+                label="Level"
+                width="100"
+                sortable
+            ></el-table-column>
+            <el-table-column
+                prop="msg"
+                label="Message"
+                sortable
+            ></el-table-column>
+        </el-table>
     </div>
 </template>
 
@@ -43,26 +49,26 @@ import { uniq } from "lodash";
 export default {
     props: {
         errors: {
-            type: Object,
-            required: true
+            type: Array,
+            required: true,
         },
         data: {
             type: Object,
-            required: true
+            required: true,
         },
         tableHeight: {
             type: Number,
-            required: true
-        }
+            required: true,
+        },
     },
     data() {
         return {
             filterErrorType: undefined,
-            errorTypes: []
+            errorTypes: [],
         };
     },
     async beforeMount() {
-        this.errorTypes = uniq(this.errors.errors.map(e => e.type)).sort();
+        this.errorTypes = uniq(this.errors.map((e) => e.type)).sort();
     },
     methods: {
         filterErrors() {
@@ -70,7 +76,7 @@ export default {
                 this.errors = { ...this.data.errors };
             } else {
                 this.errors.errors = this.data.errors.errors.filter(
-                    e => e.type === this.filterErrorType
+                    (e) => e.type === this.filterErrorType
                 );
             }
         },
@@ -80,8 +86,8 @@ export default {
             } else if (row.row.level === "warning") {
                 return { color: "#e67e22" };
             }
-        }
-    }
+        },
+    },
 };
 </script>
 

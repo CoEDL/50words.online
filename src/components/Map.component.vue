@@ -1,20 +1,43 @@
 <template>
     <div>
         <div id="map" class="style-map"></div>
-        <zoom-to-language-component
-            v-if="!selectedWord && showZoomToLanguage"
-            class="style-language-finder"
-            v-on:zoom-to-language="zoomToLanguage"
+        <data-selector-component class="style-data-selector hidden md:block" />
+        <render-selected-word-component
+            v-if="map && selectedWord"
+            :map="map"
+            class="style-render-selected-word"
+            @center-map="centerMap"
         />
-        <div class="style-map-reset">
-            <el-button
-                type="default"
-                @click="centerMap"
-                size="mini"
-                class="style-reset-button"
-            >
-                <i class="fas fa-crosshairs style-reset-button-image"></i>
-            </el-button>
+
+        <zoom-to-language-component
+            v-if="!selectedWord"
+            class="style-language-finder hidden md:block"
+            @zoom-to-language="zoomToLanguage"
+        />
+        <div class="style-map-reset pt-2 md:pt-0">
+            <div class="flex flex-col">
+                <div>
+                    <el-button
+                        type="default"
+                        @click="centerMap"
+                        size="mini"
+                        class="style-reset-button"
+                    >
+                        <i class="fas fa-crosshairs style-button-image"></i>
+                    </el-button>
+                </div>
+                <div class="h-4"></div>
+                <div>
+                    <el-button
+                        type="default"
+                        @click="toggleLayerWithoutData"
+                        size="mini"
+                        class="style-reset-button"
+                    >
+                        <i class="fas fa-layer-group style-button-image"></i>
+                    </el-button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -26,6 +49,9 @@ import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
 import RenderWordComponent from "components/RenderWord.component.vue";
 import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
+import DataSelectorComponent from "./DataSelector.component.vue";
+import RenderSelectedWordComponent from "./RenderSelectedWord.component.vue";
+
 Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
@@ -35,22 +61,21 @@ import { throttle, map, orderBy, shuffle, uniq } from "lodash";
 export default {
     components: {
         RenderWordComponent,
-        ZoomToLanguageComponent
+        ZoomToLanguageComponent,
+        DataSelectorComponent,
+        RenderSelectedWordComponent,
     },
     data() {
         return {
             watchers: {},
-            played: {
-                thisWord: [],
-                allWords: []
-            },
             map: undefined,
             popup: undefined,
             mediaElement: {
                 audio: false,
                 video: false,
-                files: []
-            }
+                files: [],
+            },
+            emptyWordsLanguageLayerShowing: false,
         };
     },
     computed: {
@@ -69,17 +94,17 @@ export default {
         playAll: function() {
             return this.$store.state.playAll;
         },
-        showZoomToLanguage: function() {
+        largeDevice: function() {
             return window.innerWidth < 768 ? false : true;
-        }
+        },
     },
     mounted() {
         this.renderMap();
-        this.watchers.words = this.$watch("words", d => {
+        this.watchers.words = this.$watch("words", (d) => {
             if (d) {
                 this.played = {
                     allWords: [],
-                    thisWord: []
+                    thisWord: [],
                 };
                 this.renderWordLayer();
             } else {
@@ -96,35 +121,78 @@ export default {
         window.removeEventListener("resize", this.centerMap);
     },
     methods: {
-        centerMap() {
+        async centerMap() {
             if (this.popup) this.popup.remove();
-            this.map.fitBounds([
-                [96, -45],
-                [168, -8]
-            ]);
+
+            let position;
+            if ("geolocation" in navigator) {
+                try {
+                    position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => resolve(position),
+                            (error) => reject(error)
+                        );
+                    });
+                } catch (error) {
+                    centerCountry({ map: this.map });
+                }
+                // const latitude  = position.coords.latitude;
+                // const longitude = position.coords.longitude;
+
+                // Melbourne
+                // position = [144.948743, -37.790136];
+                if (position) {
+                    position = [
+                        position.coords.longitude,
+                        position.coords.latitude,
+                    ];
+                    centerLocation({ map: this.map, position });
+                } else {
+                    centerCountry({ map: this.map });
+                }
+            } else {
+                centerCountry({ map: this.map });
+            }
+
+            function centerCountry({ map }) {
+                map.fitBounds([
+                    [96, -45],
+                    [168, -8],
+                ]);
+            }
+
+            function centerLocation({ map, position }) {
+                map.flyTo({
+                    center: position,
+                    zoom: window.innerwidth < 768 ? 8 : 6,
+                    bearing: 0,
+                });
+            }
         },
         renderMap() {
             this.map = new mapboxgl.Map({
                 container: "map",
                 style: "mapbox://styles/mapbox/dark-v10",
-                center: [0, 0]
+                center: [0, 0],
             });
-            this.map.addControl(
-                new mapboxgl.NavigationControl({
-                    showCompass: false
-                })
-            );
+            if (this.largeDevice) {
+                this.map.addControl(
+                    new mapboxgl.NavigationControl({
+                        showCompass: false,
+                    })
+                );
+            }
             // this.map.addControl(new mapboxgl.FullscreenControl());
             this.centerMap();
             this.map.on("load", () => {
                 this.renderLanguageLayer();
             });
-            this.map.on("click", "languages", e => {
+            this.map.on("click", "languages", (e) => {
                 this.$store.commit("setSelectedLanguage", {
-                    ...e.features[0].properties
+                    ...e.features[0].properties,
                 });
             });
-            this.map.on("click", "words", e => {
+            this.map.on("click", "words", (e) => {
                 if (this.popup) this.popup.remove();
                 const RenderWordClass = Vue.extend(RenderWordComponent);
                 this.popup = new mapboxgl.Popup({ maxWidth: "none" })
@@ -140,8 +208,8 @@ export default {
                 const popupInstance = new RenderWordClass({
                     propsData: {
                         layout: "popup",
-                        word: { properties }
-                    }
+                        word: { properties },
+                    },
                 });
                 popupInstance.$mount("#vue-popup-content");
                 this.popup._update();
@@ -161,66 +229,70 @@ export default {
             if (this.map.getLayer("words"))
                 this.map.setLayoutProperty("words", "visibility", "none");
 
-            let languages = this.$store.state.languages.filter(l => !l.words);
-            renderLanguagesWithoutData({
-                languages: this.$store.state.languages,
-                map: this.map
-            });
-            renderLanguagesWithData({
-                languages: this.$store.state.languages,
-                map: this.map
-            });
+            let languages = this.$store.state.languages.filter((l) => !l.words);
+
+            this.renderLanguagesWithData();
             this.map.setLayoutProperty("languages", "visibility", "visible");
-            this.map.setLayoutProperty(
-                "languagesWithoutData",
-                "visibility",
-                "visible"
-            );
 
-            function renderLanguagesWithData({ languages, map }) {
-                const features = languages.filter(l => l.properties.words);
-                if (!map.getLayer("languages")) {
-                    map.addLayer({
-                        id: "languages",
-                        type: "symbol",
-                        source: {
-                            type: "geojson",
-                            data: {
-                                type: "FeatureCollection",
-                                features
-                            }
-                        },
-                        paint: {
-                            "text-color": styles.textColor
-                        },
-                        layout: {
-                            visibility: "visible",
-                            "text-field": "{name}",
-                            "text-size": 15,
-                            "text-max-width": 40,
-                            "text-allow-overlap": true,
-                            "icon-allow-overlap": true
-                        }
-                    });
-                }
+            if (this.largeDevice) {
+                this.emptyWordsLanguageLayerShowing = true;
+                this.renderLanguagesWithoutData();
+                this.map.setLayoutProperty(
+                    "languagesWithoutData",
+                    "visibility",
+                    "visible"
+                );
             }
+        },
 
-            function renderLanguagesWithoutData({ languages, map }) {
-                const features = languages.filter(l => !l.properties.words);
-                if (!map.getLayer("languagesWithoutData")) {
-                    map.addLayer({
+        renderLanguagesWithData() {
+            const features = this.$store.state.languages.filter(
+                (l) => l.properties.words
+            );
+            if (!this.map.getLayer("languages")) {
+                this.map.addLayer({
+                    id: "languages",
+                    type: "symbol",
+                    source: {
+                        type: "geojson",
+                        data: {
+                            type: "FeatureCollection",
+                            features,
+                        },
+                    },
+                    paint: {
+                        "text-color": styles.textColor,
+                    },
+                    layout: {
+                        visibility: "visible",
+                        "text-field": "{name}",
+                        "text-size": 15,
+                        "text-max-width": 40,
+                        "text-allow-overlap": true,
+                        "icon-allow-overlap": true,
+                    },
+                });
+            }
+        },
+        renderLanguagesWithoutData() {
+            const features = this.$store.state.languages.filter(
+                (l) => !l.properties.words
+            );
+            if (!this.map.getLayer("languagesWithoutData")) {
+                this.map.addLayer(
+                    {
                         id: "languagesWithoutData",
                         type: "symbol",
                         source: {
                             type: "geojson",
                             data: {
                                 type: "FeatureCollection",
-                                features
-                            }
+                                features,
+                            },
                         },
                         paint: {
                             "text-color": styles.primaryColor,
-                            "text-opacity": 0.4
+                            "text-opacity": 0.4,
                         },
                         layout: {
                             visibility: "visible",
@@ -228,10 +300,11 @@ export default {
                             "text-size": 15,
                             "text-max-width": 40,
                             "text-allow-overlap": true,
-                            "icon-allow-overlap": true
-                        }
-                    });
-                }
+                            "icon-allow-overlap": true,
+                        },
+                    },
+                    "languages"
+                );
             }
         },
         renderWordLayer() {
@@ -247,14 +320,14 @@ export default {
             if (!this.map.getLayer("words")) {
                 this.map.addSource("words", {
                     type: "geojson",
-                    data: { type: "FeatureCollection", features: this.words }
+                    data: { type: "FeatureCollection", features: this.words },
                 });
                 this.map.addLayer({
                     id: "words",
                     type: "symbol",
                     source: "words",
                     paint: {
-                        "text-color": styles.textColor
+                        "text-color": styles.textColor,
                     },
                     layout: {
                         "text-field": "{indigenous}",
@@ -266,144 +339,44 @@ export default {
                             "top",
                             "bottom",
                             "left",
-                            "right"
-                        ]
-                    }
+                            "right",
+                        ],
+                    },
                 });
             } else {
                 this.map.getSource("words").setData({
                     type: "FeatureCollection",
-                    features: this.words
+                    features: this.words,
                 });
             }
             this.map.setLayoutProperty("words", "visibility", "visible");
-        },
-        async playAllWords() {
-            var self = this;
-            var nextWord;
-            if (["ready", "paused"].includes(self.$store.state.playAll.state))
-                return;
-            if (self.$store.state.playAll.state === "stopped") {
-                cleanup();
-                return;
-            }
-
-            // kick off
-            if (self.$store.state.playAll.state === "next") {
-                flyToWord();
-            }
-
-            async function flyToWord() {
-                if (self.popup) self.popup.remove();
-                const selectedWord = [...self.$store.state.selectedWord].filter(
-                    w => !self.played.thisWord.includes(w.properties.indigenous)
-                );
-
-                console.log("Entries remaining:", selectedWord.length);
-
-                if (!selectedWord.length) {
-                    if (self.$store.state.playAll.loop) {
-                        console.log("Words played", self.played.allWords);
-                        console.log("Looping to next word");
-                        let words = self.$store.state.words.filter(word => {
-                            // console.log(word.name);
-                            return !self.played.allWords.includes(word.name);
-                        });
-                        console.log("Words left to play", words.length);
-                        if (!words.length) {
-                            self.played = {
-                                allWords: [],
-                                thisWord: []
-                            };
-                            words = self.$store.state.words.filter(word => {
-                                return !self.played.allWords.includes(
-                                    word.name
-                                );
-                            });
-                        }
-                        let word = shuffle(words).pop();
-                        self.played.thisWord = [];
-                        self.played.allWords = uniq([
-                            ...self.played.allWords,
-                            word.name
-                        ]);
-                        self.$store.dispatch("loadWord", {
-                            word: word.name,
-                            triggerPlayAll: true
-                        });
-                    } else {
-                        self.played = {
-                            thisWord: [],
-                            allWords: []
-                        };
-                        self.$store.commit("setPlayState", {
-                            state: "stopped",
-                            loop: false
-                        });
-                    }
-                    return;
-                }
-                nextWord = selectedWord.pop();
-                self.played.allWords = uniq([
-                    ...self.played.allWords,
-                    nextWord.properties.english
-                ]);
-                self.played.thisWord.push(nextWord.properties.indigenous);
-                // console.log(This word played", self.played.thisWord);
-
-                self.map.once("moveend", renderPopup);
-                console.log(`Flying to: ${nextWord.properties.indigenous}`);
-                self.map.flyTo({
-                    center: nextWord.geometry.coordinates,
-                    zoom: window.innerwidth < 768 ? 8 : 6,
-                    bearing: 0
-                });
-            }
-
-            async function cleanup() {
-                console.log("cleanup");
-                self.$store.commit("setPlayState", {
-                    state: "ready",
-                    loop: false
-                });
-                self.played = {
-                    allWords: [],
-                    thisWord: []
-                };
-                setTimeout(() => {
-                    if (self.popup) self.popup.remove();
-                    self.centerMap();
-                }, 2000);
-            }
-
-            async function renderPopup() {
-                // console.log("render popup");
-                if (!nextWord) return;
-
-                const RenderWordClass = Vue.extend(RenderWordComponent);
-                self.popup = new mapboxgl.Popup({ maxWidth: "none" })
-                    .setLngLat(nextWord.geometry.coordinates)
-                    .setHTML('<div id="vue-popup-content"></div>')
-                    .addTo(self.map);
-                const popupInstance = new RenderWordClass({
-                    propsData: {
-                        layout: "popup",
-                        word: nextWord,
-                        store: self.$store
-                    }
-                });
-                popupInstance.$mount("#vue-popup-content");
-                self.popup._update();
-            }
         },
         zoomToLanguage(language) {
             this.map.flyTo({
                 center: language.geometry.coordinates,
                 zoom: 11,
-                bearing: 0
+                bearing: 0,
             });
-        }
-    }
+        },
+        toggleLayerWithoutData() {
+            if (this.emptyWordsLanguageLayerShowing) {
+                this.map.setLayoutProperty(
+                    "languagesWithoutData",
+                    "visibility",
+                    "none"
+                );
+                this.emptyWordsLanguageLayerShowing = false;
+            } else {
+                this.renderLanguagesWithoutData();
+                this.map.setLayoutProperty(
+                    "languagesWithoutData",
+                    "visibility",
+                    "visible"
+                );
+                this.emptyWordsLanguageLayerShowing = true;
+            }
+        },
+    },
 };
 </script>
 
@@ -411,16 +384,16 @@ export default {
 .style-map {
     position: fixed;
     top: 0;
-    left: 50px;
-    width: calc(100vw - 50px);
+    left: 0px;
+    width: 100vw;
     height: 100vh;
     cursor: pointer;
 }
 
 .style-map-reset {
     position: fixed;
-    top: 80px;
-    left: calc(100vw - 45px);
+    top: 8px;
+    left: calc(100vw - 40px);
 }
 
 .style-reset-button {
@@ -428,11 +401,41 @@ export default {
     font-size: 12px;
 }
 
-.style-reset-button-image {
+.style-button-image {
     margin-left: -6px;
 }
 
+.style-data-selector {
+    position: fixed;
+    top: 50px;
+    left: calc(100vw - 260px);
+}
+
+.style-render-selected-word {
+    position: fixed;
+    z-index: 1000;
+    top: calc(100vh - 125px);
+    left: 0px;
+    width: 100vw;
+    background-color: #191a1a;
+}
+
 @media (min-width: 768px) {
+    .style-map {
+        position: fixed;
+        top: 0;
+        left: 50px;
+        width: calc(100vw - 50px);
+        height: 100vh;
+        cursor: pointer;
+    }
+
+    .style-data-selector {
+        position: fixed;
+        top: 15px;
+        left: calc(100vw - 250px);
+    }
+
     .style-map-reset {
         position: fixed;
         top: 80px;
@@ -444,9 +447,21 @@ export default {
         top: 65px;
         left: calc(100vw - 250px);
     }
+    .style-render-selected-word {
+        position: fixed;
+        top: 50px;
+        left: calc(100vw - 300px);
+        width: 250px;
+    }
 }
 
 @media (min-width: 1024px) {
+    .style-data-selector {
+        position: fixed;
+        top: 15px;
+        left: calc(100vw - 370px);
+    }
+
     .style-map-reset {
         position: fixed;
         top: 80px;
@@ -457,6 +472,12 @@ export default {
         width: 290px;
         top: 80px;
         left: calc(100vw - 364px);
+    }
+    .style-render-selected-word {
+        position: fixed;
+        top: 55px;
+        left: calc(100vw - 370px);
+        width: 300px;
     }
 }
 </style>

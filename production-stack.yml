@@ -19,8 +19,10 @@ services:
                     memory: 256M
         ports:
             - "80:80"
+            - "443:443"
         volumes:
             - /srv/50words.online:/var/www/50words.online
+            - /etc/letsecrypt:/etc/letsencrypt
             - $PWD/50words.online.nginx.conf:/etc/nginx/conf.d/50words.online.nginx.conf
         networks:
             - pdscnet

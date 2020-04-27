@@ -1,21 +1,17 @@
 <template>
-    <div>
-        <div class="row my-3">
-            <div
-                class="col style-help-text text-center px-5"
-            >Select from the list below, then click on the words shown on the map to hear the audio and see the language name.</div>
+    <div class="flex flex-col">
+        <div class="text-center">
+            Select from the list below, then click on the words shown on the map
+            to hear the audio and see the language name.
         </div>
         <div v-for="(word, idx) of words" :key="idx">
-            <div class="row">
-                <div class="col">
-                    <el-button
-                        type="text"
-                        class="style-button style-word"
-                        :class="{'style-selected-word': styleWord(word)}"
-                        @click="setSelectedWord(word)"
-                    >{{word}}</el-button>
-                </div>
-            </div>
+            <el-button
+                type="text"
+                class="text-black overflow-x-scroll hover:text-orange-200 text-sm md:text-xl"
+                :class="{ 'md:text-3xl text-orange-700': styleWord(word) }"
+                @click="setSelectedWord(word)"
+                >{{ word }}</el-button
+            >
         </div>
     </div>
 </template>
@@ -24,7 +20,7 @@
 export default {
     data() {
         return {
-            watchers: {}
+            watchers: {},
         };
     },
     computed: {
@@ -34,14 +30,14 @@ export default {
             },
             set: function(word) {
                 this.$store.dispatch("loadWord", { word });
-            }
+            },
         },
 
         words: function() {
-            return this.$store.state.words.map(w => {
+            return this.$store.state.words.map((w) => {
                 return w.name;
             });
-        }
+        },
     },
     methods: {
         async setSelectedWord(word) {
@@ -54,32 +50,9 @@ export default {
                 ? this.selectedWord[0]
                 : undefined;
             if (selectedWord) return word === selectedWord.properties.english;
-        }
-    }
+        },
+    },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "assets/variables.scss";
-
-.style-word {
-    font-size: 1.4em;
-}
-
-.style-selected-word {
-    color: $text-color;
-    font-size: 2em;
-}
-@media (min-width: 1024px) {
-    .style-selected-word {
-        color: $text-color;
-        font-size: 3em;
-    }
-}
-
-.style-help-text {
-    font-size: 1.2em;
-}
-</style>
-
-
+<style lang="scss" scoped></style>

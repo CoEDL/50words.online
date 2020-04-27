@@ -1,37 +1,31 @@
 <template>
-    <div>
-        <div class="row my-5 style-text">
-            <div class="col">Last Updated: {{lastUpdated}}</div>
-        </div>
+    <div class="flex flex-col m-4">
+        <div class="text-xl">Last Updated: {{ lastUpdated }}</div>
 
-        <div class="row">
-            <div class="col">
-                <el-tabs type="border-card">
-                    <el-tab-pane label="Data Processing Errors">
-                        <admin-errors-component
-                            :data="data"
-                            :errors="errors"
-                            :table-height="tableHeight"
-                            v-if="ready"
-                        />
-                    </el-tab-pane>
-                    <el-tab-pane label="Gambay Additions">
-                        <admin-additions-component
-                            :additions="additions"
-                            :table-height="tableHeight"
-                            v-if="ready"
-                        />
-                    </el-tab-pane>
-                    <el-tab-pane label="Languages">
-                        <admin-languages-component
-                            :languages="languages"
-                            :table-height="tableHeight"
-                            v-if="ready"
-                        />
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-        </div>
+        <el-tabs type="border-card">
+            <el-tab-pane label="Data Processing Errors">
+                <admin-errors-component
+                    :data="data"
+                    :errors="errors.errors"
+                    :table-height="tableHeight"
+                    v-if="ready"
+                />
+            </el-tab-pane>
+            <el-tab-pane label="Gambay Additions">
+                <admin-additions-component
+                    :additions="additions.additions"
+                    :table-height="tableHeight"
+                    v-if="ready"
+                />
+            </el-tab-pane>
+            <el-tab-pane label="Languages">
+                <admin-languages-component
+                    :languages="languages"
+                    :table-height="tableHeight"
+                    v-if="ready"
+                />
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 
@@ -47,7 +41,7 @@ export default {
     components: {
         AdminErrorsComponent,
         AdminAdditionsComponent,
-        AdminLanguagesComponent
+        AdminLanguagesComponent,
     },
     data() {
         return {
@@ -58,13 +52,13 @@ export default {
             errors: {},
             additions: {},
             languages: [],
-            ready: false
+            ready: false,
         };
     },
     computed: {
         lastUpdated: function() {
             return moment(this.errors.date).format("LLL");
-        }
+        },
     },
     async beforeMount() {
         await loadData({ store: this.$store });
@@ -72,7 +66,7 @@ export default {
 
         this.data = await loadProcessingData();
         this.errors = { ...this.data.errors };
-        this.errorTypes = uniq(this.errors.errors.map(e => e.type)).sort();
+        this.errorTypes = uniq(this.errors.errors.map((e) => e.type)).sort();
         this.additions = this.data.additions;
         this.ready = true;
     },
@@ -82,7 +76,7 @@ export default {
                 this.errors = { ...this.data.errors };
             } else {
                 this.errors.errors = this.data.errors.errors.filter(
-                    e => e.type === this.filterErrorType
+                    (e) => e.type === this.filterErrorType
                 );
             }
         },
@@ -92,8 +86,8 @@ export default {
             } else if (row.row.level === "warning") {
                 return { color: "#e67e22" };
             }
-        }
-    }
+        },
+    },
 };
 </script>
 

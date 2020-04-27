@@ -1,41 +1,13 @@
 <template>
-    <div v-if="word">
-        <div class="text-right">
-            <div class="style-selected-word">{{ word }}</div>
-            <el-button
-                circle
-                @click="play"
-                class="style-button"
-                v-if="!disablePlayAllOnIOS"
-            >
-                <span v-show="!isPlaying">
-                    <i class="fas fa-play fa-fw"></i>
-                </span>
-                <span v-show="isPlaying">
-                    <i class="fas fa-stop fa-fw"></i>
-                </span>
-            </el-button>
-            <el-button
-                circle
-                @click="pause"
-                class="style-button"
-                :class="{ 'style-button-deselected': isPaused }"
-                v-if="!disablePlayAllOnIOS && isPlaying"
-            >
-                <i class="fas fa-pause fa-fw"></i>
-            </el-button>
-            <el-button
-                circle
-                @click="setLoopState"
-                class="style-button"
-                :class="{
-                    'style-button': loop,
-                    'style-button-deselected': !loop
-                }"
-                v-if="!disablePlayAllOnIOS"
-            >
-                <i class="fas fa-repeat fa-fw"></i> </el-button
-            >&nbsp;
+    <div v-if="word" class="mt-2 p-4">
+        <div class="flex flex-col">
+            <div class="flex flex-row">
+                <div class="style-word text-lg md:text-xl lg:text-2xl">{{ word }}</div>
+                <div class="flex flex-grow"></div>
+            </div>
+            <div class="flex flex-row justify-start mt-3 pb-2">
+                <play-all-controls-component :map="map" @center-map="$emit('center-map')" />
+            </div>
         </div>
     </div>
 </template>
@@ -44,76 +16,29 @@
 import { orderBy, shuffle } from "lodash";
 import { randomBytes } from "crypto";
 import { stringify } from "querystring";
+import AudioPlayerControl from "./AudioPlayerControl.component.vue";
+import PlayAllControlsComponent from "./PlayAllControls.component.vue";
 
 export default {
+    components: {
+        PlayAllControlsComponent
+    },
+    props: {
+        map: {
+            type: Object,
+            required: true
+        }
+    },
     data() {
-        return {
-            watchers: [],
-            isPlaying: false,
-            isPaused: false,
-            loop: false,
-            disablePlayAllOnIOS:
-                !!navigator.platform.match(/iPhone|iPod|iPad/) ||
-                (navigator.platform === "MacIntel" &&
-                    navigator.maxTouchPoints > 1)
-        };
+        return {};
     },
 
     computed: {
-        playAll: function() {
-            return this.$store.state.playAll;
-        },
         word: function() {
             return this.$store.state.selectedWord &&
                 this.$store.state.selectedWord.length
                 ? this.$store.state.selectedWord[0].properties.english
                 : undefined;
-        }
-    },
-    mounted() {
-        this.watchers.playAll = this.$watch("playAll", this.updateState);
-    },
-    beforeDestroy() {
-        this.watchers.playAll();
-    },
-    methods: {
-        play() {
-            this.isPlaying = !this.isPlaying;
-            if (this.isPlaying) {
-                this.$store.commit("setPlayState", {
-                    state: "next",
-                    loop: this.loop
-                });
-                this.isPaused = false;
-            } else {
-                this.$store.commit("setPlayState", {
-                    state: "stopped",
-                    loop: this.loop
-                });
-                this.isPaused = false;
-            }
-        },
-        pause() {
-            if (this.isPaused) {
-                this.$store.commit("setPlayState", {
-                    state: "next"
-                });
-            } else {
-                this.$store.commit("setPlayState", {
-                    state: "paused"
-                });
-            }
-            this.isPaused = !this.isPaused;
-        },
-        setLoopState() {
-            this.loop = !this.loop;
-            this.$store.commit("setPlayState", {
-                loop: this.loop
-            });
-        },
-        updateState() {
-            if (this.$store.state.playAll.state === "ready")
-                this.isPlaying = false;
         }
     }
 };
@@ -132,8 +57,7 @@ export default {
     color: $primary-color;
 }
 
-.style-selected-word {
-    font-size: 1.3em;
+.style-word {
     color: $text-color;
 }
 @media (min-width: 1024px) {
