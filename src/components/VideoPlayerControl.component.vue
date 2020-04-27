@@ -25,7 +25,7 @@ export default {
         };
     },
     watch: {
-        play: function() {
+        play: function(n, o) {
             if (n.includes(true)) this.load();
         },
     },
