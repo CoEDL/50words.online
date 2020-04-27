@@ -124,6 +124,7 @@ export default {
         async centerMap() {
             if (this.popup) this.popup.remove();
 
+            centerCountry({ map: this.map });
             let position;
             if ("geolocation" in navigator) {
                 try {
