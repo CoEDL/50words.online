@@ -63,12 +63,15 @@
                         v-if="word.audio"
                         @loaded="loading = false"
                     />
-                    <div :class="{ 'style-row': word.video }" v-if="word.video">
+                    <div v-if="word.video">
                         <video-player-control
-                            class="style-video"
+                            :class="{
+                                'w-full h-auto': ready,
+                                'h-0 w-0': !ready,
+                            }"
                             :files="word.video"
                             :play="play"
-                            @loaded="loading = false"
+                            @loaded="videoReady"
                         />
                     </div>
                 </div>
@@ -102,6 +105,7 @@ export default {
         return {
             play: [false],
             loading: false,
+            ready: false,
         };
     },
     mounted() {
@@ -113,6 +117,10 @@ export default {
         playWord() {
             this.loading = true;
             this.play = [true];
+        },
+        videoReady() {
+            this.loading = false;
+            this.ready = true;
         },
     },
 };
@@ -129,10 +137,6 @@ export default {
         width: 300px;
         max-width: 300px;
     }
-}
-
-.style-video {
-    width: 100%;
 }
 
 .blinking {
