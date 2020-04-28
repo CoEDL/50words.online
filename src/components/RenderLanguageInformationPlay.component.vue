@@ -1,21 +1,36 @@
 <template>
-    <div @click="load" class="flex flex-row cursor-pointer">
-        <audio ref="audioElement" v-if="audioFiles.length">
-            <source :src="file" v-for="(file, idx) of audioFiles" :key="idx" />
-            Your browser does not support the
-            <code>audio</code> element.
-        </audio>
-
+    <div class="flex flex-row">
         <div
-            class="mr-2 style-audio-control hover:text-orange-200"
-            :class="{
-                'transition duration-500 ease-in-out blinking ': loading,
-            }"
+            @click="load"
+            class="flex flex-row cursor-pointer"
+            v-if="audioFiles.length"
         >
-            <i class="fas fa-volume-up fa-2x"></i>
+            <audio ref="audioElement" v-if="audioFiles.length">
+                <source
+                    :src="file"
+                    v-for="(file, idx) of audioFiles"
+                    :key="idx"
+                />
+                Your browser does not support the
+                <code>audio</code> element.
+            </audio>
+
+            <div
+                class="mr-2 style-audio-control hover:text-orange-200"
+                :class="{
+                    'transition duration-500 ease-in-out blinking ': loading,
+                }"
+            >
+                <i class="fas fa-volume-up fa-2x"></i>
+            </div>
+            <div class="text-lg md:text-2xl md:-mt-1">
+                {{ data.name }}
+            </div>
         </div>
-        <div class="text-lg md:text-2xl md:-mt-1">
-            {{ data.name }}
+        <div v-else>
+            <div class="text-lg md:text-2xl md:-mt-1">
+                {{ data.name }}
+            </div>
         </div>
     </div>
 </template>
@@ -30,15 +45,16 @@ export default {
     data() {
         return {
             loading: false,
-            audioFiles: [],
         };
     },
-    computed: {},
-    mounted() {},
+    computed: {
+        audioFiles: function() {
+            return [...this.data.audio];
+        },
+    },
     methods: {
         load() {
             this.loading = true;
-            this.audioFiles = [...this.data.audio];
             setTimeout(() => {
                 this.$refs.audioElement.addEventListener(
                     "canplaythrough",

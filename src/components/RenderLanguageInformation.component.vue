@@ -10,7 +10,11 @@
         </div>
         <div class="cursor-pointer my-4">
             <render-language-information-play-component
-                class="flex-grow justify-center hover:text-orange-200"
+                class="flex-grow justify-center"
+                :class="{
+                    'hover:text-orange-200':
+                        data.properties.speaker.audio.length,
+                }"
                 :data="data.properties.language"
             />
         </div>
@@ -24,7 +28,10 @@
 
         <render-language-information-play-component
             v-if="data.properties.speaker"
-            class="hover:text-orange-200 my-2"
+            class="my-2"
+            :class="{
+                'hover:text-orange-200': data.properties.speaker.audio.length,
+            }"
             :data="data.properties.speaker"
         />
 
