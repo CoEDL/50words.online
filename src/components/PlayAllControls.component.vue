@@ -148,7 +148,7 @@ export default {
             console.log(`Flying to: ${word.properties.indigenous}`);
             this.map.flyTo({
                 center: word.geometry.coordinates,
-                zoom: window.innerwidth < 768 ? 8 : 6,
+                zoom: window.innerwidth < 768 ? 4 : 6,
                 bearing: 0,
             });
 

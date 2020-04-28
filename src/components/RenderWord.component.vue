@@ -7,11 +7,13 @@
                         <i class="fas fa-volume-up fa-2x"></i>
                     </div>
                     <div class="flex flex-col">
-                        <div class="text-lg opacity-75">
+                        <div class="text-sm md:text-lg opacity-75">
                             {{ word.properties.language.name }}
                         </div>
 
-                        <div class="text-3xl my-2 hover:text-orange-200">
+                        <div
+                            class="text-lg md:text-3xl my-2 hover:text-orange-200"
+                        >
                             {{ word.properties.indigenous }}
                         </div>
                     </div>
