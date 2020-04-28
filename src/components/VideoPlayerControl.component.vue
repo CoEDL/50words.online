@@ -41,7 +41,6 @@ export default {
                 this.$refs.videoElement.addEventListener(
                     "canplaythrough",
                     () => {
-                        console.log("can play through");
                         if (this.loading) this.playWord();
                     }
                 );
