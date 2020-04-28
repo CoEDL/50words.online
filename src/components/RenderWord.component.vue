@@ -3,7 +3,7 @@
         <div v-if="layout === 'popup'">
             <div class="flex flex-col">
                 <div class="flex flex-row cursor-pointer" @click="playWord">
-                    <div class="mr-2 pt-4 style-audio-control">
+                    <div class="mr-2 pt-4 style-audio-control ">
                         <i class="fas fa-volume-up fa-2x"></i>
                     </div>
                     <div class="flex flex-col">
@@ -11,7 +11,7 @@
                             {{ word.properties.language.name }}
                         </div>
 
-                        <div class="text-3xl my-2">
+                        <div class="text-3xl my-2 hover:text-orange-200">
                             {{ word.properties.indigenous }}
                         </div>
                     </div>
@@ -33,7 +33,7 @@
         </div>
         <div v-if="layout !== 'popup'">
             <div
-                class="flex flex-row border-b border-gray-600 md:py-2 cursor-pointer"
+                class="flex flex-row border-b border-gray-600 md:py-2 cursor-pointer hover:text-orange-200"
                 @click="playWord"
             >
                 <div
