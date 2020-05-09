@@ -67,7 +67,6 @@ export default {
     },
     data() {
         return {
-            watchers: {},
             map: undefined,
             popup: undefined,
             mediaElement: {
@@ -98,26 +97,22 @@ export default {
             return window.innerWidth < 768 ? false : true;
         },
     },
-    mounted() {
-        this.renderMap();
-        this.watchers.words = this.$watch("words", (d) => {
-            if (d) {
-                this.played = {
-                    allWords: [],
-                    thisWord: [],
-                };
+    watch: {
+        words: function(n) {
+            if (n && n.length) {
                 this.renderWordLayer();
             } else {
                 this.renderLanguageLayer();
             }
-        });
-        this.watchers.words = this.$watch("playAll", this.playAllWords);
+        },
+    },
+    mounted() {
+        this.renderMap();
     },
     beforeMount() {
         window.addEventListener("resize", throttle(this.centerMap, 300));
     },
     beforeDestroy() {
-        this.watchers.words();
         window.removeEventListener("resize", this.centerMap);
     },
     methods: {
@@ -311,11 +306,13 @@ export default {
         renderWordLayer() {
             if (this.popup) this.popup.remove();
             this.map.setLayoutProperty("languages", "visibility", "none");
-            this.map.setLayoutProperty(
-                "languagesWithoutData",
-                "visibility",
-                "none"
-            );
+            if (this.map.getLayer("languagesWithoutData")) {
+                this.map.setLayoutProperty(
+                    "languagesWithoutData",
+                    "visibility",
+                    "none"
+                );
+            }
             if (!this.words) return;
 
             if (!this.map.getLayer("words")) {
