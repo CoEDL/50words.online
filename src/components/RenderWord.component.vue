@@ -3,8 +3,13 @@
         <div v-if="layout === 'popup'">
             <div class="flex flex-col">
                 <div class="flex flex-row cursor-pointer" @click="playWord">
-                    <div class="mr-2 pt-4 style-audio-control ">
-                        <i class="fas fa-volume-up fa-2x"></i>
+                    <div class="mr-4 pt-4 style-audio-control">
+                        <span v-show="word.properties.audio">
+                            <i class="fas fa-volume-up fa-2x"></i>
+                        </span>
+                        <span v-show="word.properties.video">
+                            <i class="fas fa-video fa-2x"></i>
+                        </span>
                     </div>
                     <div class="flex flex-col">
                         <div class="text-sm md:text-lg opacity-75">
@@ -44,7 +49,14 @@
                         'transition duration-500 ease-in-out blinking ': loading,
                     }"
                 >
-                    <i class="fas fa-volume-up fa-2x"></i>
+                    <div class="mr-2 pt-4">
+                        <span v-show="word.audio">
+                            <i class="fas fa-volume-up fa-2x"></i>
+                        </span>
+                        <span v-show="word.video">
+                            <i class="fas fa-video fa-2x"></i>
+                        </span>
+                    </div>
                 </div>
                 <div class="flex flex-col py-2">
                     <div
