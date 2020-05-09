@@ -23,7 +23,7 @@
                     </div>
                 </div>
 
-                <div class="" v-if="showContent">
+                <div class v-if="showContent">
                     <a
                         href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
                     >
@@ -31,10 +31,7 @@
                     </a>
                 </div>
             </div>
-            <div
-                class="flex flex-col mx-4 style-content-section"
-                v-if="showContent"
-            >
+            <div class="flex flex-col mx-4 style-content-section" v-if="showContent">
                 <div class="text-3xl text-center">50 Words</div>
 
                 <p class="my-2">
@@ -64,9 +61,10 @@
                     language.
                 </p>
                 <p class="text-center my-2 text-xl">
-                    <router-link to="/about" class="hover:text-orange-200"
-                        >find out more about this site</router-link
-                    >
+                    <router-link
+                        to="/about"
+                        class="hover:text-orange-200"
+                    >find out more about this site</router-link>
                 </p>
                 <word-list-component
                     v-if="!showLanguageData"
@@ -86,7 +84,7 @@ import { loadLanguageData } from "src/data-loader.service.js";
 export default {
     components: {
         RenderLanguageInformation,
-        WordListComponent,
+        WordListComponent
     },
     data() {
         return {
@@ -95,7 +93,7 @@ export default {
             showContent: false,
             showLanguageData: false,
             languageData: {},
-            logo: require("src/assets/logo.png"),
+            logo: require("src/assets/logo.png")
         };
     },
     computed: {
@@ -103,7 +101,7 @@ export default {
             if (!this.$store.state.selectedLanguage)
                 this.showLanguageData = false;
             return this.$store.state.selectedLanguage;
-        },
+        }
     },
     mounted() {
         this.watchers.selectedLanguage = this.$watch(
@@ -116,7 +114,7 @@ export default {
                         this.showContent = true;
                     }, 400);
                     this.languageData = await loadLanguageData({
-                        code: this.selectedLanguage.code,
+                        code: this.selectedLanguage.code
                     });
                 }
             }
@@ -143,8 +141,8 @@ export default {
                 this.isCollapsed = true;
                 this.showContent = false;
             }
-        },
-    },
+        }
+    }
 };
 </script>
 
@@ -157,6 +155,7 @@ export default {
     left: 0;
     height: 100vh;
     transition: 0.3s;
+    transition-timing-function: ease-in;
 }
 
 .style-collapsed-panel {
@@ -171,7 +170,16 @@ export default {
 @media only screen and (min-width: 768px) {
     .style-open-panel {
         width: calc(100vw * 0.5);
-        transition-timing-function: ease-in;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .style-open-panel {
+        width: calc(100vw * 0.4);
+    }
+}
+@media only screen and (min-width: 1200px) {
+    .style-open-panel {
+        width: calc(100vw * 0.3);
     }
 }
 .style-content-section {
