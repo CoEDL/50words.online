@@ -7,7 +7,7 @@
         <div v-for="(word, idx) of words" :key="idx">
             <div
                 type="text"
-                class="cursor-pointer text-black overflow-auto hover:text-orange-200 text-sm md:text-xl"
+                class="cursor-pointer text-black overflow-auto hover:text-orange-200 text-xl my-1"
                 :class="{ 'md:text-3xl text-orange-700': styleWord(word) }"
                 @click="setSelectedWord(word)"
             >
