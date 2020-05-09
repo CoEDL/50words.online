@@ -2,11 +2,16 @@
     <div v-if="word" class="mt-2 p-4">
         <div class="flex flex-col">
             <div class="flex flex-row">
-                <div class="style-word text-lg md:text-xl lg:text-2xl">{{ word }}</div>
+                <div class="style-word text-lg md:text-xl lg:text-2xl">
+                    {{ word }}
+                </div>
                 <div class="flex flex-grow"></div>
             </div>
             <div class="flex flex-row justify-start mt-3 pb-2">
-                <play-all-controls-component :map="map" @center-map="$emit('center-map')" />
+                <play-all-controls-component
+                    :map="map"
+                    @center-map="$emit('center-map')"
+                />
             </div>
         </div>
     </div>
@@ -21,13 +26,13 @@ import PlayAllControlsComponent from "./PlayAllControls.component.vue";
 
 export default {
     components: {
-        PlayAllControlsComponent
+        PlayAllControlsComponent,
     },
     props: {
         map: {
             type: Object,
-            required: true
-        }
+            required: true,
+        },
     },
     data() {
         return {};
@@ -39,8 +44,8 @@ export default {
                 this.$store.state.selectedWord.length
                 ? this.$store.state.selectedWord[0].properties.english
                 : undefined;
-        }
-    }
+        },
+    },
 };
 </script>
 
