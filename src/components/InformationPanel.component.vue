@@ -9,9 +9,9 @@
         >
             <div class="flex flex-row mb-4">
                 <div class="lg:pt-2">
-                    <el-button
+                    <div
                         type="text"
-                        class="text-white pl-3 -mt-2 md:-mt-1"
+                        class="text-white pl-3 mt-2"
                         @click="toggleCollapse"
                     >
                         <span v-show="isCollapsed">
@@ -20,7 +20,7 @@
                         <span v-show="!isCollapsed">
                             <i class="fal fa-arrow-left fa-2x"></i>
                         </span>
-                    </el-button>
+                    </div>
                 </div>
 
                 <div class="" v-if="showContent">
