@@ -5,13 +5,14 @@
             to hear the audio and see the language name.
         </div>
         <div v-for="(word, idx) of words" :key="idx">
-            <el-button
+            <div
                 type="text"
-                class="text-black overflow-x-scroll hover:text-orange-200 text-sm md:text-xl"
+                class="text-black overflow-auto hover:text-orange-200 text-sm md:text-xl"
                 :class="{ 'md:text-3xl text-orange-700': styleWord(word) }"
                 @click="setSelectedWord(word)"
-                >{{ word }}</el-button
             >
+                {{ word }}
+            </div>
         </div>
     </div>
 </template>
