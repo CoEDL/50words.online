@@ -109,7 +109,6 @@ export default {
         };
     },
     methods: {
-        pause() {},
         setLoopState() {
             this.loop = !this.loop;
             this.$store.commit("setPlayState", {
@@ -188,16 +187,13 @@ export default {
             if (this.popup) this.popup.remove();
             this.$emit("center-map");
         },
-
         pause() {
             this.isPaused = !this.isPaused;
             if (!this.isPaused) this.flyToWord();
         },
-
         setLoopState() {
             this.loop = !this.loop;
         },
-
         async loadNextWord() {
             if (this.loop && this.playAll.words.length === 0) {
                 const words = this.$store.getters.getWordList();
@@ -214,12 +210,9 @@ export default {
                 }
             }
         },
-
-        displayLanguages() {
+        async displayLanguages() {
             this.stop();
-            setTimeout(() => {
-                this.$store.commit("unsetSelectedWord");
-            }, 1200);
+            this.$store.commit("unsetSelectedWord");
         },
     },
 };
