@@ -6,7 +6,6 @@
             v-if="map && selectedWord"
             :map="map"
             class="style-render-selected-word"
-            :style="{ top: selectedWordTop }"
             @center-map="centerMap"
         />
 
@@ -77,7 +76,6 @@ export default {
                 files: [],
             },
             emptyWordsLanguageLayerShowing: false,
-            selectedWordTop: `${window.innerHeight - 130}px`,
         };
     },
     computed: {
@@ -417,6 +415,7 @@ export default {
 .style-render-selected-word {
     position: fixed;
     z-index: 1000;
+    top: calc(100% - 115px);
     left: 0px;
     width: 100vw;
     background-color: #191a1a;
