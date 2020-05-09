@@ -35,7 +35,7 @@
                     <i class="fas fa-pause fa-fw"></i>
                 </el-button>
             </div>
-            <div>
+            <div class="mr-2">
                 <el-button
                     circle
                     @click="setLoopState"
@@ -48,6 +48,21 @@
                     <i class="fas fa-repeat fa-fw"></i>
                 </el-button>
             </div>
+
+            <div>
+                <el-button
+                    circle
+                    @click="shuffle = !shuffle"
+                    class="style-button"
+                    :class="{
+                        'style-button': shuffle,
+                        'style-button-deselected': !shuffle,
+                    }"
+                >
+                    <i class="fas fa-random"></i>
+                </el-button>
+            </div>
+
             <div class="flex-grow"></div>
             <div @click="displayLanguages" class="style-word md:hidden">
                 <i class="fas fa-times fa-2x"></i>
@@ -99,6 +114,7 @@ export default {
             watchers: [],
             isPlaying: false,
             isPaused: false,
+            shuffle: false,
             loop: false,
             playAll: {
                 words: [],
@@ -124,6 +140,7 @@ export default {
         async flyToWord() {
             var self = this;
 
+            if (this.shuffle) this.playAll.words = shuffle(this.playAll.words);
             await this.loadNextWord();
             if (!this.isPlaying || this.isPaused) return;
             this.playAll.play = [false];
