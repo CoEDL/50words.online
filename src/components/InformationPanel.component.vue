@@ -36,6 +36,7 @@
                 v-if="showContent"
             >
                 <div class="text-3xl text-center">50 Words</div>
+
                 <p class="my-2">
                     This project aims to provide fifty words in every Indigenous
                     language of Australia. We hope that this will be a useful
@@ -43,6 +44,15 @@
                     50 words in their local languages, and for the general
                     public to discover the diversity of languages around
                     Australia.
+                </p>
+                <p class="my-2">
+                    We are continually adding new languages, and are asking for
+                    speakers of any language that is not already represented to
+                    contact us
+                    <a href="mailto:RUIL-contact@unimelb.edu.au"
+                        >RUIL-contact@unimelb.edu.au</a
+                    >
+                    and we will help get their recordings on the map.
                 </p>
                 <p class="my-2">
                     All words, audio and video recordings are provided by
