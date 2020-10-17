@@ -21,8 +21,11 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - /srv/50words.online:/var/www/50words.online
             - /etc/letsencrypt:/etc/letsencrypt
-            - $PWD/50words.online.nginx.conf:/etc/nginx/conf.d/50words.online.nginx.conf
+            - /srv/50words.online:/var/www/50words.online
+            - /srv/50words.online.staging:/var/www/50words.online.staging
+            - /srv/staging-repository/repository:/var/www/50words.online.staging/repository
+            - $PWD/nginx-50words.online.conf:/etc/nginx/conf.d/50words.online.conf
+            - $PWD/nginx-staging.50words.online.conf:/etc/nginx/conf.d/staging.50words.online.conf
         networks:
             - pdscnet

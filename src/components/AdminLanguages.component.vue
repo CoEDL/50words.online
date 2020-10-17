@@ -13,7 +13,12 @@
             :default-sort="{ prop: 'properties.words', order: 'descending' }"
             @sort-change="sort"
         >
-            <el-table-column prop="properties.code" label="Code" width="100" sortable="custom"></el-table-column>
+            <el-table-column
+                prop="properties.code"
+                label="Code"
+                width="100"
+                sortable="custom"
+            ></el-table-column>
             <el-table-column
                 prop="properties.name"
                 label="Language Name"
@@ -26,8 +31,16 @@
                     {{ scope.row.geometry.coordinates[1] }}
                 </template>
             </el-table-column>
-            <el-table-column prop="properties.source" label="Source Dataset" sortable="custom"></el-table-column>
-            <el-table-column prop="properties.words" label="Has Data?" sortable="custom">
+            <el-table-column
+                prop="properties.source"
+                label="Source Dataset"
+                sortable="custom"
+            ></el-table-column>
+            <el-table-column
+                prop="properties.words"
+                label="Has Data?"
+                sortable="custom"
+            >
                 <template slot-scope="scope">
                     <span v-show="scope.row.properties.words">
                         <i class="fas fa-check text-green-600"></i>
@@ -50,7 +63,7 @@ export default {
             page: 0,
             pageSize: 10,
             sortColumn: "properties.words",
-            sortOrder: "desc"
+            sortOrder: "desc",
         };
     },
     computed: {
@@ -66,7 +79,7 @@ export default {
         },
         total: function() {
             return this.$store.state.languages.length;
-        }
+        },
     },
     methods: {
         update(page) {
@@ -76,10 +89,9 @@ export default {
             this.page = 0;
             this.sortColumn = data.prop;
             this.sortOrder = data.order === "ascending" ? "asc" : "desc";
-        }
-    }
+        },
+    },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

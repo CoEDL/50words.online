@@ -1,7 +1,9 @@
-$primary-color: #aea88f;
-$text-color: #be5400;
+$highlight-dark: #c44d2b;
+$highlight-light: #e9b69e;
+$gray: #2d3748;
 
 :export {
-    textColor: $text-color;
-    primaryColor: $primary-color;
+    highlightDark: $highlight-dark;
+    highlightLight: $highlight-light;
+    gray: $gray;
 }

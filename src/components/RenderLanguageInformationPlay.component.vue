@@ -16,20 +16,12 @@
             </audio>
 
             <div
-                class="mr-2 style-audio-control hover:text-orange-200"
+                class="text-2xl"
                 :class="{
-                    'transition duration-500 ease-in-out blinking ': loading,
+                    'transition duration-500 ease-in-out blinking': loading,
                 }"
             >
-                <i class="fas fa-volume-up fa-2x"></i>
-            </div>
-            <div class="text-lg md:text-2xl md:-mt-1">
-                {{ data.name }}
-            </div>
-        </div>
-        <div v-else>
-            <div class="text-lg md:text-2xl md:-mt-1">
-                {{ data.name }}
+                <i class="fas fa-volume-up"></i>
             </div>
         </div>
     </div>
@@ -66,6 +58,7 @@ export default {
             }, 200);
         },
         play() {
+            console.log("play");
             this.loading = false;
             this.$refs.audioElement.play();
         },
@@ -79,7 +72,7 @@ export default {
 }
 @keyframes blinkingBackground {
     0% {
-        @apply text-orange-400;
+        @apply text-highlight-dark;
     }
 }
 </style>

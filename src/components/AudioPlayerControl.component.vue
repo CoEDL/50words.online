@@ -1,33 +1,34 @@
 <template>
     <audio ref="audioElement">
-        <source v-for="(file, idx) of audioFiles" :src="file" :key="idx" />Your browser does not support the
-        <code>audio</code> element.
+        <source v-for="(file, idx) of audioFiles" :src="file" :key="idx" />
+        Your browser does not support the <code>audio</code> element.
     </audio>
 </template>
 
 <script>
+import { debounce } from "lodash";
 export default {
     props: {
         files: {
             type: Array | String,
-            required: true
+            required: true,
         },
         play: {
-            type: Array,
-            required: true
+            type: Boolean | undefined,
+            required: true,
         },
-        store: Object | undefined
     },
     data() {
         return {
+            debouncedLoad: debounce(this.load, 500),
             audioFiles: [],
-            loading: false
+            loading: false,
         };
     },
     watch: {
         play: function(n, o) {
-            if (n.includes(true)) this.load();
-        }
+            if (n.play) this.debouncedLoad();
+        },
     },
     methods: {
         load() {
@@ -37,7 +38,7 @@ export default {
             } else {
                 this.audioFiles = [...this.files];
             }
-            setTimeout(() => {
+            this.$nextTick(() => {
                 this.$refs.audioElement.addEventListener(
                     "canplaythrough",
                     () => {
@@ -53,7 +54,7 @@ export default {
                     this.endedHandler
                 );
                 this.$refs.audioElement.load();
-            }, 200);
+            });
         },
         playWord() {
             this.$emit("loaded");
@@ -61,10 +62,10 @@ export default {
             this.$refs.audioElement.play();
         },
         async endedHandler() {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            this.$emit("finishedPlaying");
-        }
-    }
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            this.$emit("finished-playing");
+        },
+    },
 };
 </script>
 

@@ -11,6 +11,7 @@ import os.path
 import pprint
 from shutil import copyfile
 import subprocess
+import itertools
 import sys
 from types import SimpleNamespace
 import xlrd
@@ -18,17 +19,90 @@ import xlrd
 coloredlogs.install()
 pp = pprint.PrettyPrinter(compact=True)
 
-log.basicConfig(level=log.INFO)
+if os.getenv("LOG") == "DEBUG":
+    log.basicConfig(level=log.DEBUG)
+else:
+    log.basicConfig(level=log.WARN)
+
+WORDS = [
+    "welcome",
+    "hello",
+    "goodbye/I'll see you later",
+    "where are you going?",
+    "I'm going home",
+    "no",
+    "yes",
+    "what is your name?",
+    "come here",
+    "let's go",
+    "fire",
+    "firewood",
+    "smoke",
+    "ashes",
+    "hot weather",
+    "cold weather",
+    "wind",
+    "rain",
+    "sun",
+    "moon",
+    "star",
+    "Southern Cross",
+    "Seven Sisters",
+    "sky",
+    "Milky Way",
+    "cloud",
+    "hand",
+    "elbow",
+    "eye",
+    "nose",
+    "mouth",
+    "thigh",
+    "foot",
+    "head",
+    "knee",
+    "shoulder",
+    "ear",
+    "tree",
+    "fish",
+    "bird",
+    "goanna",
+    "grey kangaroo",
+    "emu",
+    "magpie",
+    "water",
+    "dog",
+    "here",
+    "there",
+    "today",
+    "tomorrow",
+    "mother",
+    "father",
+    "brother",
+    "sister",
+    "child",
+    "bone",
+    "money",
+]
 
 
 class SheetVerifier:
     def __init__(self, sheet, sheet_name):
-        self.sheet_name = sheet_name
+        self.language = sheet_name.replace("/srv/data/", "").split("/")[0]
+        self.sheet_name = sheet_name.replace("/srv/data/", "")
         self.sheet = sheet
         self.ok = True
         self.errors = []
 
     def verify(self):
+        if self.sheet.nrows != 65:
+            self.ok = False
+            self.errors.append(
+                {
+                    "type": "Bad spreadsheet",
+                    "level": "error",
+                    "msg": f"'{self.sheet_name}' isn't exactly 65 rows - is it correct?",
+                }
+            )
         self.check(0, 0, "Language name")
         self.check(0, 1)
         self.check(0, 2)
@@ -41,60 +115,99 @@ class SheetVerifier:
         self.check(3, 1)
         self.check(6, 0, "Date received")
         self.check(6, 1)
+        j = 0
         for i in range(8, 65):
-            if self.sheet.row_values(i)[1] and not self.sheet.row_values(i)[2]:
+            row = self.sheet.row_values
+            if not row(i)[1]:
                 self.errors.append(
                     {
-                        "type": "Missing media file for word",
+                        "type": "Sheet verification: No translation for word",
                         "level": "warning",
-                        "msg": f"'{self.sheet_name}': No media file for '{self.sheet.row_values(i)[1]}'.",
+                        "language": self.language,
+                        "msg": f"No translation for word '{row(i)[0]}'.",
+                    }
+                )
+            if not row(i)[2]:
+                self.errors.append(
+                    {
+                        "type": "Sheet verification: No media file for word",
+                        "level": "warning",
+                        "language": self.language,
+                        "msg": f"No media file for word '{row(i)[0]}'.",
                     }
                 )
 
+            if row(i)[0] != WORDS[j]:
+                self.errors.append(
+                    {
+                        "type": "Sheet verification: English word has been changed",
+                        "level": "warning",
+                        "language": self.language,
+                        "msg": f"Expected '{WORDS[j]}' but got '{row(i)[0]}'.",
+                    }
+                )
+
+            j += 1
         return self.errors
 
-    def check(self, row, column, value=None):
-        if value and self.sheet.row_values(row)[column] != value:
+    def check(self, rowNum, colNum, value=None):
+        row = self.sheet.row_values
+        if value and row(rowNum)[colNum].strip() != value:
             self.ok = False
             self.errors.append(
                 {
-                    "type": "Sheet verification incorrect data",
+                    "type": "Sheet verification: incorrect data",
                     "level": "error",
-                    "msg": f"'{self.sheet_name}': Unexpected value in row: {row}, column: {column}. Expected: {value}, Got: {self.sheet.row_values(row)[column]}",
+                    "language": self.language,
+                    "msg": f"Unexpected value in row: {rowNum}, column: {colNum}. Expected: {value}, Got: {row(rowNum)[colNum]}",
                 }
             )
-        elif not self.sheet.row_values(row)[column]:
+        elif not row(rowNum)[colNum]:
             self.errors.append(
                 {
-                    "type": "Sheet verification missing data",
+                    "type": "Sheet verification: missing data",
                     "level": "warning",
-                    "msg": f"'{self.sheet_name}': Empty cell found at row: {row+1}, column: {column+1}. Value expected.",
+                    "language": self.language,
+                    "msg": f"Empty cell found at row: {rowNum+1}, column: {colNum+1}.",
                 }
             )
 
 
 class DataExtractor:
     def __init__(self):
-        self.aiatsis_geographies = {}
+        self.aiatsis_geographies_by_name = {}
+        self.aiatsis_geographies_by_code = {}
         self.gambay_geographies = {}
+        self.errors = []
         self.data = {}
         self.words = {}
         self.languages = {}
-        self.gambay_additions = []
-        self.errors = []
+        # self.gambay_additions = []
+        # remember that these paths are relative to the volume
+        #  mountpoints inside the container
         self.data_path = "/srv/data"
         self.repository = "/srv/dist/repository"
-        self.gambay_geographies_geojson = "/srv/data/gambay-languages.geojson"
+        self.aiatsis_geography_file = f"{self.data_path}/AIATSIS-geography.xlsx"
+        self.gambay_geography_file = f"{self.data_path}/gambay-languages.geojson"
 
     def extract(self):
         self.extract_aiatsis_geographies()
         self.extract_gambay_geographies()
         self.map_gambay_and_aiatsis_geographies()
         self.apply_aiatsis_overrides()
+        self.convert_to_geojson_features()
         self.remove_languages_without_geo_data()
-        self.extract_language_data()
-        self.build_repository()
+        data = self.locate_languages_with_data()
+        # pp.pprint(data)
+        data = self.extract_language_data(data)
+        for item in data:
+            self.data[item["code"]]["properties"]["language"]["name"] = item[
+                "language"
+            ]["name"]
+            self.data[item["code"]]["properties"]["name"] = item["language"]["name"]
+        self.build_repository(data)
         self.write_master_indices()
+        # pp.pprint(self.errors)
 
     def extract_aiatsis_geographies(self):
         def parse_row(row):
@@ -106,134 +219,115 @@ class DataExtractor:
                 "override": row[7],
             }
 
-        print("Extracting AIATSIS geography data")
-        with xlrd.open_workbook(f"{self.data_path}/AIATSIS-geography.xlsx") as wb:
+        log.info("Extracting AIATSIS geography data")
+        data = []
+        with xlrd.open_workbook(self.aiatsis_geography_file) as wb:
             sh = wb.sheet_by_index(0)
             for r in range(1, sh.nrows):
                 row = parse_row(sh.row_values(r))
-                self.aiatsis_geographies[row["name"]] = row
+                self.aiatsis_geographies_by_code[row["code"]] = row
+                self.aiatsis_geographies_by_name[row["name"]] = row
+        data = itertools.groupby(data, key=lambda i: i["code"])
+        for key, group in data:
+            if len(list(group)) > 1:
+                print(f"{key} has more than entry in the AIATSIS geography file")
+                self.errors.append(
+                    {
+                        "type": "AIATSIS code found twice",
+                        "level": "error",
+                        "msg": f"The AIATSIS sheet has more than one entry with the code {key}",
+                    }
+                )
         # for item in self.aiatsis_geographies.items():
         #     pp.pprint(item)
 
     def extract_gambay_geographies(self):
-        print("Extracting Gambay geography data")
-        with open(self.gambay_geographies_geojson, "r") as f:
+        def parse(item):
+            return {
+                "code": item["properties"]["austlang"]
+                if "austlang" in item["properties"]
+                else "",
+                "name": item["properties"]["name"],
+                "lat": item["geometry"]["coordinates"][1],
+                "lng": item["geometry"]["coordinates"][0],
+            }
+
+        log.info("Extracting Gambay geography data")
+        with open(self.gambay_geography_file, "r") as f:
             gambay_data = json.load(f)
 
         for language in gambay_data["features"]:
-            language_name = language["properties"]["name"]
-            self.gambay_geographies[language_name] = language
+            item = parse(language)
+            if not (item["code"]):
+                self.errors.append(
+                    {
+                        "type": "Gambay entry missing Austlang code",
+                        "level": "error",
+                        "msg": f"Gambay item '{item['name']}'' is missing an Austlang Code.",
+                    }
+                )
+
+            if item["code"].upper() != item["code"]:
+                self.errors.append(
+                    {
+                        "type": "Gambay code lowercased",
+                        "level": "error",
+                        "msg": f"Gambay code for {item['name']} is lowercase: '{item['code']}'. Should be {item['code'].upper()}",
+                    }
+                )
+                item["code"] = item["code"].upper()
+            # pp.pprint(item)
+            self.gambay_geographies[item["name"]] = item
         # for item in self.gambay_geographies.items():
         #     pp.pprint(item)
 
     def map_gambay_and_aiatsis_geographies(self):
-        def add(prop, feature, data, language_name):
-            addition = []
-            if prop not in feature["properties"] and data:
-                addition = [{"property": prop, "value": data, "name": language_name}]
-                feature["properties"][prop] = data
-            return (addition, feature)
-
-        for (language_name, language) in self.gambay_geographies.items():
-            language["properties"]["source"] = "Gambay"
-            if "code" in language["properties"]:
-                code = language["properties"]["code"]
-                if code.upper() != language["properties"]["code"]:
-                    self.errors.append(
-                        {
-                            "type": "Gambay code lowercased",
-                            "level": "error",
-                            "msg": f"Gambay code for {language['properties']['name']} is lowercase: '{code}'. Should be {code.upper()}",
-                        }
-                    )
-                    self.data[code.upper()] = language
-                    self.data[code.upper()]["properties"]["code"] = code.upper()
-                else:
-                    self.data[code] = language
-
+        log.info("Mapping Gambay and AIATSIS geographies")
+        for (name, item) in self.gambay_geographies.items():
+            if "code" in item and not "#" in item["code"]:
+                item["source"] = "Gambay"
+                self.data[item["code"]] = item
+            elif item["name"] in self.aiatsis_geographies_by_name:
+                item = self.aiatsis_geographies[item["name"]]
+                item["source"] = "Austlang"
+                self.data[item["code"]] = item
             else:
-                if language_name in self.aiatsis_geographies:
-                    if self.aiatsis_geographies[language_name]["code"]:
-                        (additions, language) = add(
-                            "code",
-                            language,
-                            self.aiatsis_geographies[language_name]["code"],
-                            language_name,
-                        )
-                        self.gambay_additions.extend(additions)
-                        self.data[language["properties"]["code"]] = language
-                    else:
-                        self.errors.append(
-                            {
-                                "type": "Missing code in Austlang",
-                                "level": "error",
-                                "msg": f"Gambay language '{language_name}' found in Austlang but no code was present - language excluded",
-                            }
-                        )
+                self.errors.append(
+                    {
+                        "type": "Item missing code in Gambay and Gambay name not found in Austlang",
+                        "level": "error",
+                        "msg": f"Item with name {item['name']} has no code in Gambay and this name is not found in Austlang",
+                    }
+                )
 
     def apply_aiatsis_overrides(self):
-        for key, item in self.aiatsis_geographies.items():
-            if item["code"] not in self.data:
-                if not item["name"] or (not item["lng"] and item["lat"]):
-                    continue
-                self.errors.append(
-                    {
-                        "type": "Language not found in Gambay",
-                        "level": "warning",
-                        "msg": f"{item['name']} ({item['code']}) not found in Gambay. Using data from Austlang.",
-                    }
-                )
-
-                self.data[item["code"].upper()] = {
-                    "type": "Feature",
-                    "geometry": {
-                        "coordinates": [item["lng"], item["lat"]],
-                        "type": "Point",
-                    },
-                    "properties": {
-                        "code": item["code"],
-                        "name": item["name"],
-                        "source": "Austlang",
-                        "selected": False,
-                    },
-                }
+        log.info("Applying AIATSIS overrides")
+        for name, item in self.aiatsis_geographies_by_code.items():
+            item["source"] = "Austlang"
             if item["override"]:
-                self.errors.append(
-                    {
-                        "type": "Override data in Gambay",
-                        "level": "warning",
-                        "msg": f"Using Austlang data to override the Gambday data for {item['name']} ({item['code']}).",
-                    }
-                )
-                self.data[item["code"].upper()]["geometry"]["coordinates"] = [
-                    item["lng"],
-                    item["lat"],
-                ]
-                self.data[item["code"].upper()]["properties"]["name"] = item["name"]
-                self.data[item["code"].upper()]["properties"]["source"] = "Austlang"
-            if "#" in item["code"]:
-                self.errors.append(
-                    {
-                        "type": "Adding language from Austlang",
-                        "level": "warning",
-                        "msg": f"Using Austlang data for {item['name']} ({item['code']}).",
-                    }
-                )
-                self.data[item["code"].upper()] = {
-                    "type": "Feature",
-                    "geometry": {
-                        "coordinates": [item["lng"], item["lat"]],
-                        "type": "Point",
-                    },
-                    "properties": {
-                        "code": item["code"],
-                        "name": item["name"],
-                        "source": "Austlang",
-                        "selected": False,
-                    },
-                }
+                self.data[item["code"]] = item
+            if item["code"] not in self.data:
+                self.data[item["code"]] = item
+
+    def convert_to_geojson_features(self):
+        log.info("Converting the data to GeoJSON features")
+        for name, item in self.data.items():
+            self.data[item["code"]] = {
+                "type": "Feature",
+                "geometry": {
+                    "coordinates": [item["lng"], item["lat"]],
+                    "type": "Point",
+                },
+                "properties": {
+                    "code": item["code"],
+                    "name": item["name"],
+                    "source": item["source"],
+                    "selected": False,
+                },
+            }
 
     def remove_languages_without_geo_data(self):
+        log.info("Remove languages without Geo data")
         data = {}
         for (key, item) in self.data.items():
             geo = item["geometry"]["coordinates"]
@@ -241,26 +335,18 @@ class DataExtractor:
                 data[key] = item
         self.data = data
 
-    def extract_language_data(self):
-        def parse_row(row):
-            data = {"english": row[0], "indigenous": row[1].lower()}
-            if ".mov" in row[2]:
-                data["video_file"] = row[2]
-            elif ".wav" in row[2]:
-                data["audio_file"] = row[2]
-
-            if len(row) == 4 and row[3]:
-                data["english_alternate"] = row[3]
-            return data
-
+    def locate_languages_with_data(self):
+        data = []
         for root, dirs, files in os.walk(self.data_path):
+            if root == "/srv/data":
+                continue
+
+            log.info(f"Processing: {root}")
             sheet = []
             for file in files:
                 if "xlsx" in file and not "~$" in file:
                     sheet.append(file)
-            if root == "/srv/data":
-                continue
-            log.info(f"Processing: {root}")
+
             if len(sheet) == 0:
                 self.errors.append(
                     {
@@ -280,29 +366,51 @@ class DataExtractor:
                     }
                 )
                 continue
-            sheet = sheet[0]
-            sheet = os.path.join(root, sheet)
-            with xlrd.open_workbook(sheet) as wb:
+
+            data.append(
+                {
+                    "root": root,
+                    "name": os.path.join(root, sheet[0]).replace("/srv/data/", ""),
+                    "sheet": os.path.join(root, sheet[0]),
+                }
+            )
+        return data
+
+    def extract_language_data(self, data):
+        def parse_row(row):
+            data = {"english": row[0].strip(), "indigenous": row[1].strip().lower()}
+            if ".mov" in row[2]:
+                data["video_file"] = row[2]
+            elif ".wav" in row[2]:
+                data["audio_file"] = row[2]
+
+            if len(row) == 4 and row[3]:
+                data["english_alternate"] = row[3].strip()
+            return data
+
+        itemsWithData = []
+        for item in data:
+            sheetname = item["name"]
+            worksheet = item["sheet"]
+            root = item["root"]
+
+            with xlrd.open_workbook(worksheet) as wb:
                 sh = wb.sheet_by_index(0)
-                if sh.nrows != 65:
+
+                v = SheetVerifier(sh, worksheet)
+                errors = v.verify()
+                self.errors.extend(errors)
+                if not v.ok:
                     self.errors.append(
                         {
-                            "type": "Bad spreadsheet",
-                            "level": "error",
-                            "msg": f"'{sheet}' in '{root}' isn't exactly 65 rows - is it correct?",
+                            "type": "Critical errors in spreadsheet",
+                            "level": "Error",
+                            "msg": f"There were errors in the spreadsheet {item['name']} so this item has been skipped",
                         }
                     )
                     continue
 
-                log.info(f"Verifying {sheet}")
-                v = SheetVerifier(sh, sheet)
-                errors = v.verify()
-                self.errors.extend(errors)
-                if not v.ok:
-                    log.error("Errors found in sheet - skipping this folder.")
-                    continue
-
-                log.info(f"Extracting language data from {sheet}")
+                log.info(f"Extracting data: {sheetname}")
                 sheet = {
                     "language": {
                         "name": sh.row_values(0)[1].strip(),
@@ -322,43 +430,14 @@ class DataExtractor:
                     },
                     "thankyou": sh.row_values(3)[1].strip(),
                 }
-                if sheet["code"] not in self.data.keys():
-                    try:
-                        if self.aiatsis_geographies[sheet["language"]["name"]]:
-                            aiatsis_data = self.aiatsis_geographies[
-                                sheet["language"]["name"]
-                            ]
-                            self.data[sheet["code"]] = {
-                                "geometry": {
-                                    "coordinates": [
-                                        aiatsis_data["lng"],
-                                        aiatsis_data["lat"],
-                                    ],
-                                    "type": "Point",
-                                },
-                                "properties": {
-                                    "source": "Austlang",
-                                    "code": aiatsis_data["code"],
-                                    "name": aiatsis_data["name"],
-                                },
-                                "type": "Feature",
-                            }
-                            self.errors.append(
-                                {
-                                    "type": "Using Austlang data",
-                                    "level": "warning",
-                                    "msg": f"Using Austlang data for '{sheet['code']}' '{sheet['language']['name']}'",
-                                }
-                            )
-                    except KeyError as e:
-                        self.errors.append(
-                            {
-                                "type": f"Language not found in Gambay or Austlang",
-                                "level": "error",
-                                "msg": f"'{sheet['code']}' '{sheet['language']['name']}' not found in either the Gambay or Austlang data",
-                            }
-                        )
-                        continue
+                if sheet["code"] not in self.data:
+                    self.errors.append(
+                        {
+                            "type": "Code not found",
+                            "level": "error",
+                            "msg": f"'{sheetname}' has code '{sheet['code']}' but that code is not in Gambay or AIATSIS geo data.",
+                        }
+                    )
 
                 for r in range(8, sh.nrows):
                     data = parse_row(sh.row_values(r))
@@ -367,20 +446,23 @@ class DataExtractor:
                     elif "video_file" in data:
                         data["video_file"] = os.path.join(root, data["video_file"])
 
-                    sheet["words"].append(data)
+                    if "audio_file" in data or "video_file" in data:
+                        sheet["words"].append(data)
 
                 self.data[sheet["code"]]["properties"] = {
                     **sheet,
                     **self.data[sheet["code"]]["properties"],
                 }
+                itemsWithData.append(sheet)
+        return itemsWithData
 
-    def build_repository(self):
+    def build_repository(self, data):
         def get_target_name(path, file, ext):
             return os.path.join(path, os.path.splitext(os.path.basename(file))[0]) + ext
 
         def transcode(item, target, format):
             if os.environ["UPDATE_ALL"] == "true" or not os.path.exists(target):
-                log.info(f"Transcoding {item} to {format}")
+                log.debug(f"Transcoding {item} to {format}")
                 subprocess.run(
                     [
                         "ffmpeg",
@@ -395,36 +477,20 @@ class DataExtractor:
                 )
 
         def transcode_and_copy_to_repository(item, item_path):
-            if "audio_file" not in item and "video_file" not in item:
-                self.errors.append(
-                    {
-                        "type": "Audio or Video file missing",
-                        "level": "warning",
-                        "msg": f"Neither an audio or a video file was provided: '{item_path}' '{item}'",
-                    }
-                )
-                return item
-
             if "video_file" in item:
                 video_file = item["video_file"]
                 if not video_file:
-                    self.errors.append(
-                        {
-                            "type": "Video file not specified",
-                            "level": "warning",
-                            "msg": f"Video file not specified. '{item_path}' '{item}'",
-                        }
-                    )
                     del item["video_file"]
                     item["video"] = []
                     return item
 
                 if not os.path.exists(video_file):
+                    print(item)
                     self.errors.append(
                         {
-                            "type": "Video file missing",
+                            "type": "Video file not found",
                             "level": "error",
-                            "msg": f"'{video_file}' not found",
+                            "msg": f"'{video_file}' specified in sheet but file not found",
                         }
                     )
                     del item["video_file"]
@@ -461,13 +527,6 @@ class DataExtractor:
             if "audio_file" in item:
                 audio_file = item["audio_file"]
                 if not audio_file:
-                    self.errors.append(
-                        {
-                            "type": "Audio file not specified",
-                            "level": "warning",
-                            "msg": f"Audio file not specified. '{item_path}' '{item}'",
-                        }
-                    )
                     del item["audio_file"]
                     item["audio"] = []
                     return item
@@ -477,7 +536,7 @@ class DataExtractor:
                         {
                             "type": "Audio file missing",
                             "level": "error",
-                            "msg": f"'{audio_file}'' not found",
+                            "msg": f"'{audio_file}' specified in sheet but file not found",
                         }
                     )
                     del item["audio_file"]
@@ -514,53 +573,50 @@ class DataExtractor:
                 return item
 
         def push_to_words(word, item):
-            item = {**item}
+            # item = {**item}
             if word["english"] not in self.words:
                 self.words[word["english"]] = []
-            word["language"] = {
-                "code": item["properties"]["code"],
-                "name": item["properties"]["name"],
+
+            word = {
+                "type": "Feature",
+                "geometry": self.data[item.code]["geometry"],
+                "properties": {
+                    **word,
+                    "language": {"code": item.code, "name": item.language["name"]},
+                },
             }
-            item["properties"] = word
-            # pp.pprint(item)
-            self.words[word["english"]].append(item)
+            self.words[word["properties"]["english"]].append(word)
 
-        self.makepath(self.repository)
-        for key, item in self.data.items():
-            item_geometry = SimpleNamespace(**item["geometry"])
-            item_properties = SimpleNamespace(**item["properties"])
+        for item in data:
+            item = SimpleNamespace(**item)
 
-            log.info(f"Building repository for {item_properties.code}")
-            item_path = os.path.join(self.repository, item_properties.code)
+            log.info(f"Building repository for {item.code}: {item.language['name']}")
+            item_path = os.path.join(self.repository, item.code)
             self.makepath(item_path)
 
-            self.languages[item_properties.code] = item
-
-            if "speaker" in item["properties"]:
-                item["properties"]["speaker"] = transcode_and_copy_to_repository(
-                    item_properties.speaker, item_path
-                )
+            if item.speaker:
+                item.speaker = transcode_and_copy_to_repository(item.speaker, item_path)
                 # pp.pprint(item["properties"]["speaker"])
 
-            if "language" in item["properties"]:
-                item["properties"]["language"] = transcode_and_copy_to_repository(
-                    item_properties.language, item_path
+            if item.language:
+                item.language = transcode_and_copy_to_repository(
+                    item.language, item_path
                 )
                 # pp.pprint(item["properties"]["language"])
 
-            if "words" in item["properties"]:
+            if item.words:
                 words = []
-                for word in item_properties.words:
+                for word in item.words:
                     word = transcode_and_copy_to_repository(word, item_path)
                     # pp.pprint(word)
-                    push_to_words(word, item)
                     words.append(word)
-                item["properties"]["words"] = words
-                # pp.pprint(item["properties"]["words"])
+                    push_to_words(word, item)
+                item.words = words
 
-            # pp.pprint(item)
+            self.languages[item.code] = self.data[item.code]
+
             with open(os.path.join(item_path, "index.json"), "w") as f:
-                f.write(json.dumps(item))
+                f.write(json.dumps(self.data[item.code]))
 
     def makepath(self, path):
         try:
@@ -569,24 +625,35 @@ class DataExtractor:
             pass
 
     def write_master_indices(self):
-        languages = []
+        languages = {}
+        for (code, language) in self.data.items():
+            language["properties"]["words"] = False
+            languages[code] = language
+
         for (code, language) in self.languages.items():
-            language["properties"]["words"] = (
-                True if "words" in language["properties"] else False
-            )
-            languages.append(language)
+            language["properties"]["words"] = True
+            self.languages[code] = language
+            languages[code] = language
+
+        languages = [language for (code, language) in languages.items()]
+        with open(f"{self.repository}/languages-with-data.json", "w") as f:
+            f.write(json.dumps({"languages": self.languages}))
 
         with open(f"{self.repository}/languages.json", "w") as f:
             f.write(json.dumps({"languages": languages}))
 
         words = []
-        for (key, word) in self.words.items():
-            m = hashlib.sha256()
-            m.update(key.encode())
-            index = m.hexdigest()
-            words.append({"name": key, "index": f"{index}.json"})
-            with open(f"{self.repository}/{index}.json", "w") as f:
-                f.write(json.dumps(word))
+        for name in WORDS:
+            try:
+                word = self.words[name]
+                m = hashlib.sha256()
+                m.update(name.encode())
+                index = m.hexdigest()
+                words.append({"name": name, "index": f"{index}.json"})
+                with open(f"{self.repository}/{index}.json", "w") as f:
+                    f.write(json.dumps(word))
+            except:
+                pass
 
         with open(f"{self.repository}/words.json", "w") as f:
             f.write(json.dumps({"words": words}))
@@ -597,15 +664,6 @@ class DataExtractor:
                     {
                         "date": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
                         "errors": self.errors,
-                    }
-                )
-            )
-        with open(f"{self.repository}/gambay-additions.json", "w") as f:
-            f.write(
-                json.dumps(
-                    {
-                        "date": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "additions": self.gambay_additions,
                     }
                 )
             )

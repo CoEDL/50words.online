@@ -22,11 +22,7 @@ module.exports = {
         host: "0.0.0.0",
         port: 9001,
         historyApiFallback: true,
-        watchOptions: {
-            watch: true,
-            poll: 1000,
-            ignored: ["node_modules", "dist"],
-        },
+        writeToDisk: true,
     },
     plugins: [
         new CleanWebpackPlugin({
@@ -71,7 +67,7 @@ module.exports = {
                 ],
             },
             {
-                test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif)?$/,
+                test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif|mp4)?$/,
                 loader: "file-loader?name=res/[name].[ext]?[hash]",
             },
         ],

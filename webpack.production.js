@@ -75,7 +75,7 @@ module.exports = {
                 ],
             },
             {
-                test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif)?$/,
+                test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif|mp4)?$/,
                 loader: "file-loader?name=res/[name].[ext]?[hash]",
             },
         ],

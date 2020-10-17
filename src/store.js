@@ -3,87 +3,107 @@
 import Vue from "vue";
 import Vuex from "vuex";
 Vue.use(Vuex);
-import { loadWordData } from "./data-loader.service";
-import { cloneDeep } from "lodash";
+import {
+    loadLanguages,
+    loadWords,
+    loadWordData,
+    loadLanguageData,
+} from "./data-loader.service";
+import { cloneDeep, orderBy } from "lodash";
+
+export const mutations = {
+    reset(state) {
+        state = reset();
+    },
+    setWords(state, payload) {
+        state.words = [...payload.words];
+    },
+    setLanguages(state, payload) {
+        state.languages = orderBy(payload.languages, (l) => l.properties.name);
+    },
+    setSelectionToDisplay(state, payload) {
+        state.selection = { ...payload };
+    },
+    setLayer(state, payload) {
+        state.layer = payload;
+    },
+    flyTo(state, payload) {
+        state.flyTo = { ...payload };
+    },
+};
+
+export const actions = {
+    async loadData({ commit }) {
+        let response = await loadLanguages();
+        commit("setLanguages", response);
+
+        response = await loadWords();
+        commit("setWords", response);
+    },
+    async loadWord({ state, commit }, word) {
+        const words = await loadWordData({ index: word.index });
+
+        commit("setLayer", "words");
+        commit("setSelectionToDisplay", {
+            type: "word",
+            data: { ...word, words },
+        });
+    },
+    async loadLanguage({ state, commit }, { code }) {
+        const data = await loadLanguageData({ code });
+
+        commit("setLayer", "languages");
+        commit("setSelectionToDisplay", {
+            type: "language",
+            data,
+        });
+    },
+};
+
+export const getters = {
+    getWordList: (state) => () => {
+        return cloneDeep(state.words);
+    },
+    // getSelectedWord: (state) => () => {
+    //     return cloneDeep(state.selectedWord);
+    // },
+    getSelection: (state) => () => {
+        return cloneDeep(state.selection);
+    },
+    getSelectionData: (state) => () => {
+        return cloneDeep(state.selection.data);
+    },
+};
 
 const configuration = {
     strict: process.env.NODE_ENV !== "production",
     state: reset(),
-    mutations: {
-        reset(state) {
-            state = reset();
-        },
-        setWords(state, payload) {
-            state.words = [...payload.words];
-        },
-        setLanguages(state, payload) {
-            state.languages = [...payload.languages];
-        },
-        setSelectedLanguage(state, payload) {
-            state.selectedLanguage = payload;
-        },
-        setSelectedWord(state, payload) {
-            state.selectedWord = payload.word.map((w) => {
-                const language = state.languages.filter(
-                    (l) => l.code === w.code
-                )[0];
-                return {
-                    ...w,
-                    language: language.name,
-                    lat: language.lat,
-                    lng: language.lng,
-                };
-            });
-        },
-        unsetSelectedWord(state) {
-            state.selectedWord = undefined;
-        },
-        unsetSelectedLanguage(state) {
-            state.selectedLanguage = undefined;
-        },
-        show(state, payload) {
-            state.show = payload;
-        },
-    },
-    actions: {
-        async loadWord({ state, commit }, payload) {
-            // console.log("loadWord", JSON.stringify(payload, null, true));
-            let word = await loadWordData({
-                words: state.words,
-                word: payload.word,
-            });
-            console.log("Loaded data for word:", payload.word);
-            word = word.filter(
-                (w) =>
-                    (w.properties.audio && w.properties.audio.length) ||
-                    (w.properties.video && w.properties.video.length)
-            );
-            // console.log(word);
-            commit("setSelectedWord", { word });
-            if (payload.triggerPlayAll) {
-                commit("setPlayState", {
-                    state: "next",
-                });
-            }
-        },
-    },
-    getters: {
-        getWordList: (state) => () => {
-            return cloneDeep(state.words);
-        },
-        getSelectedWord: (state) => () => {
-            return cloneDeep(state.selectedWord);
-        },
-    },
+    mutations,
+    actions,
+    getters,
 };
 export const store = new Vuex.Store(configuration);
 
 function reset() {
     return {
-        show: "languages",
+        iOS:
+            [
+                "iPad Simulator",
+                "iPhone Simulator",
+                "iPod Simulator",
+                "iPad",
+                "iPhone",
+                "iPod",
+            ].includes(navigator.platform) ||
+            // iPad on iOS 13 detection
+            (navigator.userAgent.includes("Mac") && "ontouchend" in document),
         words: [],
         languages: [],
-        selectedLanguage: undefined,
-        selectedWord: undefined,
+        layer: "languages",
+        flyTo: undefined,
+        selection: {
+            type: undefined,
+            data: undefined,
+        },
     };
 }

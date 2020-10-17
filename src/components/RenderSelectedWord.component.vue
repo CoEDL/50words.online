@@ -50,26 +50,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "assets/variables.scss";
+// @import "assets/variables.scss";
 
-.style-button {
-    border-color: black;
-    background-color: black;
-    color: $text-color;
-}
+// .style-button {
+//     border-color: black;
+//     background-color: black;
+//     color: $text-color;
+// }
 
-.style-button-deselected {
-    color: $primary-color;
-}
+// .style-button-deselected {
+//     color: $primary-color;
+// }
 
-.style-word {
-    color: $text-color;
-}
-@media (min-width: 1024px) {
-    .style-selected-word {
-        font-size: 1.5em;
-        color: $text-color;
-        padding-top: 10px;
-    }
-}
+// .style-word {
+//     color: $text-color;
+// }
+// @media (min-width: 1024px) {
+//     .style-selected-word {
+//         font-size: 1.5em;
+//         color: $text-color;
+//         padding-top: 10px;
+//     }
+// }
 </style>

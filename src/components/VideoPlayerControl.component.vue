@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { debounce } from "lodash";
 export default {
     props: {
         files: {
@@ -16,17 +17,17 @@ export default {
             type: Boolean | undefined,
             required: true,
         },
-        store: Object | undefined,
     },
     data() {
         return {
+            debouncedLoad: debounce(this.load, 500),
             videoFiles: [],
             loading: false,
         };
     },
     watch: {
         play: function(n, o) {
-            if (n.includes(true)) this.load();
+            if (n.play) this.debouncedLoad();
         },
     },
     methods: {
@@ -62,7 +63,7 @@ export default {
         },
         async endedHandler() {
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            this.$emit("finishedPlaying");
+            this.$emit("finished-playing");
         },
     },
 };

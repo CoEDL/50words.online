@@ -21,7 +21,7 @@ export default {
         return {
             watchers: {},
             selector: true,
-            textColor: styles.textColor,
+            textColor: styles.highlightDark,
         };
     },
     computed: {
@@ -72,20 +72,20 @@ export default {
 </style>
 
 <style lang="scss">
-@import "assets/variables.scss";
-.el-switch__core {
-    margin: 5px 0 0 0;
-}
+// @import "assets/variables.scss";
+// .el-switch__core {
+//     margin: 5px 0 0 0;
+// }
 
-.el-switch__label > span {
-    font-size: 1em;
-}
+// .el-switch__label > span {
+//     font-size: 1em;
+// }
 
-.el-switch__label {
-    color: $primary-color;
-}
+// .el-switch__label {
+//     color: $primary-color;
+// }
 
-.el-switch__label.is-active {
-    color: $text-color;
-}
+// .el-switch__label.is-active {
+//     color: $text-color;
+// }
 </style>

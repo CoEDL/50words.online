@@ -1,154 +1,211 @@
 <template>
-    <div>
-        <div id="map" class="style-map"></div>
-        <data-selector-component class="style-data-selector hidden md:block" />
-        <render-selected-word-component
-            v-if="map && selectedWord"
-            :map="map"
-            class="style-render-selected-word"
-            @center-map="centerMap"
+    <div class="md:p-1 relative">
+        <div
+            ref="map"
+            :class="{
+                'w-full h-full': !smallDevice,
+                'width-screen cursor-pointer': smallDevice,
+            }"
+            :style="{
+                height: smallDevice
+                    ? selection.type
+                        ? '30vh'
+                        : '45vh'
+                    : mapHeight,
+            }"
+        ></div>
+        <map-layer-toggle-component
+            v-if="layer === 'languages'"
+            class="top-0 right-0 absolute md:mt-4 mr-1 md:mr-4"
+            @hide-languages-without-data="hideLanguagesWithoutData"
+            @show-languages-without-data="showLanguagesWithoutData"
         />
-
         <zoom-to-language-component
-            v-if="!selectedWord"
-            class="style-language-finder hidden md:block"
-            @zoom-to-language="zoomToLanguage"
+            class="hidden md:block top-0 left-0 absolute mt-4 ml-6"
+            @fly-to="flyTo"
         />
-        <div class="style-map-reset pt-2 md:pt-0">
+        <div class="top-0 right-0 mt-8 md:mt-32 mr-1 md:mr-3 absolute">
             <div class="flex flex-col">
-                <div>
-                    <el-button
-                        type="default"
-                        @click="centerMap"
-                        size="mini"
-                        class="style-reset-button"
-                    >
-                        <i class="fas fa-crosshairs style-button-image"></i>
-                    </el-button>
-                </div>
-                <div class="h-4"></div>
-                <div>
-                    <el-button
-                        type="default"
-                        @click="toggleLayerWithoutData"
-                        size="mini"
-                        class="style-reset-button"
-                    >
-                        <i class="fas fa-layer-group style-button-image"></i>
-                    </el-button>
+                <div
+                    @click="centerMap"
+                    size="mini"
+                    class="border-2 border-gray-400 py-1 px-3 bg-white rounded-lg"
+                >
+                    <i class="fas fa-crosshairs style-button-image"></i>
                 </div>
             </div>
         </div>
+        <contribute-dialog-component
+            class="hidden md:block"
+            :show="showContributeDialog"
+            @close="showContributeDialog = false"
+        >
+        </contribute-dialog-component>
+        <render-word-map-popup-component
+            v-if="word"
+            :word="word"
+            class="absolute z-10 top-0 ml-4 mt-4 p-1 rounded-lg bg-white border-2 border-highlight-dark text-center style-overlay"
+            @done="word = undefined"
+        />
     </div>
 </template>
 
 <script>
-import styles from "assets/variables.scss";
 import Vue from "vue";
-import ElementUI from "element-ui";
-import locale from "element-ui/lib/locale/lang/en";
-import RenderWordComponent from "components/RenderWord.component.vue";
+import styles from "assets/variables.scss";
+import RenderWordMapPopupComponent from "components/RenderWordMapPopup.component.vue";
+import MapLayerToggleComponent from "./MapLayerToggle.component.vue";
 import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
-import DataSelectorComponent from "./DataSelector.component.vue";
-import RenderSelectedWordComponent from "./RenderSelectedWord.component.vue";
+import ContributeDialogComponent from "./DialogContribute.component.vue";
 
-Vue.use(ElementUI, { locale });
 import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken =
-    "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2p2NGhzMzFkMnFsbzQwandhNmJ2MWI2eCJ9.qxu6U_HfPFd-4BZ85eNCvw";
-import { throttle, map, orderBy, shuffle, uniq } from "lodash";
+    "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2pvM2pjMW9kMHhmODNxcmxsMTd2cWkzcCJ9.jpWvN4mzM5M6ijwkSI2CfA";
+const mapBoxStyle = "mapbox://styles/marcolarosa/ckdxwicb42opj19mu7tlt23hn";
+import { debounce, throttle, map, orderBy, shuffle, uniq } from "lodash";
 
 export default {
     components: {
-        RenderWordComponent,
+        ContributeDialogComponent,
+        MapLayerToggleComponent,
         ZoomToLanguageComponent,
-        DataSelectorComponent,
-        RenderSelectedWordComponent,
+        RenderWordMapPopupComponent,
     },
     data() {
         return {
-            map: undefined,
             popup: undefined,
-            mediaElement: {
-                audio: false,
-                video: false,
-                files: [],
+            emptyWordsLanguageLayerShowing: true,
+            showContributeDialog: false,
+            debouncedRenderLanguageLayers: debounce(
+                this.renderLanguageLayers,
+                200
+            ),
+            debouncedRenderWordLayer: debounce(this.renderWordLayer, 200),
+            debouncedCenterMap: debounce(this.centerMap, 1000),
+            debouncedLayerUpdate: debounce(this.layerUpdate, 200),
+            layerProperties: {
+                withData: {
+                    color: styles.highlightDark,
+                },
+                withoutData: {
+                    zoomedOut: {
+                        color: "#ffffff",
+                        opacity: 0.6,
+                    },
+                    zoomedIn: {
+                        color: styles.gray,
+                        opacity: 0.6,
+                    },
+                },
             },
-            emptyWordsLanguageLayerShowing: false,
+            word: undefined,
         };
     },
     computed: {
-        words: function() {
-            return this.$store.state.selectedWord;
+        mapHeight: function() {
+            return `${window.innerHeight - 150}px`;
         },
-        show: function() {
-            return this.$store.state.show;
+        languagesWithData: function() {
+            return this.$store.state.languages.filter(
+                (l) => l.properties.words
+            );
         },
-        selectedLanguage: function() {
-            return this.$store.state.selectedLanguage;
+        languagesWithoutData: function() {
+            return this.$store.state.languages.filter(
+                (l) => !l.properties.words
+            );
         },
-        selectedWord: function() {
-            return this.$store.state.selectedWord;
+        selection: function() {
+            return this.$store.getters.getSelection();
+        },
+        layer: function() {
+            return this.$store.state.layer;
+        },
+        flyToCoordinates: function() {
+            return this.$store.state.flyTo;
         },
         playAll: function() {
             return this.$store.state.playAll;
         },
-        largeDevice: function() {
-            return window.innerWidth < 768 ? false : true;
+        smallDevice: function() {
+            return window.innerWidth < 768 ? true : false;
         },
     },
     watch: {
-        words: function(n) {
-            if (n && n.length) {
-                this.renderWordLayer();
+        layer: function() {
+            if (this.layer === "languages") {
+                this.debouncedRenderLanguageLayers();
             } else {
-                this.renderLanguageLayer();
+                this.debouncedRenderWordLayer();
+            }
+        },
+        selection: function(n) {
+            setTimeout(() => {
+                if (this.selection.type === "word") {
+                    this.debouncedRenderWordLayer();
+                } else if (this.selection.type === "language") {
+                    if (this.selection?.data?.geometry?.coordinates) {
+                        this.flyTo({
+                            coordinates: this.selection.data.geometry
+                                .coordinates,
+                        });
+                    }
+                } else {
+                    this.debouncedCenterMap();
+                }
+            }, 300);
+        },
+        flyToCoordinates: function() {
+            if (this.flyToCoordinates?.word?.geometry?.coordinates) {
+                this.flyTo({
+                    coordinates: this.flyToCoordinates.word.geometry
+                        .coordinates,
+                });
             }
         },
     },
     mounted() {
-        this.renderMap();
-    },
-    beforeMount() {
-        window.addEventListener("resize", throttle(this.centerMap, 300));
-    },
-    beforeDestroy() {
-        window.removeEventListener("resize", this.centerMap);
+        setTimeout(() => {
+            this.renderMap();
+        }, 200);
     },
     methods: {
         async centerMap() {
-            if (this.popup) this.popup.remove();
+            this.map.resize();
+
+            // if (this.popup) this.popup.remove();
+            // centerCountry({ map: this.map });
+            // let position;
+            // if ("geolocation" in navigator) {
+            //     try {
+            //         position = await new Promise((resolve, reject) => {
+            //             navigator.geolocation.getCurrentPosition(
+            //                 (position) => resolve(position),
+            //                 (error) => reject(error)
+            //             );
+            //         });
+            //     } catch (error) {
+            //         centerCountry({ map: this.map });
+            //     }
+            //     // const latitude  = position.coords.latitude;
+            //     // const longitude = position.coords.longitude;
+
+            //     // Melbourne
+            //     // position = [144.948743, -37.790136];
+            //     if (position) {
+            //         position = [
+            //             position.coords.longitude,
+            //             position.coords.latitude,
+            //         ];
+            //         centerLocation({ map: this.map, position });
+            //     } else {
+            //         centerCountry({ map: this.map });
+            //     }
+            // } else {
+            //     centerCountry({ map: this.map });
+            // }
 
             centerCountry({ map: this.map });
-            let position;
-            if ("geolocation" in navigator) {
-                try {
-                    position = await new Promise((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => resolve(position),
-                            (error) => reject(error)
-                        );
-                    });
-                } catch (error) {
-                    centerCountry({ map: this.map });
-                }
-                // const latitude  = position.coords.latitude;
-                // const longitude = position.coords.longitude;
-
-                // Melbourne
-                // position = [144.948743, -37.790136];
-                if (position) {
-                    position = [
-                        position.coords.longitude,
-                        position.coords.latitude,
-                    ];
-                    centerLocation({ map: this.map, position });
-                } else {
-                    centerCountry({ map: this.map });
-                }
-            } else {
-                centerCountry({ map: this.map });
-            }
 
             function centerCountry({ map }) {
                 map.fitBounds([
@@ -157,112 +214,161 @@ export default {
                 ]);
             }
 
-            function centerLocation({ map, position }) {
-                map.flyTo({
-                    center: position,
-                    zoom: window.innerwidth < 768 ? 8 : 6,
-                    bearing: 0,
-                });
-            }
+            // function centerLocation({ map, position }) {
+            //     map.flyTo({
+            //         center: position,
+            //         zoom: window.innerwidth < 768 ? 8 : 6,
+            //         bearing: 0,
+            //     });
+            // }
         },
         renderMap() {
             this.map = new mapboxgl.Map({
-                container: "map",
-                style: "mapbox://styles/mapbox/dark-v10",
+                container: this.$refs.map,
+                style: mapBoxStyle,
+                dragRotate: false,
+                touchPitch: false,
                 center: [0, 0],
             });
-            if (this.largeDevice) {
+            if (this.smallDevice) {
+                // this.map.addControl(new mapboxgl.FullscreenControl());
+            } else {
                 this.map.addControl(
                     new mapboxgl.NavigationControl({
                         showCompass: false,
                     })
                 );
             }
-            // this.map.addControl(new mapboxgl.FullscreenControl());
-            this.centerMap();
+            this.debouncedCenterMap();
             this.map.on("load", () => {
-                this.renderLanguageLayer();
+                this.addLanguageLayerSources();
+                this.renderLanguageLayers();
+                this.addLanguageLayerEventHandlers();
             });
-            this.map.on("click", "languages", (e) => {
-                this.$store.commit("setSelectedLanguage", {
-                    ...e.features[0].properties,
-                });
+            this.map.on("moveend", () => {
+                const flyToState = this.$store.state.flyTo;
+                if (flyToState?.word && !flyToState.state.play) {
+                    this.$store.commit("flyTo", {
+                        ...flyToState,
+                        state: {
+                            play: true,
+                        },
+                    });
+                }
+            });
+            this.map.on("zoom", () => {
+                this.debouncedLayerUpdate();
+            });
+        },
+        addLanguageLayerSources() {
+            this.map.addSource("languagesWithData", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: this.languagesWithData,
+                },
+            });
+            this.map.addSource("languagesWithoutData", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: this.languagesWithoutData,
+                },
+            });
+        },
+        addLanguageLayerEventHandlers() {
+            // languages with data event handlers
+            this.map.on("click", "languagesWithData", (e) => {
+                const language = e.features[0].properties;
+                this.$store.dispatch("loadLanguage", { code: language.code });
+            });
+            this.map.on("mouseenter", "languagesWithData", () => {
+                this.map.getCanvas().style.cursor = "pointer";
+            });
+            this.map.on("mouseleave", "languagesWithData", () => {
+                this.map.getCanvas().style.cursor = "";
+            });
+
+            // languages without data event handlers
+            this.map.on("mouseenter", "languagesWithoutData", () => {
+                const zoomLevel = this.map.getZoom();
+                if (zoomLevel > 5.5) {
+                    this.map.getCanvas().style.cursor = "pointer";
+                }
+            });
+            this.map.on("mouseleave", "languagesWithoutData", () => {
+                this.map.getCanvas().style.cursor = "";
+            });
+            this.map.on("click", "languagesWithoutData", (e) => {
+                const zoomLevel = this.map.getZoom();
+                if (zoomLevel > 5.5) {
+                    this.showContributeDialog = true;
+                }
+            });
+        },
+        addWordLayerEventHandlers() {
+            // word event handlers
+            this.map.on("mouseenter", "words", () => {
+                this.map.getCanvas().style.cursor = "pointer";
+            });
+            this.map.on("mouseleave", "words", () => {
+                this.map.getCanvas().style.cursor = "";
             });
             this.map.on("click", "words", (e) => {
-                if (this.popup) this.popup.remove();
-                const RenderWordClass = Vue.extend(RenderWordComponent);
-                this.popup = new mapboxgl.Popup({ maxWidth: "none" })
-                    .setLngLat(e.lngLat)
-                    .setHTML('<div id="vue-popup-content"></div>')
-                    .addTo(this.map);
                 const properties = e.features[0].properties;
                 if (properties.audio)
                     properties.audio = JSON.parse(properties.audio);
                 if (properties.video)
                     properties.video = JSON.parse(properties.video);
                 properties.language = JSON.parse(properties.language);
-                const popupInstance = new RenderWordClass({
-                    propsData: {
-                        layout: "popup",
-                        word: { properties },
-                    },
-                });
-                popupInstance.$mount("#vue-popup-content");
-                this.popup._update();
-            });
-            // Change the cursor to a pointer when the mouse is over the places layer.
-            this.map.on("mouseenter", "languages", () => {
-                this.map.getCanvas().style.cursor = "pointer";
-            });
+                if (!this.smallDevice) {
+                    this.word = { ...properties };
+                }
 
-            // Change it back to a pointer when it leaves.
-            this.map.on("mouseleave", "languages", () => {
-                this.map.getCanvas().style.cursor = "";
+                // const RenderWordClass = Vue.extend(RenderWordMapPopupComponent);
+                // const popupInstance = new RenderWordClass({
+                //     propsData: {
+                //         word: properties,
+                //     },
+                // });
+
+                // if (this.popup) this.popup = this.popup.remove();
+                // this.popup = new mapboxgl.Popup({
+                //     maxWidth: "none",
+                // })
+                //     .setText("popup")
+                //     .setLngLat(e.lngLat)
+                //     .addTo(this.map);
+                // .setHTML('<divid="vue-popup-content"></div>')
+                // popupInstance.$mount("#popup-content");
+                // this.popup._update();
             });
         },
-        renderLanguageLayer() {
-            if (this.popup) this.popup.remove();
-            if (this.map.getLayer("words"))
-                this.map.setLayoutProperty("words", "visibility", "none");
-
-            let languages = this.$store.state.languages.filter((l) => !l.words);
-
+        renderLanguageLayers() {
+            this.map.resize();
+            if (this.map.getLayer("words")) {
+                this.map.removeLayer("words");
+                this.map.removeSource("words");
+            }
             this.renderLanguagesWithData();
-            this.map.setLayoutProperty("languages", "visibility", "visible");
-
-            if (this.largeDevice) {
-                this.emptyWordsLanguageLayerShowing = true;
-                this.renderLanguagesWithoutData();
-                this.map.setLayoutProperty(
-                    "languagesWithoutData",
-                    "visibility",
-                    "visible"
-                );
+            this.renderLanguagesWithoutData({});
+            if (this.smallDevice) {
+                this.toggleLayerWithoutData();
             }
         },
-
         renderLanguagesWithData() {
-            const features = this.$store.state.languages.filter(
-                (l) => l.properties.words
-            );
-            if (!this.map.getLayer("languages")) {
+            if (!this.map.getLayer("languagesWithData")) {
                 this.map.addLayer({
-                    id: "languages",
+                    id: "languagesWithData",
                     type: "symbol",
-                    source: {
-                        type: "geojson",
-                        data: {
-                            type: "FeatureCollection",
-                            features,
-                        },
-                    },
+                    source: "languagesWithData",
                     paint: {
-                        "text-color": styles.textColor,
+                        "text-color": this.layerProperties.withData.color,
                     },
                     layout: {
                         visibility: "visible",
                         "text-field": "{name}",
-                        "text-size": 15,
+                        "text-size": 16,
                         "text-max-width": 40,
                         "text-allow-overlap": true,
                         "icon-allow-overlap": true,
@@ -271,24 +377,17 @@ export default {
             }
         },
         renderLanguagesWithoutData() {
-            const features = this.$store.state.languages.filter(
-                (l) => !l.properties.words
-            );
             if (!this.map.getLayer("languagesWithoutData")) {
                 this.map.addLayer(
                     {
                         id: "languagesWithoutData",
                         type: "symbol",
-                        source: {
-                            type: "geojson",
-                            data: {
-                                type: "FeatureCollection",
-                                features,
-                            },
-                        },
+                        source: "languagesWithoutData",
                         paint: {
-                            "text-color": styles.primaryColor,
-                            "text-opacity": 0.4,
+                            "text-color": this.layerProperties.withoutData
+                                .zoomedOut.color,
+                            "text-opacity": this.layerProperties.withoutData
+                                .zoomedOut.opacity,
                         },
                         layout: {
                             visibility: "visible",
@@ -299,60 +398,55 @@ export default {
                             "icon-allow-overlap": true,
                         },
                     },
-                    "languages"
+                    "languagesWithData"
                 );
             }
         },
         renderWordLayer() {
-            if (this.popup) this.popup.remove();
-            this.map.setLayoutProperty("languages", "visibility", "none");
-            if (this.map.getLayer("languagesWithoutData")) {
-                this.map.setLayoutProperty(
-                    "languagesWithoutData",
-                    "visibility",
-                    "none"
-                );
-            }
-            if (!this.words) return;
+            this.map.resize();
 
-            if (!this.map.getLayer("words")) {
-                this.map.addSource("words", {
-                    type: "geojson",
-                    data: { type: "FeatureCollection", features: this.words },
-                });
-                this.map.addLayer({
-                    id: "words",
-                    type: "symbol",
-                    source: "words",
-                    paint: {
-                        "text-color": styles.textColor,
-                    },
-                    layout: {
-                        "text-field": "{indigenous}",
-                        "text-size": 15,
-                        "text-max-width": 40,
-                        "text-allow-overlap": true,
-                        "icon-allow-overlap": true,
-                        "text-variable-anchor": [
-                            "top",
-                            "bottom",
-                            "left",
-                            "right",
-                        ],
-                    },
-                });
-            } else {
-                this.map.getSource("words").setData({
-                    type: "FeatureCollection",
-                    features: this.words,
-                });
+            if (this.map.getLayer("languagesWithData")) {
+                this.map.removeLayer("languagesWithData");
             }
-            this.map.setLayoutProperty("words", "visibility", "visible");
+            if (this.map.getLayer("languagesWithoutData")) {
+                this.map.removeLayer("languagesWithoutData");
+            }
+
+            if (this.map.getLayer("words")) {
+                this.map.removeLayer("words");
+                this.map.removeSource("words");
+            }
+            const words = this.$store.getters.getSelectionData()?.words;
+            if (!words) return;
+            this.map.addSource("words", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: words,
+                },
+            });
+            this.map.addLayer({
+                id: "words",
+                type: "symbol",
+                source: "words",
+                paint: {
+                    "text-color": this.layerProperties.withData.color,
+                },
+                layout: {
+                    "text-field": "{indigenous}",
+                    "text-size": 15,
+                    "text-max-width": 40,
+                    "text-allow-overlap": true,
+                    "icon-allow-overlap": true,
+                    "text-variable-anchor": ["top", "bottom", "left", "right"],
+                },
+            });
+            this.addWordLayerEventHandlers();
         },
-        zoomToLanguage(language) {
+        flyTo({ coordinates }) {
             this.map.flyTo({
-                center: language.geometry.coordinates,
-                zoom: 11,
+                center: coordinates,
+                zoom: 7,
                 bearing: 0,
             });
         },
@@ -374,117 +468,65 @@ export default {
                 this.emptyWordsLanguageLayerShowing = true;
             }
         },
+        layerUpdate() {
+            if (this.$store.state.layer !== "languages") return;
+            if (!this.map.getLayer("languagesWithoutData")) return;
+            const zoomLevel = this.map.getZoom();
+            if (zoomLevel < 5.5) {
+                this.map.setPaintProperty(
+                    "languagesWithoutData",
+                    "text-opacity",
+                    this.layerProperties.withoutData.zoomedOut.opacity
+                );
+                this.map.setPaintProperty(
+                    "languagesWithoutData",
+                    "text-color",
+                    this.layerProperties.withoutData.zoomedOut.color
+                );
+            } else {
+                this.map.setPaintProperty(
+                    "languagesWithoutData",
+                    "text-color",
+                    this.layerProperties.withoutData.zoomedIn.color
+                );
+                this.map.setPaintProperty(
+                    "languagesWithoutData",
+                    "text-opacity",
+                    this.layerProperties.withoutData.zoomedIn.opacity
+                );
+            }
+        },
+        hideLanguagesWithoutData() {
+            if (this.map.getLayer("languagesWithoutData")) {
+                this.map.setLayoutProperty(
+                    "languagesWithoutData",
+                    "visibility",
+                    "none"
+                );
+            }
+        },
+        showLanguagesWithoutData() {
+            if (this.map.getLayer("languagesWithoutData")) {
+                this.map.setLayoutProperty(
+                    "languagesWithoutData",
+                    "visibility",
+                    "visible"
+                );
+            }
+        },
     },
 };
 </script>
 
-<style lang="scss" scoped>
-.style-map {
-    position: fixed;
-    top: 0;
-    left: 0px;
-    width: 100vw;
-    height: 100vh;
-    cursor: pointer;
-}
-
-.style-map-reset {
-    position: fixed;
-    top: 8px;
-    left: calc(100vw - 40px);
-}
-
-.style-reset-button {
-    max-width: 8px;
-    font-size: 12px;
-}
-
-.style-button-image {
-    margin-left: -6px;
-}
-
-.style-data-selector {
-    position: fixed;
-    top: 50px;
-    left: calc(100vw - 260px);
-}
-
-.style-render-selected-word {
-    position: fixed;
-    z-index: 1000;
-    top: calc(100% - 115px);
-    left: 0px;
-    width: 100vw;
-    background-color: #191a1a;
-}
-
-@media (min-width: 768px) {
-    .style-map {
-        position: fixed;
-        top: 0;
-        left: 50px;
-        width: calc(100vw - 50px);
-        height: 100vh;
-        cursor: pointer;
-    }
-
-    .style-data-selector {
-        position: fixed;
-        top: 15px;
-        left: calc(100vw - 250px);
-    }
-
-    .style-map-reset {
-        position: fixed;
-        top: 80px;
-        left: calc(100vw - 41px);
-    }
-    .style-language-finder {
-        position: fixed;
-        width: 200px;
-        top: 65px;
-        left: calc(100vw - 250px);
-    }
-    .style-render-selected-word {
-        position: fixed;
-        top: 50px;
-        left: calc(100vw - 300px);
-        width: 250px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .style-data-selector {
-        position: fixed;
-        top: 15px;
-        left: calc(100vw - 370px);
-    }
-
-    .style-map-reset {
-        position: fixed;
-        top: 80px;
-        left: calc(100vw - 41px);
-    }
-    .style-language-finder {
-        position: fixed;
-        width: 290px;
-        top: 80px;
-        left: calc(100vw - 364px);
-    }
-    .style-render-selected-word {
-        position: fixed;
-        top: 55px;
-        left: calc(100vw - 370px);
-        width: 300px;
-    }
-}
-</style>
+<style lang="scss" scoped></style>
 
 <style lang="scss">
 @import "assets/variables.scss";
+.style-overlay {
+    width: 400px;
+}
 
 .mapboxgl-popup-tip {
-    border-top-color: $primary-color !important;
 }
 
 .mapboxgl-popup-content {
@@ -492,7 +534,6 @@ export default {
     width: unset;
     padding: 15px 25px;
     font-size: 0.8em;
-    background-color: $primary-color;
     white-space: nowrap;
 }
 
@@ -501,28 +542,26 @@ export default {
 }
 
 .mapboxgl-ctrl-top-right {
-    margin: 0px 5px 0 0;
+    margin: -5px calc(100vw - 45px) 0 0;
 }
 
 @media (min-width: 768px) {
     .mapboxgl-ctrl-top-right {
-        margin: 0px 0 0 0;
+        margin: 41px 6px 0 0;
     }
     .mapboxgl-popup-content {
         text-align: center;
         font-size: 1.2em;
-        background-color: $primary-color;
     }
 }
 
 @media (min-width: 1024px) {
     .mapboxgl-ctrl-top-right {
-        margin: 0px 0px 0 0;
+        margin: 41px 6px 0 0;
     }
     .mapboxgl-popup-content {
         text-align: center;
         font-size: 1.5em;
-        background-color: $primary-color;
     }
 }
 </style>

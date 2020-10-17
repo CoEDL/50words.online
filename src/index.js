@@ -4,12 +4,13 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 import Vue from "vue";
+import VueAnalytics from "vue-analytics";
+import KeenUI from "keen-ui";
+import "keen-ui/dist/keen-ui.css";
+Vue.use(KeenUI);
 import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
-import VueScrollTo from "vue-scrollto";
-import VueAnalytics from "vue-analytics";
 Vue.use(ElementUI, { locale });
-Vue.use(VueScrollTo);
 
 import App from "components/app.vue";
 import { router } from "./routes";
@@ -21,8 +22,8 @@ Vue.use(VueAnalytics, {
     router,
     debug: {
         isProd: !isProd,
-        sendHitTask: isProd
-    }
+        sendHitTask: isProd,
+    },
 });
 App.router = router;
 App.store = store;

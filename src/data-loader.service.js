@@ -1,62 +1,57 @@
 "use strict";
 
-import { compact, orderBy } from "lodash";
+export async function loadLanguages() {
+    const languages = await get("/repository/languages.json");
+    return languages;
+}
 
-export async function loadData({ store }) {
-    const words = (await get(mapRepositoryRoot("/repository/words.json")))
-        .words;
-    store.commit(`setWords`, { words });
-    let languages = (await get(mapRepositoryRoot("/repository/languages.json")))
-        .languages;
-    store.commit(`setLanguages`, { languages });
+export async function loadWords() {
+    let words = await get("/repository/words.json");
+    return words;
+}
 
-    async function get(path) {
-        try {
-            let response = await fetch(path);
-            if (response.status !== 200) {
-                throw new Error(response);
-            }
-            return await response.json();
-        } catch (error) {
-            console.log(error);
-            return [];
+async function get(path) {
+    try {
+        let response = await fetch(path);
+        if (response.status !== 200) {
+            throw new Error(response);
         }
+        return await response.json();
+    } catch (error) {
+        console.log(error);
+        return [];
     }
 }
 
-export async function loadLanguageData({ code }) {
+export async function loadLanguageMetadata({ code }) {
     let response = await fetch(
         mapRepositoryRoot(`/repository/${code}/index.json`)
     );
     if (response.status !== 200) {
         throw new Error(response);
     }
-    let data = await response.json();
-    data.words = data.properties.words.map(w => {
-        return {
-            ...w,
-            audio: mapRepositoryRoot(w.audio)
-        };
-    });
+    return await response.json();
+}
+
+export async function loadLanguageData({ code }) {
+    const data = await loadLanguageMetadata({ code });
+
+    data.words = data.properties.words
+        .map((w) => {
+            return {
+                ...w,
+                audio: mapRepositoryRoot(w.audio),
+            };
+        })
+        .filter((w) => {
+            return w?.audio?.length || w?.video?.length;
+        });
     return data;
 }
 
-export async function loadWordData({ word, words }) {
-    let index = words.filter(w => {
-        return w.name === word;
-    })[0].index;
-    let response = await fetch(mapRepositoryRoot(`/repository/${index}`));
-    if (response.status !== 200) {
-        throw new Error(response);
-    }
-    word = await response.json();
-    word = word.map(w => {
-        return {
-            ...w,
-            audio: mapRepositoryRoot(w.properties.audio)
-        };
-    });
-    return word;
+export async function loadWordData({ index }) {
+    let words = await get(`/repository/${index}`);
+    return words;
 }
 
 export async function loadProcessingData() {
@@ -66,14 +61,14 @@ export async function loadProcessingData() {
     }
     const errors = await response.json();
 
-    response = await fetch(
-        mapRepositoryRoot(`/repository/gambay-additions.json`)
-    );
-    if (response.status !== 200) {
-        throw new Error(response);
-    }
-    const additions = await response.json();
-    return { errors, additions };
+    // response = await fetch(
+    //     mapRepositoryRoot(`/repository/gambay-additions.json`)
+    // );
+    // if (response.status !== 200) {
+    //     throw new Error(response);
+    // }
+    // const additions = await response.json();
+    return { errors };
 }
 
 export function mapRepositoryRoot(path) {

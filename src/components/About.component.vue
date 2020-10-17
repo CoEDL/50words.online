@@ -1,129 +1,53 @@
 <template>
-    <div class="flex flex-col justify-center mx-auto px-4 xl:px-64">
-        <router-link to="/">
-            <i class="fas fa-arrow-left"></i>&nbsp;back to site
-        </router-link>
-        <div class="my-4">
-            <div class="text-3xl text-center">About 50 words</div>
-        </div>
-        <div class="my-2">
-            <img :src="view50words" class="" />
-        </div>
-        <div class="text-justify">
-            <p class="my-4">
-                The words included here are just a small sample to give an idea
-                of what Australian languages sound like. In some languages,
-                words are more specific, for example, you have to say if a grey
-                kangaroo is male or female in Murrinhpatha, so we have included
-                only the word for the male grey kangaroo in that list. In some
-                languages, the word for 'thigh' is the same as the word for
-                'leg' so they are both shown in those lists.
-            </p>
-            <p class="my-4">
-                When you listen to these words you will notice that Australian
-                languages have many sounds that are not found in English, and
-                these can be tricky for English speakers to pronounce. For an
-                explanation of these sounds, and help in pronouncing them we
-                recommend you watch the short video series we put online at the
-                <a
-                    class="style-link"
-                    href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/training/australian-indigenous-languages/sounds-of-aboriginal-languages"
-                    target="_blank"
-                    >RUIL website.</a
-                >
-            </p>
-            <p class="my-4">
-                For more information about Australian Indigenous languages, see
-                our pages
-                <a
-                    class="style-link"
-                    href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/training/australian-indigenous-languages"
-                    target="_blank"
-                    >here</a
-                >
-                and also
-                <a
-                    class="style-link"
-                    href="https://www.firstlanguages.org.au"
-                    target="_blank"
-                    >First Languages Australia</a
-                >
-                or
-                <a
-                    class="style-link"
-                    href="https://collection.aiatsis.gov.au/austlang/search"
-                    target="_blank"
-                    >Austlang</a
-                >.
-            </p>
-            <p class="my-4">
-                The 50-word project is led by the Research Unit for Indigenous
-                Language at the University of Melbourne, funded by the Duncan
-                Leary Trust for Australian Indigenous Languages. For further
-                information see:
-                <a
-                    class="style-link"
-                    href="http://indiglang.arts.unimelb.edu.au"
-                    target="_blank"
-                    >http://indiglang.arts.unimelb.edu.au</a
-                >
-            </p>
-            <p class="my-4">
-                Words are added to the 50 words site as we receive them, and we
-                are asking for speakers of any language that is not already
-                represented to contact us (RUIL-contact @ unimelb.edu.au) and we
-                will help get their recordings into the site. We will send out
-                the word list, instructions, and a consent form, so that
-                speakers can give their permission for the words to be used
-                here.
-            </p>
+    <div class="flex flex-col space-y-4 lg:text-lg break-normal text-justify">
+        <p>
+            This project from the
+            <a
+                class="style-link"
+                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+                target="_blank"
+            >
+                Research Unit for Indigenous Language</a
+            >
+            aims to provide fifty words in Indigenous languages of Australia The
+            map is intended to be a useful resource for schools and educational
+            organisations to learn 50 words in their local languages, and for
+            the general public to discover the diversity of languages around
+            Australia. For the best experience, the map should be viewed on a
+            computer or tablet.
+        </p>
+        <p>
+            We are continually adding words in new languages, and are asking for
+            speakers of any language that is not already represented to contact
+            us (<a class="style-link" href="mailto:ruil-contact@unimelb.edu.au"
+                >RUIL-contact@unimelb.edu.au</a
+            >) and we will help get their recordings on the map.
+        </p>
+        <p>
+            All words, audio, and video recordings are provided by language
+            speakers and are included here with permission. Australian
+            Indigenous languages have many thousands of words but we are
+            displaying just some on this site, with audio or video.
+        </p>
+        <p>
+            The 50 Words Project is led by the Research Unit for Indigenous
+            Language at the University of Melbourne, and funded by the Duncan
+            Leary Trust for Australian Indigenous Languages.
+        </p>
+        <p>
+            This research project has been approved by the Human Research Ethics
+            Committee of the University of Melbourne. Project number: 1853186.1
+        </p>
+        <p>
+            For more information see our
 
-            <p class="my-4">
-                This project is led by
-                <a
-                    href="https://www.findanexpert.unimelb.edu.au/display/person14513"
-                    target="_blank"
-                    >Professor Rachel Nordlinger</a
-                >
-                and
-                <a
-                    href="https://www.findanexpert.unimelb.edu.au/display/person18278"
-                    target="_blank"
-                    >Associate Professor Nick Thieberger</a
-                >
-                in the Research Unit for Indigenous Language at the University
-                of Melbourne with Katie Jepson and Allyra Murray. Site design
-                and development was by
-                <a
-                    href="https://www.linkedin.com/in/marcolarosa/"
-                    target="_blank"
-                    >Dr Marco La Rosa</a
-                >
-                and the code is available @
-                <a
-                    href="https://github.com/CoEDL/50words.online"
-                    target="_blank"
-                    >https://github.com/CoEDL/50words.online</a
-                >. You will find instructions there for reusing the code if you
-                want to build a similar project with different geography.
-            </p>
-
-            <p class="my-4">
-                The map uses information from
-                <a href="https://www.firstlanguages.org.au/" target="_blank"
-                    >Austlang (AIATSIS)</a
-                >
-                and from
-                <a href="https://gambay.com.au/" target="_blank">Gambay</a>
-                produced by First Languages Australia.
-            </p>
-
-            <p class="my-4">
-                This research project has been approved by the Human Research
-                Ethics Committee of The University of Melbourne. Project
-                number:1853186.2
-            </p>
-        </div>
+            <a
+                class="style-link"
+                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+                target="_blank"
+                >project website</a
+            >.
+        </p>
         <render-about-logo-component />
     </div>
 </template>
@@ -141,39 +65,3 @@ export default {
     },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "assets/variables.scss";
-
-.page-style {
-    padding: 15px;
-    font-size: 1.2em;
-}
-
-.style-link {
-    color: $text-color;
-}
-
-.style-heading {
-    font-size: 30px;
-}
-
-.style-screenshot {
-    max-width: 80vw;
-    max-height: 500px;
-}
-.style-content-container {
-    font-size: 16px;
-    padding: 5px;
-}
-@media (min-width: 768px) {
-    .style-content-container {
-        padding: 10px;
-    }
-}
-@media (min-width: 1024px) {
-    .style-content-container {
-        padding: 20px;
-    }
-}
-</style>
