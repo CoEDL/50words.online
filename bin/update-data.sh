@@ -10,6 +10,7 @@ elif [ "$1" == "--staging" ] ; then
     export DATA_50WORDS="/srv/data"
     export REPOSITORY_50WORDS="/srv/staging"
     export LOG="INFO"
+    docker-compose up
 elif [ "$1" == "--dev" ] ; then
     export DATA_50WORDS="./data"
     export REPOSITORY_50WORDS="./dist"
