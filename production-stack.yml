@@ -9,7 +9,7 @@ networks:
 
 services:
     web:
-        image: nginx:1.15.2-alpine
+        image: nginx:latest
         deploy:
             replicas: 2
             restart_policy:
@@ -22,9 +22,10 @@ services:
             - "443:443"
         volumes:
             - /etc/letsencrypt:/etc/letsencrypt
-            - /srv/50words.online:/var/www/50words.online
-            - /srv/50words.online.staging:/var/www/50words.online.staging
-            - /srv/staging-repository/repository:/var/www/50words.online.staging/repository
+            - /srv/production/www:/var/www/production
+            - /srv/production/repository:/var/www/production/repository
+            - /srv/staging/www:/var/www/staging
+            - /srv/staging/repository:/var/www/staging/repository
             - $PWD/nginx-50words.online.conf:/etc/nginx/conf.d/50words.online.conf
             - $PWD/nginx-staging.50words.online.conf:/etc/nginx/conf.d/staging.50words.online.conf
         networks:
