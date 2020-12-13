@@ -7,11 +7,7 @@
                 'width-screen cursor-pointer': smallDevice,
             }"
             :style="{
-                height: smallDevice
-                    ? selection.type
-                        ? '30vh'
-                        : '45vh'
-                    : mapHeight,
+                height: smallDevice ? (selection.type ? '30vh' : '45vh') : mapHeight,
             }"
         ></div>
         <map-layer-toggle-component
@@ -59,9 +55,8 @@ import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
 import ContributeDialogComponent from "./DialogContribute.component.vue";
 
 import mapboxgl from "mapbox-gl";
-mapboxgl.accessToken =
-    "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2pvM2pjMW9kMHhmODNxcmxsMTd2cWkzcCJ9.jpWvN4mzM5M6ijwkSI2CfA";
-const mapBoxStyle = "mapbox://styles/marcolarosa/ckdxwicb42opj19mu7tlt23hn";
+import { mapBoxStyle, accessToken } from "../configuration";
+mapboxgl.accessToken = accessToken;
 import { debounce, throttle, map, orderBy, shuffle, uniq } from "lodash";
 
 export default {
@@ -76,10 +71,7 @@ export default {
             popup: undefined,
             emptyWordsLanguageLayerShowing: true,
             showContributeDialog: false,
-            debouncedRenderLanguageLayers: debounce(
-                this.renderLanguageLayers,
-                200
-            ),
+            debouncedRenderLanguageLayers: debounce(this.renderLanguageLayers, 200),
             debouncedRenderWordLayer: debounce(this.renderWordLayer, 200),
             debouncedCenterMap: debounce(this.centerMap, 1000),
             debouncedLayerUpdate: debounce(this.layerUpdate, 200),
@@ -106,14 +98,10 @@ export default {
             return `${window.innerHeight - 150}px`;
         },
         languagesWithData: function() {
-            return this.$store.state.languages.filter(
-                (l) => l.properties.words
-            );
+            return this.$store.state.languages.filter((l) => l.properties.words);
         },
         languagesWithoutData: function() {
-            return this.$store.state.languages.filter(
-                (l) => !l.properties.words
-            );
+            return this.$store.state.languages.filter((l) => !l.properties.words);
         },
         selection: function() {
             return this.$store.getters.getSelection();
@@ -146,8 +134,7 @@ export default {
                 } else if (this.selection.type === "language") {
                     if (this.selection?.data?.geometry?.coordinates) {
                         this.flyTo({
-                            coordinates: this.selection.data.geometry
-                                .coordinates,
+                            coordinates: this.selection.data.geometry.coordinates,
                         });
                     }
                 } else {
@@ -158,8 +145,7 @@ export default {
         flyToCoordinates: function() {
             if (this.flyToCoordinates?.word?.geometry?.coordinates) {
                 this.flyTo({
-                    coordinates: this.flyToCoordinates.word.geometry
-                        .coordinates,
+                    coordinates: this.flyToCoordinates.word.geometry.coordinates,
                 });
             }
         },
@@ -316,10 +302,8 @@ export default {
             });
             this.map.on("click", "words", (e) => {
                 const properties = e.features[0].properties;
-                if (properties.audio)
-                    properties.audio = JSON.parse(properties.audio);
-                if (properties.video)
-                    properties.video = JSON.parse(properties.video);
+                if (properties.audio) properties.audio = JSON.parse(properties.audio);
+                if (properties.video) properties.video = JSON.parse(properties.video);
                 properties.language = JSON.parse(properties.language);
                 if (!this.smallDevice) {
                     this.word = { ...properties };
@@ -384,10 +368,8 @@ export default {
                         type: "symbol",
                         source: "languagesWithoutData",
                         paint: {
-                            "text-color": this.layerProperties.withoutData
-                                .zoomedOut.color,
-                            "text-opacity": this.layerProperties.withoutData
-                                .zoomedOut.opacity,
+                            "text-color": this.layerProperties.withoutData.zoomedOut.color,
+                            "text-opacity": this.layerProperties.withoutData.zoomedOut.opacity,
                         },
                         layout: {
                             visibility: "visible",
@@ -452,19 +434,11 @@ export default {
         },
         toggleLayerWithoutData() {
             if (this.emptyWordsLanguageLayerShowing) {
-                this.map.setLayoutProperty(
-                    "languagesWithoutData",
-                    "visibility",
-                    "none"
-                );
+                this.map.setLayoutProperty("languagesWithoutData", "visibility", "none");
                 this.emptyWordsLanguageLayerShowing = false;
             } else {
                 this.renderLanguagesWithoutData();
-                this.map.setLayoutProperty(
-                    "languagesWithoutData",
-                    "visibility",
-                    "visible"
-                );
+                this.map.setLayoutProperty("languagesWithoutData", "visibility", "visible");
                 this.emptyWordsLanguageLayerShowing = true;
             }
         },
@@ -498,20 +472,12 @@ export default {
         },
         hideLanguagesWithoutData() {
             if (this.map.getLayer("languagesWithoutData")) {
-                this.map.setLayoutProperty(
-                    "languagesWithoutData",
-                    "visibility",
-                    "none"
-                );
+                this.map.setLayoutProperty("languagesWithoutData", "visibility", "none");
             }
         },
         showLanguagesWithoutData() {
             if (this.map.getLayer("languagesWithoutData")) {
-                this.map.setLayoutProperty(
-                    "languagesWithoutData",
-                    "visibility",
-                    "visible"
-                );
+                this.map.setLayoutProperty("languagesWithoutData", "visibility", "visible");
             }
         },
     },

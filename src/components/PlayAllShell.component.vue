@@ -13,11 +13,6 @@ import HeaderComponent from "./Header.component.vue";
 import HeaderMobileComponent from "./HeaderMobile.component.vue";
 import MapComponent from "./PlayAllMap.component.vue";
 
-import mapboxgl from "mapbox-gl";
-mapboxgl.accessToken =
-    "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2pvM2pjMW9kMHhmODNxcmxsMTd2cWkzcCJ9.jpWvN4mzM5M6ijwkSI2CfA";
-const mapBoxStyle = "mapbox://styles/marcolarosa/ckdxwicb42opj19mu7tlt23hn";
-
 export default {
     components: {
         HeaderComponent,

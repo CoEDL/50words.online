@@ -25,9 +25,8 @@
 import RenderWordMapPopupComponent from "components/RenderWordMapPopup.component.vue";
 
 import mapboxgl from "mapbox-gl";
-mapboxgl.accessToken =
-    "pk.eyJ1IjoibWFyY29sYXJvc2EiLCJhIjoiY2pvM2pjMW9kMHhmODNxcmxsMTd2cWkzcCJ9.jpWvN4mzM5M6ijwkSI2CfA";
-const mapBoxStyle = "mapbox://styles/marcolarosa/ckdxwicb42opj19mu7tlt23hn";
+import { mapBoxStyle, accessToken } from "../configuration";
+mapboxgl.accessToken = accessToken;
 import { debounce, throttle, map, orderBy, shuffle, uniq } from "lodash";
 import styles from "assets/variables.scss";
 import { loadWordData } from "../data-loader.service";
