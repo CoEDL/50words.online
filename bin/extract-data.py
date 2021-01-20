@@ -14,7 +14,7 @@ import subprocess
 import itertools
 import sys
 from types import SimpleNamespace
-import xlrd
+from openpyxl import load_workbook
 
 coloredlogs.install()
 pp = pprint.PrettyPrinter(compact=True)
@@ -86,15 +86,18 @@ WORDS = [
 
 
 class SheetVerifier:
-    def __init__(self, sheet, sheet_name):
+    def __init__(self, rows, sheet_name):
         self.language = sheet_name.replace("/srv/data/", "").split("/")[0]
         self.sheet_name = sheet_name.replace("/srv/data/", "")
-        self.sheet = sheet
         self.ok = True
         self.errors = []
+        self.rows = rows
+        # self.rows = [row for row in self.sheet.rows if row[0].value is not None]
+        # for row in self.rows:
+        #     print(row[0].value, row[1].value, row[2].value, row[3].value, row[4].value)
 
     def verify(self):
-        if self.sheet.nrows != 65:
+        if len(self.rows) != 65:
             self.ok = False
             self.errors.append(
                 {
@@ -117,33 +120,33 @@ class SheetVerifier:
         self.check(6, 1)
         j = 0
         for i in range(8, 65):
-            row = self.sheet.row_values
-            if not row(i)[1]:
+            row = self.rows
+            if not row[i][1].value:
                 self.errors.append(
                     {
                         "type": "Sheet verification: No translation for word",
                         "level": "warning",
                         "language": self.language,
-                        "msg": f"No translation for word '{row(i)[0]}'.",
+                        "msg": f"No translation for word '{row[i][0].value}'.",
                     }
                 )
-            if not row(i)[2]:
+            if not row[i][2].value:
                 self.errors.append(
                     {
                         "type": "Sheet verification: No media file for word",
                         "level": "warning",
                         "language": self.language,
-                        "msg": f"No media file for word '{row(i)[0]}'.",
+                        "msg": f"No media file for word '{row[i][0].value}'.",
                     }
                 )
 
-            if row(i)[0] != WORDS[j]:
+            if row[i][0].value != WORDS[j]:
                 self.errors.append(
                     {
                         "type": "Sheet verification: English word has been changed",
                         "level": "warning",
                         "language": self.language,
-                        "msg": f"Expected '{WORDS[j]}' but got '{row(i)[0]}'.",
+                        "msg": f"Expected '{WORDS[j]}' but got '{row[i][0].value}'.",
                     }
                 )
 
@@ -151,18 +154,18 @@ class SheetVerifier:
         return self.errors
 
     def check(self, rowNum, colNum, value=None):
-        row = self.sheet.row_values
-        if value and row(rowNum)[colNum].strip() != value:
+        row = self.rows[rowNum]
+        if value and row[colNum].value.strip() != value:
             self.ok = False
             self.errors.append(
                 {
                     "type": "Sheet verification: incorrect data",
                     "level": "error",
                     "language": self.language,
-                    "msg": f"Unexpected value in row: {rowNum}, column: {colNum}. Expected: {value}, Got: {row(rowNum)[colNum]}",
+                    "msg": f"Unexpected value in row: {rowNum}, column: {colNum}. Expected: {value}, Got: {row[colNum]}",
                 }
             )
-        elif not row(rowNum)[colNum]:
+        elif not row[colNum]:
             self.errors.append(
                 {
                     "type": "Sheet verification: missing data",
@@ -198,7 +201,7 @@ class DataExtractor:
         self.convert_to_geojson_features()
         self.remove_languages_without_geo_data()
         data = self.locate_languages_with_data()
-        # pp.pprint(data)
+        # # pp.pprint(data)
         data = self.extract_language_data(data)
         for item in data:
             self.data[item["code"]]["properties"]["language"]["name"] = item[
@@ -212,21 +215,21 @@ class DataExtractor:
     def extract_aiatsis_geographies(self):
         def parse_row(row):
             return {
-                "code": row[0],
-                "name": row[1],
-                "lat": row[3],
-                "lng": row[4],
-                "override": row[7],
+                "code": row[0].value,
+                "name": row[1].value,
+                "lat": row[3].value,
+                "lng": row[4].value,
+                "override": row[7].value,
             }
 
         log.info("Extracting AIATSIS geography data")
         data = []
-        with xlrd.open_workbook(self.aiatsis_geography_file) as wb:
-            sh = wb.sheet_by_index(0)
-            for r in range(1, sh.nrows):
-                row = parse_row(sh.row_values(r))
-                self.aiatsis_geographies_by_code[row["code"]] = row
-                self.aiatsis_geographies_by_name[row["name"]] = row
+        wb = load_workbook(filename=self.aiatsis_geography_file)
+        sheet = wb.worksheets[0]
+        for row in sheet.rows:
+            row = parse_row(row)
+            self.aiatsis_geographies_by_code[row["code"]] = row
+            self.aiatsis_geographies_by_name[row["name"]] = row
         data = itertools.groupby(data, key=lambda i: i["code"])
         for key, group in data:
             if len(list(group)) > 1:
@@ -238,8 +241,6 @@ class DataExtractor:
                         "msg": f"The AIATSIS sheet has more than one entry with the code {key}",
                     }
                 )
-        # for item in self.aiatsis_geographies.items():
-        #     pp.pprint(item)
 
     def extract_gambay_geographies(self):
         def parse(item):
@@ -377,15 +378,21 @@ class DataExtractor:
         return data
 
     def extract_language_data(self, data):
-        def parse_row(row):
-            data = {"english": row[0].strip(), "indigenous": row[1].strip().lower()}
-            if ".mov" in row[2]:
-                data["video_file"] = row[2]
-            elif ".wav" in row[2]:
-                data["audio_file"] = row[2]
+        def get(item):
+            try:
+                return item.value.strip() if item.value is not None else ""
+            except:
+                return item.value if item.value is not None else ""
 
-            if len(row) == 4 and row[3]:
-                data["english_alternate"] = row[3].strip()
+        def parse_row(row):
+            data = {"english": get(row[0]), "indigenous": get(row[1])}
+            if ".mov" in get(row[2]):
+                data["video_file"] = get(row[2])
+            elif ".wav" in get(row[2]):
+                data["audio_file"] = get(row[2])
+
+            if len(row) == 4 and get(row[3]):
+                data["english_alternate"] = get(row[3])
             return data
 
         itemsWithData = []
@@ -394,66 +401,75 @@ class DataExtractor:
             worksheet = item["sheet"]
             root = item["root"]
 
-            with xlrd.open_workbook(worksheet) as wb:
-                sh = wb.sheet_by_index(0)
+            wb = load_workbook(filename=worksheet)
+            sheet = wb.worksheets[0]
 
-                v = SheetVerifier(sh, worksheet)
-                errors = v.verify()
-                self.errors.extend(errors)
-                if not v.ok:
-                    self.errors.append(
-                        {
-                            "type": "Critical errors in spreadsheet",
-                            "level": "Error",
-                            "msg": f"There were errors in the spreadsheet {item['name']} so this item has been skipped",
-                        }
-                    )
-                    continue
+            i = 0
+            rows = []
+            for row in sheet.rows:
+                if i < 65:
+                    rows.append(row)
+                i += 1
 
-                log.info(f"Extracting data: {sheetname}")
-                sheet = {
-                    "language": {
-                        "name": sh.row_values(0)[1].strip(),
-                        "audio_file": os.path.join(root, sh.row_values(0)[2].strip())
-                        if sh.row_values(0)[2]
-                        else "",
-                    },
-                    "date_received": sh.row_values(6)[1],
-                    "code": sh.row_values(1)[1].strip(),
-                    "weblink": sh.row_values(5)[1].strip(),
-                    "words": [],
-                    "speaker": {
-                        "name": sh.row_values(2)[1].strip(),
-                        "audio_file": os.path.join(root, sh.row_values(2)[2].strip())
-                        if sh.row_values(2)[2].strip()
-                        else "",
-                    },
-                    "thankyou": sh.row_values(3)[1].strip(),
-                }
-                if sheet["code"] not in self.data:
-                    self.errors.append(
-                        {
-                            "type": "Code not found",
-                            "level": "error",
-                            "msg": f"'{sheetname}' has code '{sheet['code']}' but that code is not in Gambay or AIATSIS geo data.",
-                        }
-                    )
+            v = SheetVerifier(rows, worksheet)
+            errors = v.verify()
+            self.errors.extend(errors)
+            if not v.ok:
+                self.errors.append(
+                    {
+                        "type": "Critical errors in spreadsheet",
+                        "level": "Error",
+                        "msg": f"There were errors in the spreadsheet {item['name']} so this item has been skipped",
+                    }
+                )
+                continue
 
-                for r in range(8, sh.nrows):
-                    data = parse_row(sh.row_values(r))
-                    if "audio_file" in data:
-                        data["audio_file"] = os.path.join(root, data["audio_file"])
-                    elif "video_file" in data:
-                        data["video_file"] = os.path.join(root, data["video_file"])
+            log.info(f"Extracting data: {sheetname}")
+            sheet = {
+                "language": {
+                    "name": get(rows[0][1]),
+                    "audio_file": os.path.join(root, get(rows[0][2]))
+                    if get(rows[0][2])
+                    else "",
+                },
+                "date_received": get(rows[6][1]).strftime("%Y%m%d")
+                if isinstance(get(rows[6][1]), datetime)
+                else get(rows[6][1]),
+                "code": get(rows[1][1]),
+                "weblink": get(rows[5][1]),
+                "words": [],
+                "speaker": {
+                    "name": get(rows[2][1]),
+                    "audio_file": os.path.join(root, get(rows[2][2]))
+                    if get(rows[2][2])
+                    else "",
+                },
+                "thankyou": get(rows[3][1]),
+            }
+            if sheet["code"] not in self.data:
+                self.errors.append(
+                    {
+                        "type": "Code not found",
+                        "level": "error",
+                        "msg": f"'{sheetname}' has code '{sheet['code']}' but that code is not in Gambay or AIATSIS geo data.",
+                    }
+                )
 
-                    if "audio_file" in data or "video_file" in data:
-                        sheet["words"].append(data)
+            for r in range(8, len(rows)):
+                data = parse_row(rows[r])
+                if "audio_file" in data:
+                    data["audio_file"] = os.path.join(root, data["audio_file"])
+                elif "video_file" in data:
+                    data["video_file"] = os.path.join(root, data["video_file"])
 
-                self.data[sheet["code"]]["properties"] = {
-                    **sheet,
-                    **self.data[sheet["code"]]["properties"],
-                }
-                itemsWithData.append(sheet)
+                if "audio_file" in data or "video_file" in data:
+                    sheet["words"].append(data)
+
+            self.data[sheet["code"]]["properties"] = {
+                **sheet,
+                **self.data[sheet["code"]]["properties"],
+            }
+            itemsWithData.append(sheet)
         return itemsWithData
 
     def build_repository(self, data):
