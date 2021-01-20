@@ -1,10 +1,6 @@
 <template>
     <div>
-        <div
-            :ref="reference.button"
-            class="text-2xl cursor-pointer"
-            @click="toggleInformation"
-        >
+        <div :ref="reference.button" class="text-2xl cursor-pointer" @click="toggleInformation">
             <i class="fas fa-info-circle"></i>
         </div>
         <div :ref="reference.template" style="display: none;">
@@ -12,19 +8,29 @@
                 class="bg-highlight-dark text-white style-information-panel p-4 rounded-lg flex flex-col space-y-4"
                 v-if="selection"
             >
-                <div v-if="selection.speaker.name" class="flex flex-col">
-                    <div>
-                        Recordings provided by:
+                <div class="flex flex-col space-y-4">
+                    <div v-if="selection.speaker.name">
+                        <div>
+                            Recordings provided by:
+                        </div>
+                        <div>- {{ selection.speaker.name }}</div>
                     </div>
-                    <div>- {{ selection.speaker.name }}</div>
-                </div>
-                <div class="flex flex-col">
-                    <div>Thanks also to:</div>
-                    <div>- {{ selection.thankyou }}</div>
-                    You can find more information about this language in the
-                    <a :href="ausLangLink" target="_blank" class="underline">
-                        AusLang website.
-                    </a>
+                    <span v-if="selection.thankyou">
+                        <div>Thanks also to:</div>
+                        <div>- {{ selection.thankyou }}</div>
+                    </span>
+                    <span>
+                        You can find more information about this language in the
+                        <a :href="austLangLink" target="_blank" class="underline">
+                            AustLang website.
+                        </a>
+                    </span>
+                    <span v-if="selection.weblink">
+                        See also:
+                        <a :href="selection.weblink" target="_blank" class="underline">
+                            {{ selection.weblink }}
+                        </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -59,7 +65,7 @@ export default {
     },
     mounted() {},
     computed: {
-        ausLangLink: function() {
+        austLangLink: function() {
             return `https://collection.aiatsis.gov.au/austlang/language/${this.selection?.code}`;
         },
     },
