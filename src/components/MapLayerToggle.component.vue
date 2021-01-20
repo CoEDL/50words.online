@@ -16,14 +16,12 @@
 </template>
 
 <script>
-import styles from "assets/variables.scss";
-
 export default {
     data() {
         return {
             state: window.innerWidth < 768 ? true : false,
-            activeColor: styles.highlightDark,
-            inactiveColor: styles.gray,
+            activeColor: "#c44d2b",
+            inactiveColor: "#2d3748",
         };
     },
     methods: {

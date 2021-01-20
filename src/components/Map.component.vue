@@ -48,7 +48,6 @@
 
 <script>
 import Vue from "vue";
-import styles from "assets/variables.scss";
 import RenderWordMapPopupComponent from "components/RenderWordMapPopup.component.vue";
 import MapLayerToggleComponent from "./MapLayerToggle.component.vue";
 import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
@@ -77,7 +76,7 @@ export default {
             debouncedLayerUpdate: debounce(this.layerUpdate, 200),
             layerProperties: {
                 withData: {
-                    color: styles.highlightDark,
+                    color: "#c44d2b",
                 },
                 withoutData: {
                     zoomedOut: {
@@ -85,7 +84,7 @@ export default {
                         opacity: 0.6,
                     },
                     zoomedIn: {
-                        color: styles.gray,
+                        color: "#2d3748",
                         opacity: 0.6,
                     },
                 },
@@ -487,7 +486,6 @@ export default {
 <style lang="scss" scoped></style>
 
 <style lang="scss">
-@import "assets/variables.scss";
 .style-overlay {
     width: 400px;
 }

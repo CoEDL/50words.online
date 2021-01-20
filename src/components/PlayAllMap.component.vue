@@ -28,7 +28,6 @@ import mapboxgl from "mapbox-gl";
 import { mapBoxStyle, accessToken } from "../configuration";
 mapboxgl.accessToken = accessToken;
 import { debounce, throttle, map, orderBy, shuffle, uniq } from "lodash";
-import styles from "assets/variables.scss";
 import { loadWordData } from "../data-loader.service";
 
 export default {
@@ -40,7 +39,7 @@ export default {
             play: true,
             layerProperties: {
                 withData: {
-                    color: styles.highlightDark,
+                    color: "#c44d2b",
                 },
                 withoutData: {
                     zoomedOut: {
@@ -48,7 +47,7 @@ export default {
                         opacity: 0.6,
                     },
                     zoomedIn: {
-                        color: styles.gray,
+                        color: "#2d3748",
                         opacity: 0.6,
                     },
                 },
@@ -186,7 +185,6 @@ export default {
 </style>
 
 <style lang="scss">
-@import "assets/variables.scss";
 .mapboxgl-popup-tip {
 }
 

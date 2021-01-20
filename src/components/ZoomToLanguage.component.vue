@@ -13,10 +13,9 @@
                     <i class="fas fa-search"></i>
                 </div>
                 <template slot-scope="{ item }">
-                    <span
-                        :class="{ 'style-has-words': item.properties.words }"
-                        >{{ item.properties.name }}</span
-                    >
+                    <span :class="{ 'style-has-words': item.properties.words }">{{
+                        item.properties.name
+                    }}</span>
                 </template>
             </el-autocomplete>
         </div>
@@ -56,12 +55,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-// @import "assets/variables.scss";
-
-// .style-has-words {
-//     color: $text-color;
-//     font-size: 25px;
-//     line-height: 40px;
-// }
-</style>
+<style lang="scss" scoped></style>

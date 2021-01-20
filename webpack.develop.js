@@ -14,7 +14,7 @@ module.exports = {
     entry: ["./src/vendor.js", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[hash].bundle.js",
+        filename: "[name].[fullhash].bundle.js",
     },
     devServer: {
         contentBase: path.join(__dirname, "dist"),
@@ -28,9 +28,7 @@ module.exports = {
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: ["*.js", "*.css"],
         }),
-        new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css",
-        }),
+        new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             title: "50words",
             template: "./src/index.html",
@@ -47,28 +45,41 @@ module.exports = {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                query: { compact: false },
             },
             {
                 test: /\.css$/,
                 use: [
-                    "vue-style-loader",
-                    { loader: "css-loader", options: { importLoaders: 1 } },
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: "",
+                        },
+                    },
+                    "css-loader",
                     "postcss-loader",
                 ],
             },
             {
                 test: /\.scss$/,
                 use: [
-                    "vue-style-loader",
-                    { loader: "css-loader", options: { importLoaders: 1 } },
-                    "postcss-loader",
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: "",
+                        },
+                    },
+                    "css-loader",
                     "sass-loader",
+                    "postcss-loader",
                 ],
             },
             {
                 test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif|mp4)?$/,
-                loader: "file-loader?name=res/[name].[ext]?[hash]",
+                loader: "file-loader",
+                options: {
+                    name: "assets/[contenthash].[ext]",
+                    esModule: false,
+                },
             },
         ],
     },

@@ -13,13 +13,7 @@
                 </el-button>
             </div>
             <div class="mr-2">
-                <el-button
-                    circle
-                    @click="stop"
-                    class="style-button"
-                    v-if="isPlaying"
-                    :key="'stop'"
-                >
+                <el-button circle @click="stop" class="style-button" v-if="isPlaying" :key="'stop'">
                     <i class="fas fa-stop fa-fw"></i>
                 </el-button>
             </div>
@@ -90,7 +84,6 @@
 
 <script>
 import { orderBy, shuffle, uniq } from "lodash";
-import { randomBytes } from "crypto";
 import { stringify } from "querystring";
 import AudioPlayerControl from "./AudioPlayerControl.component.vue";
 import VideoPlayerControl from "./VideoPlayerControl.component.vue";
@@ -217,9 +210,7 @@ export default {
                 for (let word of words) {
                     if (!this.playAll.playedWords.includes(word.name)) {
                         this.$store.dispatch("loadWord", { word: word.name });
-                        await new Promise((resolve) =>
-                            setTimeout(resolve, 1500)
-                        );
+                        await new Promise((resolve) => setTimeout(resolve, 1500));
                         this.playAll.words = this.$store.getters.getSelectedWord();
 
                         break;

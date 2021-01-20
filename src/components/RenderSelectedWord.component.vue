@@ -8,10 +8,7 @@
                 <div class="flex flex-grow"></div>
             </div>
             <div class="flex flex-row justify-start mt-3 pb-2">
-                <play-all-controls-component
-                    :map="map"
-                    @center-map="$emit('center-map')"
-                />
+                <play-all-controls-component :map="map" @center-map="$emit('center-map')" />
             </div>
         </div>
     </div>
@@ -19,7 +16,6 @@
 
 <script>
 import { orderBy, shuffle } from "lodash";
-import { randomBytes } from "crypto";
 import { stringify } from "querystring";
 import AudioPlayerControl from "./AudioPlayerControl.component.vue";
 import PlayAllControlsComponent from "./PlayAllControls.component.vue";
@@ -40,8 +36,7 @@ export default {
 
     computed: {
         word: function() {
-            return this.$store.state.selectedWord &&
-                this.$store.state.selectedWord.length
+            return this.$store.state.selectedWord && this.$store.state.selectedWord.length
                 ? this.$store.state.selectedWord[0].properties.english
                 : undefined;
         },

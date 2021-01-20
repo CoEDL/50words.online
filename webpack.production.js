@@ -6,39 +6,25 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
     target: "web",
     mode: "production",
-    devtool: "none",
     entry: ["./src/vendor.js", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[contenthash].bundle.js",
+        filename: "[name].[fullhash].bundle.js",
     },
-    optimization: {
-        moduleIds: "hashed",
-        runtimeChunk: "single",
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: "vendors",
-                    chunks: "all",
-                },
-            },
-        },
-        minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})],
-    },
+    // optimization: {
+    //     minimize: true,
+    //     minimizer: [new TerserPlugin()],
+    // },
     plugins: [
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: ["*.js", "*.css", "*.LICENSE"],
         }),
-        new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css",
-        }),
+        new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             title: "50words",
             template: "./src/index.html",
@@ -55,28 +41,41 @@ module.exports = {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                query: { compact: false },
             },
             {
                 test: /\.css$/,
                 use: [
-                    "vue-style-loader",
-                    { loader: "css-loader", options: { importLoaders: 1 } },
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: "",
+                        },
+                    },
+                    "css-loader",
                     "postcss-loader",
                 ],
             },
             {
                 test: /\.scss$/,
                 use: [
-                    "vue-style-loader",
-                    { loader: "css-loader", options: { importLoaders: 1 } },
-                    "postcss-loader",
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: "",
+                        },
+                    },
+                    "css-loader",
                     "sass-loader",
+                    "postcss-loader",
                 ],
             },
             {
                 test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif|mp4)?$/,
-                loader: "file-loader?name=res/[name].[ext]?[hash]",
+                loader: "file-loader",
+                options: {
+                    name: "assets/[contenthash].[ext]",
+                    esModule: false,
+                },
             },
         ],
     },

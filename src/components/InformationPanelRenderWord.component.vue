@@ -96,10 +96,7 @@ export default {
         flyTo: function() {
             const flyTo = this.$store.state.flyTo;
             if (flyTo.handler !== "informationPanelRenderWord") return;
-            if (
-                this.word.language.code ===
-                flyTo?.word?.properties?.language.code
-            ) {
+            if (this.word.language.code === flyTo?.word?.properties?.language.code) {
                 if (!this.$store.state.iOS && flyTo.state.play) {
                     this.state = { play: true };
                 }
@@ -124,9 +121,7 @@ export default {
                 const code = this.word.language.code;
                 const word = this.$store.getters
                     .getSelectionData()
-                    .words.filter(
-                        (word) => word.properties.language.code === code
-                    )[0];
+                    .words.filter((word) => word.properties.language.code === code)[0];
 
                 this.$store.commit("flyTo", {
                     word,
@@ -149,7 +144,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "assets/variables.scss";
 .style-video-popup {
     width: 150px;
     max-width: 150px;
@@ -166,7 +160,7 @@ export default {
 }
 @keyframes blinkingBackground {
     0% {
-        @apply text-orange-400;
+        @apply text-yellow-500;
     }
 }
 </style>
