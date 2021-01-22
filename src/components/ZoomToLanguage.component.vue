@@ -42,7 +42,7 @@ export default {
             }
             const regexp = new RegExp(query, "gi");
             const languages = this.languages.filter((l) => {
-                return l.properties.name.match(regexp);
+                if (l?.properties?.name) return l.properties.name.match(regexp);
             });
             cb(languages);
         },
