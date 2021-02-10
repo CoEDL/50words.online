@@ -1,10 +1,5 @@
 <template>
-    <div
-        id="informationPanel"
-        class="overflow-scroll"
-        :style="{ height: height }"
-        v-if="data"
-    >
+    <div id="informationPanel" class="overflow-scroll" :style="{ height: height }" v-if="data">
         <div class="flex flex-col">
             <div class="flex flex-row px-2 md:my-2">
                 <div
@@ -22,13 +17,9 @@
         <div class="flex flex-row pl-4 pr-5 my-2">
             <language-information-component :code="data.properties.code" />
             <div class="flex-grow"></div>
-            <render-language-information-play-component
-                :data="data.properties.language"
-            />
+            <render-language-information-play-component :data="data.properties.language" />
         </div>
-        <div
-            class="text-xs text-sm md:text-base px-2 border-b-2 pb-2 flex flex-row"
-        >
+        <div class="text-xs text-sm md:text-base px-2 border-b-2 pb-2 flex flex-row">
             <div class="text-gray-600">
                 {{ data.properties.speaker.name }}
             </div>
@@ -64,10 +55,7 @@
                 :key="index(word)"
                 class="mx-1 hover:bg-highlight-dark hover:text-white p-1 px-2 md:p-2 md:my-1 rounded-lg"
             >
-                <information-panel-render-word-component
-                    :data="word"
-                    display="translation"
-                />
+                <information-panel-render-word-component :data="word" display="translation" />
             </div>
         </div>
     </div>
@@ -91,8 +79,7 @@ export default {
             playAllWords: false,
             height:
                 window.innerWidth < 768
-                    ? `${window.innerHeight -
-                          (window.innerHeight * 0.4 + 60)}px`
+                    ? `${window.innerHeight - (window.innerHeight * 0.4 + 60)}px`
                     : `${window.innerHeight - 170}px`,
         };
     },

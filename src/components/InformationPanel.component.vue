@@ -6,38 +6,28 @@
                 <span
                     slot="label"
                     :class="{
-                        'text-black border-b-4 border-black pb-2':
-                            activeTab === 'language',
+                        'text-black border-b-4 border-black pb-2': activeTab === 'language',
                         'text-gray-600': activeTab !== 'language',
                     }"
                     >LANGUAGE</span
                 >
                 <div v-if="activeTab === 'language'">
-                    <information-panel-language-list-component
-                        v-if="show === 'list'"
-                    />
-                    <information-panel-view-language-component
-                        v-if="show === 'language'"
-                    />
+                    <information-panel-language-list-component v-if="show === 'list'" />
+                    <information-panel-view-language-component v-if="show === 'language'" />
                 </div>
             </el-tab-pane>
             <el-tab-pane label="" name="word">
                 <span
                     slot="label"
                     :class="{
-                        'text-black  border-b-4 border-black pb-2 ':
-                            activeTab === 'word',
+                        'text-black  border-b-4 border-black pb-2 ': activeTab === 'word',
                         'text-gray-600': activeTab !== 'word',
                     }"
                     >WORD</span
                 >
                 <div v-if="activeTab === 'word'">
-                    <information-panel-word-list-component
-                        v-if="show === 'list'"
-                    />
-                    <information-panel-view-word-component
-                        v-if="show === 'word'"
-                    />
+                    <information-panel-word-list-component v-if="show === 'list'" />
+                    <information-panel-view-word-component v-if="show === 'word'" />
                 </div>
             </el-tab-pane>
         </el-tabs>
