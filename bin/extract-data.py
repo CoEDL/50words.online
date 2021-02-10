@@ -391,8 +391,11 @@ class DataExtractor:
             elif ".wav" in get(row[2]):
                 data["audio_file"] = get(row[2])
 
-            if len(row) == 4 and get(row[3]):
-                data["english_alternate"] = get(row[3])
+            try:
+                if get(row[3]):
+                    data["english_alternate"] = get(row[3])
+            except:
+                pass
             return data
 
         itemsWithData = []
