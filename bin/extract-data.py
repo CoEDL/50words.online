@@ -404,7 +404,19 @@ class DataExtractor:
             worksheet = item["sheet"]
             root = item["root"]
 
-            wb = load_workbook(filename=worksheet)
+            log.info(f"Processing sheet: {sheetname}")
+            try:
+                wb = load_workbook(filename=worksheet)
+            except:
+                self.errors.append(
+                    {
+                        "type": "Critical errors in spreadsheet",
+                        "level": "Error",
+                        "msg": f"There were errors in the spreadsheet {sheetname} so this language has been skipped",
+                    }
+                )
+                continue
+
             sheet = wb.worksheets[0]
 
             i = 0
@@ -422,7 +434,7 @@ class DataExtractor:
                     {
                         "type": "Critical errors in spreadsheet",
                         "level": "Error",
-                        "msg": f"There were errors in the spreadsheet {item['name']} so this item has been skipped",
+                        "msg": f"There were errors in the spreadsheet {sheetname} so this language has been skipped",
                     }
                 )
                 continue
