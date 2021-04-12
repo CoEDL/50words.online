@@ -1,38 +1,36 @@
 <template>
     <div class="flex flex-col pr-2">
-        <div class="flex flex-row">
-            <div
-                class="flex flex-row flex-grow cursor-pointer group hover:text-white hover:bg-highlight-dark p-2 rounded-lg"
-                @click="playWord"
-            >
-                <render-word-component :word="word" :display="display" />
-                <div class="flex-grow"></div>
+        <div
+            class="flex flex-row flex-grow cursor-pointer group hover:text-white hover:bg-highlight-dark p-2 rounded-lg"
+            @click="playWord"
+        >
+            <render-word-component class="flex-grow" :word="word" :display="display" />
+            <!-- <div class="flex-grow"></div> -->
 
-                <div @click="playWord">
-                    <div class="text-2xl">
-                        <span v-show="word.audio">
-                            <i class="fas fa-volume-up"></i>
-                        </span>
-                        <span v-show="word.video">
-                            <i class="fas fa-video"></i>
-                        </span>
-                    </div>
+            <div @click="playWord">
+                <div class="text-2xl">
+                    <span v-show="word.audio">
+                        <i class="fas fa-volume-up"></i>
+                    </span>
+                    <span v-show="word.video">
+                        <i class="fas fa-video"></i>
+                    </span>
                 </div>
-
-                <audio-player-control
-                    :files="word.audio"
-                    :play="state"
-                    v-if="word.audio"
-                    @loaded="loading = false"
-                />
             </div>
-            <language-information-component
-                class="p-2 hidden md:block"
-                :code="word.language.code"
-                :offset="[0, 10]"
-                v-if="display === 'languageName'"
-            />
         </div>
+
+        <audio-player-control
+            :files="word.audio"
+            :play="state"
+            v-if="word.audio"
+            @loaded="loading = false"
+        />
+        <language-information-component
+            class="p-2 hidden md:block"
+            :code="word.language.code"
+            :offset="[0, 10]"
+            v-if="display === 'languageName'"
+        />
         <div v-if="word.video">
             <video-player-control
                 :class="{
