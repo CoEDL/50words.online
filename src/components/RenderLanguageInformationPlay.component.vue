@@ -1,20 +1,12 @@
 <template>
-    <div class="flex flex-row">
-        <div
-            @click="load"
-            class="flex flex-row cursor-pointer"
-            v-if="audioFiles.length"
-        >
-            <audio ref="audioElement" v-if="audioFiles.length">
-                <source
-                    :src="file"
-                    v-for="(file, idx) of audioFiles"
-                    :key="idx"
-                />
-                Your browser does not support the
-                <code>audio</code> element.
-            </audio>
+    <div class="w-10">
+        <audio ref="audioElement" v-if="audioFiles.length">
+            <source :src="file" v-for="(file, idx) of audioFiles" :key="idx" />
+            Your browser does not support the
+            <code>audio</code> element.
+        </audio>
 
+        <div @click="load" class="flex flex-row cursor-pointer" v-if="audioFiles.length">
             <div
                 class="text-2xl"
                 :class="{
@@ -48,12 +40,9 @@ export default {
         load() {
             this.loading = true;
             setTimeout(() => {
-                this.$refs.audioElement.addEventListener(
-                    "canplaythrough",
-                    () => {
-                        if (this.loading) this.play();
-                    }
-                );
+                this.$refs.audioElement.addEventListener("canplaythrough", () => {
+                    if (this.loading) this.play();
+                });
                 this.$refs.audioElement.load();
             }, 200);
         },

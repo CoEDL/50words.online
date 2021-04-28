@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="flex flex-row">
         <div :ref="reference.button" class="text-2xl cursor-pointer" @click="toggleInformation">
             <i class="fas fa-info-circle"></i>
         </div>
