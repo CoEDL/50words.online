@@ -47,7 +47,6 @@ export default {
             }, 200);
         },
         play() {
-            console.log("play");
             this.loading = false;
             this.$refs.audioElement.play();
         },
