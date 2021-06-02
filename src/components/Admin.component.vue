@@ -11,6 +11,9 @@
                 <el-tab-pane label="Data Processing Errors" name="errors">
                     <admin-errors-component v-if="tab === 'errors'" />
                 </el-tab-pane>
+                <el-tab-pane label="Languages With Data" name="languagesWithData">
+                    <admin-languages-with-data-component v-if="tab === 'languagesWithData'" />
+                </el-tab-pane>
                 <!-- <el-tab-pane label="Gambay Additions" name="gambayAdditions">
                     <admin-additions-component
                         v-if="tab === 'gambayAdditions'"
@@ -25,30 +28,22 @@
 </template>
 
 <script>
-// import { loadData, loadProcessingData } from "src/data-loader.service";
-import { uniq } from "lodash";
 import AdminErrorsComponent from "./AdminErrors.component.vue";
 import AdminAdditionsComponent from "./AdminAdditions.component.vue";
 import AdminLanguagesComponent from "./AdminLanguages.component.vue";
-import AdminWordStatsComponent from "./AdminWordStats.component.vue";
-import moment from "moment";
+import AdminLanguagesWithDataComponent from "./AdminLanguagesWithData.component.vue";
 
 export default {
     components: {
         AdminErrorsComponent,
         AdminAdditionsComponent,
         AdminLanguagesComponent,
-        AdminWordStatsComponent,
+        AdminLanguagesWithDataComponent,
     },
     data() {
         return {
             tab: "languages",
         };
-    },
-    computed: {
-        // lastUpdated: function() {
-        //     return moment(this.errors.date).format("LLL");
-        // }
     },
     async mounted() {
         this.$store.dispatch("loadData");
