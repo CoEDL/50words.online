@@ -66,7 +66,10 @@ export default {
     mounted() {},
     computed: {
         austLangLink: function() {
-            return `https://collection.aiatsis.gov.au/austlang/language/${this.selection?.code}`;
+            return `https://collection.aiatsis.gov.au/austlang/language/${this.selection?.code.replace(
+                ".",
+                "_"
+            )}`;
         },
     },
     methods: {
