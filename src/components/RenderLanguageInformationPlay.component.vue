@@ -32,7 +32,7 @@ export default {
         };
     },
     computed: {
-        audioFiles: function() {
+        audioFiles: function () {
             return [...this.data.audio];
         },
     },

@@ -1,12 +1,18 @@
 <template>
     <div class="flex flex-col">
-        <ui-select
+        <el-select
             v-if="words.length"
-            help="Select a word"
-            :options="words"
+            placeholder="Select a word"
             v-model="word"
             @change="displayWord"
-        ></ui-select>
+        >
+            <el-option
+                v-for="word in words"
+                :key="word.value"
+                :label="word.label"
+                :value="word.value"
+            />
+        </el-select>
     </div>
 </template>
 
@@ -18,7 +24,7 @@ export default {
         };
     },
     computed: {
-        words: function() {
+        words: function () {
             return this.$store.state.words.map((w) => {
                 return { label: w.name, value: w.name };
             });
@@ -26,10 +32,7 @@ export default {
     },
     methods: {
         displayWord(word) {
-            if (!word?.value) return;
-            word = this.$store.state.words.filter(
-                (w) => w.name === word.value
-            )[0];
+            word = this.$store.state.words.filter((w) => w.name === word)[0];
             this.$store.dispatch("loadWord", word);
         },
     },

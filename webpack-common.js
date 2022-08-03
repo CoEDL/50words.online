@@ -1,41 +1,41 @@
 "use strict";
 
 const path = require("path");
-const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const { VueLoaderPlugin } = require("vue-loader");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
     target: "web",
-    mode: "production",
-    entry: ["./src/vendor.js", "./src/index.js"],
+    entry: ["./src/main.js"],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].[fullhash].bundle.js",
+        filename: "[contenthash].js",
+        publicPath: "http://localhost:9000/",
     },
-    // optimization: {
-    //     minimize: true,
-    //     minimizer: [new TerserPlugin()],
-    // },
     plugins: [
-        new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ["*.js", "*.css", "*.LICENSE"],
-        }),
-        new MiniCssExtractPlugin(),
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "50words",
-            template: "./src/index.html",
+            template: "./public/index.html",
         }),
         new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({ filename: "[contenthash].css" }),
     ],
     module: {
         rules: [
             {
                 test: /\.vue$/,
                 loader: "vue-loader",
+            },
+            {
+                test: /\.mjs$/,
+                resolve: {
+                    fullySpecified: false,
+                },
+                include: /node_modules/,
+                type: "javascript/auto",
             },
             {
                 test: /\.js$/,
@@ -56,7 +56,7 @@ module.exports = {
                 ],
             },
             {
-                test: /\.scss$/,
+                test: /\.s[ac]ss$/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
@@ -70,25 +70,21 @@ module.exports = {
                 ],
             },
             {
-                test: /\.(woff|woff2|ttf|eot|svg|png|jp(e*)g|gif|mp4)?$/,
-                loader: "file-loader",
-                options: {
-                    name: "assets/[contenthash].[ext]",
-                    esModule: false,
-                },
+                test: /\.(svg|png|jp(e*)g|gif|mp4)?$/,
+                type: "asset/resource",
+            },
+            {
+                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                type: "asset/resource",
             },
         ],
     },
     resolve: {
         alias: {
+            "@": path.resolve(__dirname, "src"),
             src: path.resolve(__dirname, "src"),
             assets: path.resolve(__dirname, "src/assets"),
             components: path.resolve(__dirname, "src/components"),
-            configuration: path.resolve(__dirname, "src/configuration"),
-            directives: path.resolve(__dirname, "src/directives"),
-            routes: path.resolve(__dirname, "src/routes/"),
-            services: path.resolve(__dirname, "src/services"),
-            store: path.resolve(__dirname, "src/store"),
         },
     },
 };

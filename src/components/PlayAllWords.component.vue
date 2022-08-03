@@ -4,19 +4,19 @@
             <div class="flex flex-col">
                 <render-word-component :word="word" :display="display" />
                 <audio-player-control
-                    v-if="word.audio"
+                    v-if="word.audio && word.audio.length"
                     :files="word.audio"
-                    :play="state"
+                    :state="state"
                     @finished-playing="playWord"
                 />
                 <video-player-control
-                    v-if="word.video"
+                    v-if="word.video && word.video.length"
                     :class="{
                         'w-full h-auto': word.video,
                         'h-0 w-0': !word.video,
                     }"
                     :files="word.video"
-                    :play="state"
+                    :state="state"
                     @finished-playing="playWord"
                 />
             </div>
@@ -57,12 +57,12 @@ export default {
         };
     },
     computed: {
-        flyTo: function() {
+        flyTo: function () {
             return this.$store.state.flyTo;
         },
     },
     watch: {
-        flyTo: function(n, o) {
+        flyTo: function (n, o) {
             if (this.flyTo.handler !== "playAllWords") return;
             if (this.flyTo?.state?.play) {
                 this.state = { play: true };
@@ -81,10 +81,7 @@ export default {
                 return;
             }
             this.word = this.wordList.pop();
-            if (
-                this.word?.video?.length &&
-                (this.$store.state.iOS || window.innerWidth < 768)
-            ) {
+            if (this.word?.video?.length && (this.$store.state.iOS || window.innerWidth < 768)) {
                 this.playWord();
             }
 

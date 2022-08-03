@@ -1,12 +1,10 @@
 <template>
-    <div class="flex flex-col">
-        <ui-autocomplete
-            help="Search for a word or a language"
-            :suggestions="options"
-            v-model="query"
-            @select="handleSelect"
-        ></ui-autocomplete>
-    </div>
+    <el-autocomplete
+        placeholder="Search for a word or a language"
+        v-model="query"
+        @select="handleSelect"
+        :fetch-suggestions="querySearch"
+    ></el-autocomplete>
 </template>
 
 <script>
@@ -16,9 +14,9 @@ export default {
             query: "",
         };
     },
-    computed: {
-        options: function() {
-            const options = [
+    methods: {
+        querySearch(query, cb) {
+            let options = [
                 ...this.$store.state.languages
                     .map((language) => language.properties)
                     .filter((language) => language.words)
@@ -34,10 +32,14 @@ export default {
                     return { label: w.name, type: "word", value: w.name };
                 }),
             ];
-            return options;
+            if (query.length > 3)
+                options = options.filter((o) => {
+                    let re = new RegExp(query, "i");
+                    return o.value.match(re);
+                });
+            console.log(options[0]);
+            cb(options);
         },
-    },
-    methods: {
         displayWord({ word }) {
             word = this.$store.state.words.filter((w) => w.name === word)[0];
             this.$store.dispatch("loadWord", word);
@@ -46,6 +48,7 @@ export default {
             this.$store.dispatch("loadLanguage", { code });
         },
         handleSelect(selection) {
+            console.log(selection);
             if (selection.type === "language") {
                 this.displayLanguage({ code: selection.code });
             } else if (selection.type === "word") {

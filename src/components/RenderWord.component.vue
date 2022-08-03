@@ -11,10 +11,7 @@
                 >
                     {{ word.english_alternate }}
                 </div>
-                <div
-                    class="text-gray-600 group-hover:text-white text-sm md:text-base"
-                    v-else
-                >
+                <div class="text-gray-600 group-hover:text-white text-sm md:text-base" v-else>
                     {{ word.english }}
                 </div>
             </div>

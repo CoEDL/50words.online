@@ -1,14 +1,19 @@
 <template>
     <div class="flex flex-col pr-2">
-        <div
-            class="flex flex-row flex-grow cursor-pointer group hover:text-white hover:bg-highlight-dark p-2 rounded-lg"
-            @click="playWord"
-        >
-            <render-word-component class="flex-grow" :word="word" :display="display" />
-            <!-- <div class="flex-grow"></div> -->
+        <div class="flex flex-row">
+            <language-information-component
+                class="p-2"
+                :code="word.language.code"
+                :offset="[0, 10]"
+                v-if="display === 'languageName'"
+            />
+            <div
+                class="flex flex-row flex-grow cursor-pointer group hover:text-white hover:bg-highlight-dark p-2 rounded-lg"
+                @click="playWord"
+            >
+                <render-word-component class="flex-grow" :word="word" :display="display" />
 
-            <div @click="playWord">
-                <div class="text-2xl">
+                <div class="text-2xl" :class="{ blinking: state.play }">
                     <span v-show="word.audio">
                         <i class="fas fa-volume-up"></i>
                     </span>
@@ -17,31 +22,31 @@
                     </span>
                 </div>
             </div>
-        </div>
 
-        <audio-player-control
-            :files="word.audio"
-            :play="state"
-            v-if="word.audio"
-            @loaded="loading = false"
-        />
-        <language-information-component
-            class="p-2 hidden md:block"
-            :code="word.language.code"
-            :offset="[0, 10]"
-            v-if="display === 'languageName'"
-        />
-        <div v-if="word.video">
-            <video-player-control
-                :class="{
-                    'w-full h-auto': ready,
-                    'h-0 w-0': !ready,
-                }"
-                :files="word.video"
-                :play="state"
-                @loaded="videoReady"
-                @finished-playing="ready = false"
-            />
+            <div v-if="word.audio && word.audio.length">
+                <audio-player-control
+                    :files="word.audio"
+                    :state="state"
+                    @loaded="loading = false"
+                    @finished-playing="state.play = false"
+                />
+            </div>
+
+            <div v-if="word.video && word.video.length">
+                <video-player-control
+                    :class="{
+                        'w-full h-auto': ready,
+                        'h-0 w-0': !ready,
+                    }"
+                    :files="word.video"
+                    :state="state"
+                    @loaded="videoReady"
+                    @finished-playing="
+                        ready = false;
+                        state.play = false;
+                    "
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -68,7 +73,7 @@ export default {
             type: String,
             required: true,
             default: "translation",
-            validator: function(value) {
+            validator: function (value) {
                 // The value must match one of these strings
                 return ["translation", "languageName"].includes(value) !== -1;
             },
@@ -83,15 +88,15 @@ export default {
         };
     },
     computed: {
-        smallDevice: function() {
+        smallDevice: function () {
             return window.innerWidth < 768 ? true : false;
         },
-        flyTo: function() {
+        flyTo: function () {
             return this.$store.state.flyTo;
         },
     },
     watch: {
-        flyTo: function() {
+        flyTo: function () {
             const flyTo = this.$store.state.flyTo;
             if (flyTo.handler !== "informationPanelRenderWord") return;
             if (this.word.language.code === flyTo?.word?.properties?.language.code) {

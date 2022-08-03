@@ -1,12 +1,18 @@
 <template>
     <div class="flex flex-col">
-        <ui-select
+        <el-select
             v-if="languages.length"
-            help="Select a language"
-            :options="languages"
+            placeholder="Select a language"
             v-model="code"
             @change="displayLanguage"
-        ></ui-select>
+        >
+            <el-option
+                v-for="language in languages"
+                :key="language.value"
+                :label="language.label"
+                :value="language.value"
+            />
+        </el-select>
     </div>
 </template>
 
@@ -18,7 +24,7 @@ export default {
         };
     },
     computed: {
-        languages: function() {
+        languages: function () {
             const languages = this.$store.state.languages
                 .map((language) => language.properties)
                 .filter((language) => language.words)
@@ -32,9 +38,8 @@ export default {
         },
     },
     methods: {
-        displayLanguage(language) {
-            if (!language?.value) return;
-            this.$store.dispatch("loadLanguage", { code: language.value });
+        displayLanguage(code) {
+            this.$store.dispatch("loadLanguage", { code });
         },
     },
 };

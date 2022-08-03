@@ -2,7 +2,7 @@
     <div class="flex flex-col">
         <div class="flex flex-row justify-between">
             <el-button
-                type="text"
+                :link="true"
                 class="text-gray-600"
                 @click="home"
                 v-if="$route.name !== 'home'"
@@ -11,7 +11,7 @@
             </el-button>
             <span v-if="!$store.state.iOS">
                 <el-button
-                    type="text"
+                    :link="true"
                     class="text-gray-600 hover:text-highlight-dark"
                     :class="{
                         'text-highlight-dark': $route.name === 'playall',
@@ -22,7 +22,7 @@
                 </el-button>
             </span>
             <el-button
-                type="text"
+                :link="true"
                 class="text-gray-600 hover:text-highlight-dark"
                 :class="{
                     'text-highlight-dark': $route.name === 'about',
@@ -32,7 +32,7 @@
                 ABOUT
             </el-button>
             <el-button
-                type="text"
+                :link="true"
                 class="text-gray-600 hover:text-highlight-dark"
                 :class="{
                     'text-highlight-dark': $route.name === 'contribute',
@@ -43,7 +43,7 @@
             </el-button>
             <!-- <div class="flex flex-grow"></div> -->
             <el-button
-                type="text"
+                :link="true"
                 class="text-gray-600 hover:text-highlight-dark"
                 :class="{
                     'text-highlight-dark': $route.name === 'help',
@@ -54,9 +54,7 @@
             </el-button>
         </div>
         <div class="flex flex-col cursor-pointer" @click="unsetSelection">
-            <div class="text-lg font-bold text-highlight-dark">
-                50 WORDS PROJECT
-            </div>
+            <div class="text-lg font-bold text-highlight-dark">50 WORDS PROJECT</div>
             <div class="text-sm text-gray-700">
                 Hear 50 words in Australian Indigenous languages
             </div>

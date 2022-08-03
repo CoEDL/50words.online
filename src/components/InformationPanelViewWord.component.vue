@@ -1,5 +1,5 @@
 <template>
-    <div class="overflow-scroll" :style="{ height: height }" v-if="data">
+    <div class="overflow-scroll text-black" :style="{ height: height }" v-if="data">
         <div class="flex flex-col">
             <div class="flex flex-row px-2 md:my-2">
                 <div
@@ -13,10 +13,7 @@
             </div>
 
             <div class="flex flex-row justify-around my-2">
-                <ui-button
-                    @click="playAllWords = !playAllWords"
-                    color="default"
-                >
+                <el-button @click="playAllWords = !playAllWords" type="primary">
                     <div v-show="!playAllWords">
                         <i class="fas fa-play"></i>
                         <div class="inline-block ml-1">play all words</div>
@@ -25,7 +22,7 @@
                         <i class="fas fa-stop"></i>
                         <div class="inline-block ml-1">stop playing</div>
                     </div>
-                </ui-button>
+                </el-button>
             </div>
 
             <div v-if="playAllWords">
@@ -37,10 +34,7 @@
             </div>
             <div v-if="!playAllWords">
                 <div v-for="(word, idx) of data.words" :key="idx" class="m-1">
-                    <information-panel-render-word-component
-                        :data="word"
-                        display="languageName"
-                    />
+                    <information-panel-render-word-component :data="word" display="languageName" />
                 </div>
             </div>
         </div>
@@ -63,13 +57,12 @@ export default {
             playAllWords: false,
             height:
                 window.innerWidth < 768
-                    ? `${window.innerHeight -
-                          (window.innerHeight * 0.4 + 60)}px`
+                    ? `${window.innerHeight - (window.innerHeight * 0.4 + 60)}px`
                     : `${window.innerHeight - 170}px`,
         };
     },
     computed: {
-        data: function() {
+        data: function () {
             return this.$store.getters.getSelectionData();
         },
     },

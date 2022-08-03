@@ -31,12 +31,9 @@
                 </div>
             </div>
         </div>
-        <contribute-dialog-component
-            class="hidden md:block"
-            :show="showContributeDialog"
-            @close="showContributeDialog = false"
-        >
-        </contribute-dialog-component>
+        <el-dialog v-model="showContributeDialog" ref="modal" title="Contribute">
+            <contribute-component />
+        </el-dialog>
         <render-word-map-popup-component
             v-if="word"
             :word="word"
@@ -51,7 +48,7 @@ import Vue from "vue";
 import RenderWordMapPopupComponent from "components/RenderWordMapPopup.component.vue";
 import MapLayerToggleComponent from "./MapLayerToggle.component.vue";
 import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
-import ContributeDialogComponent from "./DialogContribute.component.vue";
+import ContributeComponent from "./Contribute.component.vue";
 
 import mapboxgl from "mapbox-gl";
 import { mapBoxStyle, accessToken } from "../configuration";
@@ -60,7 +57,7 @@ import { debounce, throttle, map, orderBy, shuffle, uniq } from "lodash";
 
 export default {
     components: {
-        ContributeDialogComponent,
+        ContributeComponent,
         MapLayerToggleComponent,
         ZoomToLanguageComponent,
         RenderWordMapPopupComponent,
@@ -93,40 +90,40 @@ export default {
         };
     },
     computed: {
-        mapHeight: function() {
+        mapHeight: function () {
             return `${window.innerHeight - 150}px`;
         },
-        languagesWithData: function() {
+        languagesWithData: function () {
             return this.$store.state.languages.filter((l) => l.properties.words);
         },
-        languagesWithoutData: function() {
+        languagesWithoutData: function () {
             return this.$store.state.languages.filter((l) => !l.properties.words);
         },
-        selection: function() {
+        selection: function () {
             return this.$store.getters.getSelection();
         },
-        layer: function() {
+        layer: function () {
             return this.$store.state.layer;
         },
-        flyToCoordinates: function() {
+        flyToCoordinates: function () {
             return this.$store.state.flyTo;
         },
-        playAll: function() {
+        playAll: function () {
             return this.$store.state.playAll;
         },
-        smallDevice: function() {
+        smallDevice: function () {
             return window.innerWidth < 768 ? true : false;
         },
     },
     watch: {
-        layer: function() {
+        layer: function () {
             if (this.layer === "languages") {
                 this.debouncedRenderLanguageLayers();
             } else {
                 this.debouncedRenderWordLayer();
             }
         },
-        selection: function(n) {
+        selection: function (n) {
             setTimeout(() => {
                 if (this.selection.type === "word") {
                     this.debouncedRenderWordLayer();
@@ -141,7 +138,7 @@ export default {
                 }
             }, 300);
         },
-        flyToCoordinates: function() {
+        flyToCoordinates: function () {
             if (this.flyToCoordinates?.word?.geometry?.coordinates) {
                 this.flyTo({
                     coordinates: this.flyToCoordinates.word.geometry.coordinates,

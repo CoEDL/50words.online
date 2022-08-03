@@ -4,7 +4,7 @@
             <header-component />
             <div class="flex flex-row">
                 <information-panel-component class="mt-4 w-3/12" />
-                <div class="flex flex-col w-full md:w-9/12 hidden md:flex">
+                <div class="flex flex-col w-full md:w-9/12 md:flex">
                     <div class="flex-grow mt-2 ml-2 flex flex-col">
                         <map-component class="flex-grow" />
                     </div>
@@ -14,22 +14,18 @@
             </div>
         </div>
         <div class="flex flex-col md:hidden w-screen h-screen">
-            <header-mobile-component class="px-2" />
+            <header-mobile-component class="p-4" />
             <div
-                class="flex-grow flex flex-col justify-evenly my-2 px-2"
+                class="flex-grow flex flex-col space-y-4 justify-evenly my-2 px-2"
                 v-if="!selection"
             >
                 <mobile-select-language-component />
                 <mobile-select-word-component />
                 <mobile-search-for-word-language-component />
             </div>
-            <div v-else class="mt-6 mb-2">
-                <information-panel-view-language-component
-                    v-if="layer === 'languages'"
-                />
-                <information-panel-view-word-component
-                    v-if="layer === 'words'"
-                />
+            <div v-else class="p-2">
+                <information-panel-view-language-component v-if="layer === 'languages'" />
+                <information-panel-view-word-component v-if="layer === 'words'" />
             </div>
             <div class="relative">
                 <map-component class="bottom-0 absolute" />
@@ -68,10 +64,10 @@ export default {
         return {};
     },
     computed: {
-        selection: function() {
+        selection: function () {
             return this.$store.getters.getSelectionData();
         },
-        layer: function() {
+        layer: function () {
             return this.$store.state.layer;
         },
     },

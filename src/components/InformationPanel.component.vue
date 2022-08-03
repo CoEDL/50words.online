@@ -1,30 +1,33 @@
 <template>
     <div class="flex flex-col">
         <div class="text-sm text-gray-600">View by</div>
-        <el-tabs v-model="activeTab" @tab-click="handleTabSelect">
-            <el-tab-pane label="" name="language">
-                <span
-                    slot="label"
-                    :class="{
-                        'text-black border-b-4 border-black pb-2': activeTab === 'language',
-                        'text-gray-600': activeTab !== 'language',
-                    }"
-                    >LANGUAGE</span
-                >
+        <el-tabs v-model="activeTab" @tab-click="handleTabSelect" class="text-gray-700">
+            <el-tab-pane name="language">
+                <template #label>
+                    <span
+                        :class="{
+                            'text-black': activeTab === 'language',
+                            'text-gray-600': activeTab !== 'language',
+                        }"
+                    >
+                        LANGUAGE
+                    </span>
+                </template>
                 <div v-if="activeTab === 'language'">
                     <information-panel-language-list-component v-if="show === 'list'" />
                     <information-panel-view-language-component v-if="show === 'language'" />
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="" name="word">
-                <span
-                    slot="label"
-                    :class="{
-                        'text-black  border-b-4 border-black pb-2 ': activeTab === 'word',
-                        'text-gray-600': activeTab !== 'word',
-                    }"
-                    >WORD</span
-                >
+            <el-tab-pane label="word" name="word">
+                <template #label>
+                    <span
+                        :class="{
+                            'text-black': activeTab === 'word',
+                            'text-gray-600': activeTab !== 'word',
+                        }"
+                        >WORD</span
+                    >
+                </template>
                 <div v-if="activeTab === 'word'">
                     <information-panel-word-list-component v-if="show === 'list'" />
                     <information-panel-view-word-component v-if="show === 'word'" />
@@ -55,12 +58,12 @@ export default {
         };
     },
     computed: {
-        selection: function() {
+        selection: function () {
             return this.$store.state.selection;
         },
     },
     watch: {
-        selection: function() {
+        selection: function () {
             this.show = this.$store.state.selection.type
                 ? this.$store.state.selection.type
                 : "list";
@@ -72,7 +75,7 @@ export default {
                 type: undefined,
                 data: undefined,
             });
-            if (tab.$options.propsData.name === "language") {
+            if (tab.props.name === "language") {
                 this.$store.commit("setLayer", "languages");
                 this.show = "list";
             } else {

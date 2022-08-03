@@ -1,14 +1,6 @@
-"use strict";
+import { createStore } from "vuex";
 
-import Vue from "vue";
-import Vuex from "vuex";
-Vue.use(Vuex);
-import {
-    loadLanguages,
-    loadWords,
-    loadWordData,
-    loadLanguageData,
-} from "./data-loader.service";
+import { loadLanguages, loadWords, loadWordData, loadLanguageData } from "./data-loader.service";
 import { cloneDeep, orderBy } from "lodash";
 
 export const mutations = {
@@ -75,16 +67,15 @@ export const getters = {
     },
 };
 
-const configuration = {
+export const store = new createStore({
     strict: process.env.NODE_ENV !== "production",
-    state: reset(),
+    state: resetState(),
+    getters,
     mutations,
     actions,
-    getters,
-};
-export const store = new Vuex.Store(configuration);
+});
 
-function reset() {
+function resetState() {
     return {
         iOS:
             [

@@ -1,7 +1,7 @@
 module.exports = {
-    variants: {
-        textColor: ["responsive", "hover", "focus", "group-hover"],
-    },
+    future: {},
+    mode: "jit",
+    content: ["./public/index.html", "./src/**/*.html", "./src/**/*.{js,jsx,ts,tsx,vue}"],
     theme: {
         extend: {
             colors: {
@@ -19,4 +19,6 @@ module.exports = {
             xxl: "1600px",
         },
     },
+    variants: {},
+    plugins: [],
 };
