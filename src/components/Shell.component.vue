@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="pt-4 px-6 flex flex-col hidden md:flex">
+        <div class="pt-4 px-6 hidden md:flex md:flex-col">
             <header-component />
             <div class="flex flex-row">
                 <information-panel-component class="mt-4 w-3/12" />
