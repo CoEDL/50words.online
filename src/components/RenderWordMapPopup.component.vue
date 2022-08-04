@@ -12,19 +12,18 @@
             </div>
         </div>
         <audio-player-control
+            v-if="word.audio && word.audio.length"
             :files="word.audio"
-            :play="state"
-            v-if="word.audio"
+            :state="state"
             @loaded="loading = false"
             @finished-playing="$emit('done')"
         />
-        <div v-if="word.video">
-            <video-player-control
-                :files="word.video"
-                :play="state"
-                @finished-playing="$emit('done')"
-            />
-        </div>
+        <video-player-control
+            v-if="word.video && word.video.length"
+            :files="word.video"
+            :state="state"
+            @finished-playing="$emit('done')"
+        />
     </div>
 </template>
 
