@@ -1,13 +1,15 @@
 <template>
-    <audio ref="audioElement">
-        <source v-for="(file, idx) of data.audioFiles" :src="file" :key="idx" />
-        Your browser does not support the <code>audio</code> element.
-    </audio>
+    <div>
+        <audio ref="audioElement">
+            <source v-for="(file, idx) of data.audioFiles" :src="file" :key="idx" />
+            Your browser does not support the <code>audio</code> element.
+        </audio>
+    </div>
 </template>
 
 <script setup>
 import { debounce } from "lodash";
-import { reactive, ref, watch, nextTick } from "vue";
+import { reactive, ref, watch, nextTick, onMounted } from "vue";
 
 const props = defineProps({
     files: {
@@ -26,6 +28,21 @@ const data = reactive({
     loading: false,
 });
 const audioElement = ref(null);
+
+onMounted(() => {
+    if (ios()) {
+        audioElement.value.addEventListener("loadedmetadata", () => {
+            playWord();
+        });
+    } else {
+        audioElement.value.addEventListener("canplaythrough", () => {
+            playWord();
+        });
+    }
+    audioElement.value.addEventListener("ended", endedHandler);
+    audioElement.value.addEventListener("error", endedHandler);
+});
+
 watch(
     () => props.state,
     () => {
@@ -39,12 +56,8 @@ function load() {
     } else {
         data.audioFiles = [...props.files];
     }
+
     nextTick(() => {
-        audioElement.value.addEventListener("canplaythrough", () => {
-            if (data.loading) playWord();
-        });
-        audioElement.value.addEventListener("ended", endedHandler);
-        audioElement.value.addEventListener("error", endedHandler);
         audioElement.value.load();
     });
 }
@@ -56,5 +69,15 @@ function playWord() {
 async function endedHandler() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     emit("finished-playing");
+}
+
+function ios() {
+    if (typeof window === `undefined` || typeof navigator === `undefined`) return false;
+
+    return /iPhone|iPad|iPod/i.test(
+        navigator.userAgent ||
+            navigator.vendor ||
+            (window.opera && opera.toString() === `[object Opera]`)
+    );
 }
 </script>

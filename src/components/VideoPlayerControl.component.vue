@@ -7,7 +7,7 @@
 
 <script setup>
 import { debounce } from "lodash";
-import { reactive, ref, watch, nextTick } from "vue";
+import { reactive, ref, watch, nextTick, onMounted } from "vue";
 
 const props = defineProps({
     files: {
@@ -26,6 +26,20 @@ const data = reactive({
     loading: false,
 });
 const videoElement = ref(null);
+
+onMounted(() => {
+    if (ios()) {
+        videoElement.value.addEventListener("loadedmetadata", () => {
+            playWord();
+        });
+    } else {
+        videoElement.value.addEventListener("canplaythrough", () => {
+            playWord();
+        });
+    }
+    videoElement.value.addEventListener("ended", endedHandler);
+    videoElement.value.addEventListener("error", endedHandler);
+});
 watch(
     () => props.state,
     () => {
@@ -34,19 +48,15 @@ watch(
 );
 function load() {
     data.loading = true;
+
     if (typeof props.files === "string" && props.files) {
         data.videoFiles = JSON.parse(props.files);
     } else {
         data.videoFiles = [...props.files];
     }
-    setTimeout(() => {
-        videoElement.value.addEventListener("canplaythrough", () => {
-            if (data.loading) playWord();
-        });
-        videoElement.value.addEventListener("ended", endedHandler);
-        videoElement.value.addEventListener("error", endedHandler);
+    nextTick(() => {
         videoElement.value.load();
-    }, 200);
+    });
 }
 function playWord() {
     emit("loaded");
@@ -56,5 +66,14 @@ function playWord() {
 async function endedHandler() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     emit("finished-playing");
+}
+function ios() {
+    if (typeof window === `undefined` || typeof navigator === `undefined`) return false;
+
+    return /iPhone|iPad|iPod/i.test(
+        navigator.userAgent ||
+            navigator.vendor ||
+            (window.opera && opera.toString() === `[object Opera]`)
+    );
 }
 </script>
