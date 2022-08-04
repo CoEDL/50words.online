@@ -22,31 +22,30 @@
                     </span>
                 </div>
             </div>
+        </div>
+        <div v-if="word.audio && word.audio.length">
+            <audio-player-control
+                :files="word.audio"
+                :state="state"
+                @loaded="loading = false"
+                @finished-playing="state.play = false"
+            />
+        </div>
 
-            <div v-if="word.audio && word.audio.length">
-                <audio-player-control
-                    :files="word.audio"
-                    :state="state"
-                    @loaded="loading = false"
-                    @finished-playing="state.play = false"
-                />
-            </div>
-
-            <div v-if="word.video && word.video.length">
-                <video-player-control
-                    :class="{
-                        'w-full h-auto': ready,
-                        'h-0 w-0': !ready,
-                    }"
-                    :files="word.video"
-                    :state="state"
-                    @loaded="videoReady"
-                    @finished-playing="
-                        ready = false;
-                        state.play = false;
-                    "
-                />
-            </div>
+        <div v-if="word.video && word.video.length">
+            <video-player-control
+                :class="{
+                    'w-full h-auto': ready,
+                    'h-0 w-0': !ready,
+                }"
+                :files="word.video"
+                :state="state"
+                @loaded="videoReady"
+                @finished-playing="
+                    ready = false;
+                    state.play = false;
+                "
+            />
         </div>
     </div>
 </template>
