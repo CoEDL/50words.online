@@ -1,6 +1,7 @@
 const path = require("path");
 const { merge } = require("webpack-merge");
 const common = require("./webpack-common");
+const webpack = require("webpack");
 
 const configuration = merge(common, {
     mode: "development",
@@ -21,6 +22,15 @@ const configuration = merge(common, {
         historyApiFallback: true,
         hot: true,
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            PRODUCTION: JSON.stringify(false),
+            DEVELOPMENT: JSON.stringify(true),
+            // VERSION: JSON.stringify("5fa3b9"),
+            __VUE_OPTIONS_API__: JSON.stringify(true),
+            __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
+        }),
+    ],
 });
 
 module.exports = configuration;
