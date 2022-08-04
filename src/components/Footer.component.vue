@@ -1,23 +1,40 @@
 <template>
-    <div class="flex flex-row h-16 py-4">
-        <div class="flex-grow"></div>
-        <div class="mx-4">
-            <a
-                href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
-                target="_blank"
-            >
-                <img :src="ruilLogo" class="h-10" />
-            </a>
+    <div class="flex flex-col">
+        <div class="flex flex-row">
+            <div class="flex-grow"></div>
+            <div class="text-sm text-gray-800">
+                Attribution-NonCommercial 4.0 International
+                <a
+                    href="https://creativecommons.org/licenses/by-nc/4.0/"
+                    target="_blank"
+                    class="text-highlight-dark"
+                >
+                    https://creativecommons.org/licenses/by-nc/4.0/
+                </a>
+            </div>
         </div>
-        <div class="mx-4">
-            <a href="https://www.firstlanguages.org.au" target="_blank">
-                <img :src="firstLangLogo" class="h-10" />
-            </a>
-        </div>
-        <div class="mx-4">
-            <a href="https://www.dynamicsoflanguage.edu.au/" target="_blank">
-                <img :src="coedlLogo" class="h-10" />
-            </a>
+
+        <div class="flex flex-row h-16 py-4">
+            <div class="flex-grow"></div>
+
+            <div class="mx-4">
+                <a
+                    href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
+                    target="_blank"
+                >
+                    <img :src="ruilLogo" class="h-10" />
+                </a>
+            </div>
+            <div class="mx-4">
+                <a href="https://www.firstlanguages.org.au" target="_blank">
+                    <img :src="firstLangLogo" class="h-10" />
+                </a>
+            </div>
+            <div class="mx-4">
+                <a href="https://www.dynamicsoflanguage.edu.au/" target="_blank">
+                    <img :src="coedlLogo" class="h-10" />
+                </a>
+            </div>
         </div>
     </div>
 </template>

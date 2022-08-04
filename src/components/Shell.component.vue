@@ -8,7 +8,6 @@
                     <div class="flex-grow mt-2 ml-2 flex flex-col">
                         <map-component class="flex-grow" />
                     </div>
-
                     <footer-component class="hidden md:flex" />
                 </div>
             </div>
@@ -22,6 +21,16 @@
                 <mobile-select-language-component />
                 <mobile-select-word-component />
                 <mobile-search-for-word-language-component />
+                <div class="text-sm text-gray-800 text-center">
+                    Attribution-NonCommercial 4.0 International
+                    <a
+                        href="https://creativecommons.org/licenses/by-nc/4.0/"
+                        target="_blank"
+                        class="text-highlight-dark"
+                    >
+                        https://creativecommons.org/licenses/by-nc/4.0/
+                    </a>
+                </div>
             </div>
             <div v-else class="p-2">
                 <information-panel-view-language-component v-if="layer === 'languages'" />

@@ -1,17 +1,11 @@
 <template>
     <div class="flex flex-col">
         <header-mobile-component class="px-2" />
-        <div class="mt-2 p-2">
-            <div
-                v-if="$route.name === 'about'"
-                class="overflow-scroll style-content pr-4"
-            >
+        <div class="mt-2 p-2 text-black">
+            <div v-if="$route.name === 'about'" class="overflow-scroll style-content pr-4">
                 <about-component />
             </div>
-            <div
-                v-else-if="$route.name === 'help'"
-                class="overflow-scroll style-content pr-4"
-            >
+            <div v-else-if="$route.name === 'help'" class="overflow-scroll style-content pr-4">
                 <help-component class="p-6 border-2" />
             </div>
             <div

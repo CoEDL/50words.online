@@ -91,7 +91,7 @@ export default {
     },
     computed: {
         mapHeight: function () {
-            return `${window.innerHeight - 150}px`;
+            return `${window.innerHeight - 200}px`;
         },
         languagesWithData: function () {
             return this.$store.state.languages.filter((l) => l.properties.words);
