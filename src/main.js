@@ -7,21 +7,9 @@ import "@fortawesome/fontawesome-free/js/all";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoReplaceSvg = "nest";
 import mapboxgl from "mapbox-gl";
+import VueGtag from "vue-gtag";
 
-// import VueAnalytics from "vue-analytics";
-
-// const isProd = process.env.NODE_ENV === "production";
-// Vue.use(VueAnalytics, {
-//     id: "UA-36256674-2",
-//     router,
-//     debug: {
-//         isProd: !isProd,
-//         sendHitTask: isProd,
-//     },
-// });
-// App.router = router;
-// App.store = store;
-// const app = new Vue(App);
+const notDevelopment = process.env.NODE_ENV !== "development";
 
 import { createApp } from "vue";
 import App from "./App.vue";
@@ -31,8 +19,8 @@ import ElementPlus from "element-plus";
 
 (async () => {
     // Vue.config.productionTip = false;
-
     const app = createApp(App);
+    app.use(VueGtag, { config: "G-XCLN54BQ4P", enabled: notDevelopment }, router);
     app.use(store);
     app.use(router);
     app.use(ElementPlus);
