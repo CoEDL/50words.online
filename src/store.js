@@ -7,11 +7,11 @@ export const mutations = {
     reset(state) {
         state = reset();
     },
-    setWords(state, payload) {
-        state.words = [...payload.words];
+    setWords(state, words) {
+        state.words = [...words];
     },
-    setLanguages(state, payload) {
-        state.languages = orderBy(payload.languages, (l) => l.properties.name);
+    setLanguages(state, languages) {
+        state.languages = orderBy(languages, (l) => l.properties?.name?.toLowerCase());
     },
     setSelectionToDisplay(state, payload) {
         state.selection = { ...payload };
@@ -26,11 +26,12 @@ export const mutations = {
 
 export const actions = {
     async loadData({ commit }) {
-        let response = await loadLanguages();
-        commit("setLanguages", response);
+        let languages = await loadLanguages();
+        console.log(languages[0]);
+        commit("setLanguages", languages);
 
-        response = await loadWords();
-        commit("setWords", response);
+        let words = await loadWords();
+        commit("setWords", words);
     },
     async loadWord({ state, commit }, word) {
         const words = await loadWordData({ index: word.index });

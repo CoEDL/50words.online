@@ -1,12 +1,12 @@
 "use strict";
 
 export async function loadLanguages() {
-    const languages = await get("/repository/languages.json");
+    const { languages } = await get("/repository/languages.json");
     return languages;
 }
 
 export async function loadWords() {
-    let words = await get("/repository/words.json");
+    let { words } = await get("/repository/words.json");
     return words;
 }
 
@@ -24,9 +24,7 @@ async function get(path) {
 }
 
 export async function loadLanguageMetadata({ code }) {
-    let response = await fetch(
-        mapRepositoryRoot(`/repository/${code}/index.json`)
-    );
+    let response = await fetch(mapRepositoryRoot(`/repository/${code}/index.json`));
     if (response.status !== 200) {
         throw new Error(response);
     }
@@ -73,9 +71,6 @@ export async function loadProcessingData() {
 
 export function mapRepositoryRoot(path) {
     return path;
-    const root =
-        process.env.NODE_ENV === "development"
-            ? "/repository"
-            : "/50words/repository";
+    const root = process.env.NODE_ENV === "development" ? "/repository" : "/50words/repository";
     return path.replace("/repository", root);
 }
