@@ -1,21 +1,16 @@
 <template>
     <div class="flex flex-col">
-        <div class="flex flex-row">
-            <div class="flex-grow"></div>
-            <div class="text-sm text-gray-800">
-                Attribution-NonCommercial 4.0 International
-                <a
-                    href="https://creativecommons.org/licenses/by-nc/4.0/"
-                    target="_blank"
-                    class="text-highlight-dark"
-                >
-                    https://creativecommons.org/licenses/by-nc/4.0/
-                </a>
-            </div>
-        </div>
-
         <div class="flex flex-row h-16 py-4">
             <div class="flex-grow"></div>
+            <div class="mx-4">
+                <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"
+                    ><img
+                        alt="Creative Commons License"
+                        class="h-10"
+                        style="border-width: 0"
+                        src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png"
+                /></a>
+            </div>
 
             <div class="mx-4">
                 <a

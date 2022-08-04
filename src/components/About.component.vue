@@ -3,13 +3,13 @@
         <div class="bg-blue-100 p-2 flex flex-col space-y-2">
             <div class="flex flex-row space-x-2">
                 <div>
-                    <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
-                        <img
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"
+                        ><img
+                            class="h-12"
                             alt="Creative Commons License"
                             style="border-width: 0"
-                            src="https://i.creativecommons.org/l/by/4.0/88x31.png"
-                        />
-                    </a>
+                            src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png"
+                    /></a>
                 </div>
                 <div>
                     The material in this site is made available under a Creative Commons BY-NC
