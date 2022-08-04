@@ -13,7 +13,12 @@
             </div>
 
             <div class="flex flex-row justify-around my-2">
-                <el-button @click="playAllWords = !playAllWords" type="primary">
+                <el-button
+                    @click="playAllWords = !playAllWords"
+                    :text="true"
+                    :bg="true"
+                    size="large"
+                >
                     <div v-show="!playAllWords">
                         <i class="fas fa-play"></i>
                         <div class="inline-block ml-1">play all words</div>
