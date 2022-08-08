@@ -13,8 +13,9 @@
                 </div>
                 <div>
                     The material in this site is made available under a Creative Commons BY-NC
-                    licence, you can use it as long as it is non-commercial and the source is
-                    attributed.
+                    licence. The words provided on this site are not to be used for commercial
+                    purposes. The permission and guidance of local communities should always be
+                    sought before using Aboriginal languages.
                 </div>
             </div>
         </div>
