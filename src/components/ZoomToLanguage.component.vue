@@ -9,10 +9,10 @@
                 placeholder=""
                 @select="zoomToLanguage"
             >
-                <div slot="prefix" class="pt-1 pl-1 text-lg text-gray-800">
+                <template #prefix class="pt-1 pl-1 text-lg text-gray-800">
                     <i class="fas fa-search"></i>
-                </div>
-                <template slot-scope="{ item }">
+                </template>
+                <template #default="{ item }">
                     <span :class="{ 'style-has-words': item.properties.words }">{{
                         item.properties.name
                     }}</span>
@@ -30,7 +30,7 @@ export default {
         };
     },
     computed: {
-        languages: function() {
+        languages: function () {
             return this.$store.state.languages;
         },
     },
