@@ -27,7 +27,6 @@ export const mutations = {
 export const actions = {
     async loadData({ commit }) {
         let languages = await loadLanguages();
-        console.log(languages[0]);
         commit("setLanguages", languages);
 
         let words = await loadWords();
