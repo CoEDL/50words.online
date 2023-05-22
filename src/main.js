@@ -20,7 +20,7 @@ import ElementPlus from "element-plus";
 (async () => {
     // Vue.config.productionTip = false;
     const app = createApp(App);
-    app.use(VueGtag, { config: "G-XCLN54BQ4P", enabled: notDevelopment }, router);
+    app.use(VueGtag, { config: { id: "G-XCLN54BQ4P" }, enabled: notDevelopment }, router);
     app.use(store);
     app.use(router);
     app.use(ElementPlus);
