@@ -228,6 +228,8 @@ class DataExtractor:
         sheet = wb.worksheets[0]
         for row in sheet.rows:
             row = parse_row(row)
+            if row['code'] == None:
+                continue
             self.aiatsis_geographies_by_code[row["code"]] = row
             self.aiatsis_geographies_by_name[row["name"]] = row
         data = itertools.groupby(data, key=lambda i: i["code"])
