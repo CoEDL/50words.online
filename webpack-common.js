@@ -14,7 +14,7 @@ module.exports = {
         filename: "[contenthash].js",
     },
     plugins: [
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "50words",
             template: "./public/index.html",
