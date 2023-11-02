@@ -80,6 +80,6 @@ function playAll() {
     router.push({ name: "playall" });
 }
 function home() {
-    router.push({ name: "home" });
+    router.push({ name: "languages" });
 }
 </script>

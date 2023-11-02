@@ -10,7 +10,28 @@ const routes = [
         path: "/",
         name: "home",
         component: ShellComponent,
-        children: [],
+        children: [
+            {
+                path: "/languages",
+                name: "languages",
+                component: ShellComponent,
+            },
+            {
+                path: "/languages/:language",
+                name: "language",
+                component: ShellComponent,
+            },
+            {
+                path: "/words",
+                name: "words",
+                component: ShellComponent,
+            },
+            {
+                path: "/words/:word",
+                name: "word",
+                component: ShellComponent,
+            },
+        ],
     },
     {
         name: "playall",

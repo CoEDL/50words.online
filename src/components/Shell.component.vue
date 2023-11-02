@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div v-if="ready">
+        <!-- visible on medium sized screens and larger -->
         <div class="pt-4 px-6 hidden md:flex md:flex-col">
             <header-component />
             <div class="flex flex-row">
@@ -12,12 +13,11 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col md:hidden w-screen h-screen">
-            <header-mobile-component class="p-4" />
-            <div
-                class="flex-grow flex flex-col space-y-4 justify-evenly my-2 px-2"
-                v-if="!selection"
-            >
+
+        <!-- visible only on small screens - hidden on medium sized screens and larger -->
+        <div class="flex flex-col space-y-4 md:hidden w-screen h-screen">
+            <header-mobile-component class="px-2" />
+            <div class="flex-grow flex flex-col space-y-4 px-2" v-if="!selection">
                 <mobile-select-language-component />
                 <mobile-select-word-component />
                 <mobile-search-for-word-language-component />
@@ -36,14 +36,14 @@
                 <information-panel-view-language-component v-if="layer === 'languages'" />
                 <information-panel-view-word-component v-if="layer === 'words'" />
             </div>
-            <div class="relative">
-                <map-component class="bottom-0 absolute" />
-            </div>
+            <map-component class="" />
         </div>
     </div>
 </template>
 
-<script>
+<script setup>
+import { loadLanguages, loadWords } from "../data-loader.service";
+
 import MapComponent from "./Map.component.vue";
 import HeaderComponent from "./Header.component.vue";
 import InformationPanelComponent from "./InformationPanel.component.vue";
@@ -55,35 +55,21 @@ import MobileSearchForWordLanguageComponent from "./MobileSearchForWordLanguage.
 import MobileSelectWordComponent from "./MobileSelectWord.component.vue";
 import InformationPanelViewLanguageComponent from "./InformationPanelViewLanguage.component.vue";
 import InformationPanelViewWordComponent from "./InformationPanelViewWord.component.vue";
+import { computed, ref, onBeforeMount } from "vue";
+import { useStore } from "vuex";
+const $store = useStore();
 
-export default {
-    components: {
-        MapComponent,
-        HeaderComponent,
-        InformationPanelComponent,
-        FooterComponent,
-        HeaderMobileComponent,
-        MobileSelectLanguageComponent,
-        MobileSelectWordComponent,
-        MobileSearchForWordLanguageComponent,
-        InformationPanelViewLanguageComponent,
-        InformationPanelViewWordComponent,
-    },
-    data() {
-        return {};
-    },
-    computed: {
-        selection: function () {
-            return this.$store.getters.getSelectionData();
-        },
-        layer: function () {
-            return this.$store.state.layer;
-        },
-    },
-    mounted() {
-        this.$store.dispatch("loadData");
-    },
-};
+let selection = computed(() => $store.getters.getSelectionData());
+let layer = computed(() => $store.state.layer);
+let ready = ref(false);
+onBeforeMount(async () => {
+    console.time();
+    let languages = await loadLanguages();
+    $store.commit("setLanguages", languages);
+
+    let words = await loadWords();
+    $store.commit("setWords", words);
+    console.timeEnd();
+    ready.value = true;
+});
 </script>
-
-<style scoped lang="scss"></style>

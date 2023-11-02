@@ -13,19 +13,34 @@
 </template>
 
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, watch } from "vue";
 import { useStore } from "vuex";
-const store = useStore();
+import { useRoute } from "vue-router";
+const $store = useStore();
+const $route = useRoute();
+
+// this watcher handles word loading in response to nav events
+watch(
+    () => $route.path,
+    () => {
+        if ($route.params?.word) {
+            let word = $store.state.words.filter((word) => word.name === $route.params.word);
+            if (word.length) displayWord(word[0]);
+        }
+    },
+    { immediate: true }
+);
 
 const data = reactive({
     filter: "",
 });
 let words = computed(() => {
     const regexp = new RegExp(data.filter, "i");
-    return store.state.words.filter((w) => w.name.match(regexp));
+    return $store.state.words.filter((w) => w.name.match(regexp));
 });
+
 function displayWord(word) {
-    store.dispatch("loadWord", word);
+    $store.dispatch("loadWord", word);
 }
 </script>
 

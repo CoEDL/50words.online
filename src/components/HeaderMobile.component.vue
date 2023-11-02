@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col">
-        <div class="flex flex-row justify-between">
+    <div class="flex flex-col space-y-4">
+        <div class="flex flex-row justify-between mt-2">
             <el-button
                 :link="true"
                 class="text-gray-600"
@@ -74,7 +74,7 @@ export default {
     },
     methods: {
         home() {
-            this.$router.push({ name: "home" }).catch(() => {});
+            this.$router.push({ name: "languages" }).catch(() => {});
         },
         showHelp() {
             this.$router.push({ name: "help" }).catch(() => {});

@@ -13,22 +13,39 @@
 </template>
 
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, watch } from "vue";
 import { useStore } from "vuex";
-const store = useStore();
+import { useRoute } from "vue-router";
+const $store = useStore();
+const $route = useRoute();
+
+// this watcher handles language loading in response to nav events
+watch(
+    () => $route.path,
+    () => {
+        if ($route.params?.language) {
+            let language = $store.state.languages
+                .map((language) => language.properties)
+                .filter((language) => language.name === $route.params.language);
+            if (language.length) displayLanguage(language[0]);
+        }
+    },
+    { immediate: true }
+);
 
 const data = reactive({
     filter: "",
 });
 let languages = computed(() => {
     const regexp = new RegExp(data.filter, "i");
-    return store.state.languages
+    return $store.state.languages
         .map((language) => language.properties)
         .filter((language) => language.words)
         .filter((l) => l.language.name.match(regexp));
 });
+
 function displayLanguage(language) {
-    store.dispatch("loadLanguage", { code: language.code });
+    $store.dispatch("loadLanguage", { code: language.code });
 }
 </script>
 

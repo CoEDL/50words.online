@@ -63,45 +63,34 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import RenderLanguageInformationPlayComponent from "./RenderLanguageInformationPlay.component.vue";
 import InformationPanelRenderWordComponent from "./InformationPanelRenderWord.component.vue";
 import LanguageInformationComponent from "./LanguageInformation.component.vue";
 import PlayAllWordsComponent from "./PlayAllWords.component.vue";
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+const $store = useStore();
+const $router = useRouter();
 
-export default {
-    components: {
-        RenderLanguageInformationPlayComponent,
-        InformationPanelRenderWordComponent,
-        LanguageInformationComponent,
-        PlayAllWordsComponent,
-    },
-    data() {
-        return {
-            playAllWords: false,
-            height:
-                window.innerWidth < 768
-                    ? `${window.innerHeight - (window.innerHeight * 0.4 + 60)}px`
-                    : `${window.innerHeight - 170}px`,
-        };
-    },
-    computed: {
-        language: function () {
-            return this.$store.getters.getSelectionData();
-        },
-    },
-    methods: {
-        back() {
-            this.$store.commit("setSelectionToDisplay", {
-                type: undefined,
-                data: undefined,
-            });
-        },
-        index(word) {
-            return `${word.english}${word.indigenous}`;
-        },
-    },
-};
+let playAllWords = ref(false);
+let height = ref(
+    window.innerWidth < 768
+        ? `${window.innerHeight - (window.innerHeight * 0.4 + 60)}px`
+        : `${window.innerHeight - 170}px`
+);
+let language = computed(() => $store.getters.getSelectionData());
+function back() {
+    $router.push("/languages");
+    setTimeout(() => {
+        $store.commit("setSelectionToDisplay", {
+            type: undefined,
+            data: undefined,
+        });
+    }, 100);
+}
+function index(word) {
+    return `${word.english}${word.indigenous}`;
+}
 </script>
-
-<style lang="scss" scoped></style>

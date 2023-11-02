@@ -7,7 +7,7 @@
                 'width-screen cursor-pointer': smallDevice,
             }"
             :style="{
-                height: smallDevice ? (selection.type ? '30vh' : '45vh') : mapHeight,
+                height: smallDevice ? (selection.type ? '30vh' : '60vh') : mapHeight,
             }"
         ></div>
         <map-layer-toggle-component
@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import RenderWordMapPopupComponent from "components/RenderWordMapPopup.component.vue";
 import MapLayerToggleComponent from "./MapLayerToggle.component.vue";
 import ZoomToLanguageComponent from "components/ZoomToLanguage.component.vue";
@@ -155,38 +154,6 @@ export default {
         async centerMap() {
             this.map.resize();
 
-            // if (this.popup) this.popup.remove();
-            // centerCountry({ map: this.map });
-            // let position;
-            // if ("geolocation" in navigator) {
-            //     try {
-            //         position = await new Promise((resolve, reject) => {
-            //             navigator.geolocation.getCurrentPosition(
-            //                 (position) => resolve(position),
-            //                 (error) => reject(error)
-            //             );
-            //         });
-            //     } catch (error) {
-            //         centerCountry({ map: this.map });
-            //     }
-            //     // const latitude  = position.coords.latitude;
-            //     // const longitude = position.coords.longitude;
-
-            //     // Melbourne
-            //     // position = [144.948743, -37.790136];
-            //     if (position) {
-            //         position = [
-            //             position.coords.longitude,
-            //             position.coords.latitude,
-            //         ];
-            //         centerLocation({ map: this.map, position });
-            //     } else {
-            //         centerCountry({ map: this.map });
-            //     }
-            // } else {
-            //     centerCountry({ map: this.map });
-            // }
-
             centerCountry({ map: this.map });
 
             function centerCountry({ map }) {
@@ -195,14 +162,6 @@ export default {
                     [168, -8],
                 ]);
             }
-
-            // function centerLocation({ map, position }) {
-            //     map.flyTo({
-            //         center: position,
-            //         zoom: window.innerwidth < 768 ? 8 : 6,
-            //         bearing: 0,
-            //     });
-            // }
         },
         renderMap() {
             this.map = new mapboxgl.Map({
@@ -210,7 +169,10 @@ export default {
                 style: mapBoxStyle,
                 dragRotate: false,
                 touchPitch: false,
-                center: [0, 0],
+                bounds: [
+                    [96, -45],
+                    [168, -8],
+                ],
             });
             if (this.smallDevice) {
                 // this.map.addControl(new mapboxgl.FullscreenControl());
@@ -221,7 +183,7 @@ export default {
                     })
                 );
             }
-            this.debouncedCenterMap();
+            // this.debouncedCenterMap();
             this.map.on("load", () => {
                 this.addLanguageLayerSources();
                 this.renderLanguageLayers();
@@ -304,24 +266,6 @@ export default {
                 if (!this.smallDevice) {
                     this.word = { ...properties };
                 }
-
-                // const RenderWordClass = Vue.extend(RenderWordMapPopupComponent);
-                // const popupInstance = new RenderWordClass({
-                //     propsData: {
-                //         word: properties,
-                //     },
-                // });
-
-                // if (this.popup) this.popup = this.popup.remove();
-                // this.popup = new mapboxgl.Popup({
-                //     maxWidth: "none",
-                // })
-                //     .setText("popup")
-                //     .setLngLat(e.lngLat)
-                //     .addTo(this.map);
-                // .setHTML('<divid="vue-popup-content"></div>')
-                // popupInstance.$mount("#popup-content");
-                // this.popup._update();
             });
         },
         renderLanguageLayers() {
