@@ -269,6 +269,7 @@ class DataExtractor:
                         "msg": f"Gambay item '{item['name']}'' is missing an Austlang Code.",
                     }
                 )
+                continue
 
             if item["code"].upper() != item["code"]:
                 self.errors.append(
