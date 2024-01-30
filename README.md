@@ -19,7 +19,7 @@ the extraction tool that creates the repository for the application.
 Authorised people have access to the server via SSH - SCP then do the following:
 
 ```
-> cd /srv/pdsc-50words-source
+> cd /srv/50words-source
 > ./bin/update-data.sh --prod
 
 ```
