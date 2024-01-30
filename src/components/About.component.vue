@@ -1,16 +1,13 @@
 <template>
     <div class="flex flex-col space-y-4 lg:text-lg break-normal text-justify">
         <div class="bg-blue-100 p-2 flex flex-col space-y-2">
-            <div class="flex flex-row space-x-2">
-                <div>
-                    <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"
-                        ><img
-                            class="h-12"
-                            alt="Creative Commons License"
-                            style="border-width: 0"
-                            src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png"
-                    /></a>
-                </div>
+            <div class="flex flex-row space-x-4 items-center">
+                <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"
+                    ><img
+                        class="w-96"
+                        alt="Creative Commons License"
+                        src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png"
+                /></a>
                 <div>
                     The material in this site is made available under a Creative Commons BY-NC
                     licence. The words provided on this site are not to be used for commercial
@@ -43,6 +40,12 @@
             >) and we will help get their recordings on the map.
         </p>
         <p>
+            Note that there is not always a one-to-one correspondence between words in English and
+            the Aboriginal language. For example, ‘brother’ in English corresponds to two words in
+            Wik-Mungkan, older brother and younger brother, so we have included just one: “wuny”
+            older brother.
+        </p>
+        <p>
             All words, audio, and video recordings are provided by language speakers and are
             included here with permission. Australian Indigenous languages have many thousands of
             words but we are displaying just some on this site, with audio or video.
@@ -52,19 +55,17 @@
             University of Melbourne, and funded by the Duncan Leary Trust for Australian Indigenous
             Languages.
         </p>
-        <p>
+        <p class="text-sm">
             This research project has been approved by the Human Research Ethics Committee of the
-            University of Melbourne. Project number: 1853186.1
+            University of Melbourne. Project number: 2024-28141-49151-4
         </p>
         <p>
-            For more information see our
-
             <a
-                class="style-link"
+                class="style-link text-blue-600"
                 href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
                 target="_blank"
-                >project website</a
-            >.
+                >For more information see our project website.</a
+            >
         </p>
         <render-about-logo-component />
     </div>
