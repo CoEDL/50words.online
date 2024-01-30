@@ -48,7 +48,7 @@
         <p>
             All words, audio, and video recordings are provided by language speakers and are
             included here with permission. Australian Indigenous languages have many thousands of
-            words but we are displaying just some on this site, with audio or video.
+            words but we are displaying just some on this site, with audio.
         </p>
         <p>
             The 50 Words Project is led by the Research Unit for Indigenous Language at the
