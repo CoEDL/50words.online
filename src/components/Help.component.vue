@@ -7,7 +7,7 @@
         </div>
         <a
             class="text-blue-700"
-            href="https://arts.unimelb.edu.au/__data/assets/pdf_file/0005/3352838/50_Words-Lockdown-activities.pdf"
+            href="https://arts.unimelb.edu.au/__data/assets/pdf_file/0005/3352838/50Words_A5ActivityBooklet-V3-.pdf"
             target="_blank"
             >Find out more.</a
         >
