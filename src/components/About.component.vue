@@ -45,6 +45,7 @@
             Wik-Mungkan, older brother and younger brother, so we have included just one: “wuny”
             older brother.
         </p>
+        <p>Note that there can be variation in the way that words are pronounced, so the version on this site may not be exactly the same as that used by other speakers.
         <p>
             All words, audio, and video recordings are provided by language speakers and are
             included here with permission. Australian Indigenous languages have many thousands of
@@ -64,7 +65,7 @@
                 class="style-link text-blue-600"
                 href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
                 target="_blank"
-                >For more information see our project website.</a
+                >For more information and resources, including a teaching guide, see our project website.</a
             >
         </p>
         <render-about-logo-component />
