@@ -65,8 +65,8 @@
                 class="style-link text-blue-600"
                 href="https://arts.unimelb.edu.au/research-unit-for-indigenous-language/research/current-research-projects/50-words-project"
                 target="_blank"
-                >For more information and resources, including a teaching guide, see our project website.</a
-            >
+                >For more information and resources see our project website.</a
+            > <a href="https://arts.unimelb.edu.au/__data/assets/pdf_file/0005/3352838/50Words_A5ActivityBooklet-V3-.pdf">A teaching guide can be downloaded here. </a>
         </p>
         <render-about-logo-component />
     </div>
