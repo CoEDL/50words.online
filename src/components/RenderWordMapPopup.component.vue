@@ -3,7 +3,10 @@
         <div class="text-lg md:text-xl mb-2">
             {{ word.indigenous }}
         </div>
-        <div class="text-lg md:text-xl mb-4">
+        <div class="text-lg md:text-xl mb-4" v-if="word.english_alternate">
+            {{ word.english_alternate }}
+        </div>
+        <div class="text-lg md:text-xl mb-4" v-else>
             {{ word.english }}
         </div>
         <div class="text-gray-600 group-hover:text-white text-sm md:text-base">
