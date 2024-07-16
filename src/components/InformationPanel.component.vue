@@ -81,7 +81,7 @@ watch(
             let name =
                 activeTab.value === "languages"
                     ? selection.data?.properties?.name
-                    : selection.data?.name;
+                    : encodeURIComponent(selection.data?.name);
             $router.push({ path: `/${activeTab.value}/${name}` });
         }
     },
