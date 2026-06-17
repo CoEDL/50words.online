@@ -1,7 +1,6 @@
-version: "3"
 services:
     data-processor:
-        image: python:3-buster
+        image: python:3
         tty: true
         environment:
             - UPDATE_ALL=$UPDATE_ALL
