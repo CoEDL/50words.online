@@ -1,7 +1,7 @@
 <template>
     <div>
         <audio ref="audioElement">
-            <source v-for="(file, idx) of data.audioFiles" :src="file" :key="idx" />
+            <source v-for="file of data.audioFiles" :src="file" :key="file" />
             Your browser does not support the <code>audio</code> element.
         </audio>
     </div>
