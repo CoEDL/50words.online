@@ -1,0 +1,20 @@
+services:
+  prod:
+    image: ghcr.io/coedl/50words.online:latest
+    hostname: prod
+    ports:
+      - 8081:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/50words.conf
+      - ./production/repository:/srv/50words/www/repository:ro
+    restart: always
+
+  stage:
+    image: ghcr.io/coedl/50words.online:staging
+    hostname: stage
+    ports:
+      - 8082:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/50words.conf
+      - ./production/repository:/srv/50words/www/repository:ro
+    restart: always

@@ -5,7 +5,8 @@
     -   [Developing the application](#developing-the-application)
         -   [Producing a data repository to work from in development](#producing-a-data-repository-to-work-from-in-development)
     -   [Creating the repository data for the application](#creating-the-repository-data-for-the-application)
-    -   [Building production containers](#building-production-containers)
+    -   [Building containers](#building-containers)
+    -   [Deploying](#deploying)
 
 This project aims to provide fifty words in every Indigenous language of Australia. We hope that
 this will be a useful resource for schools and educational organisations to learn 50 words in their
@@ -69,13 +70,42 @@ By default, the script won't re-transcode files so that updates happen quickly. 
 it (because you've updated the source audio files) then run at the shell:
 `./bin/update-data.sh --dev --update-all`
 
-## Building production containers
+## Building containers
 
-50words is deployed via a docker container using docker compose. To build a new release just run:
+Containers are built and published to the GitHub Container Registry
+(`ghcr.io/coedl/50words.online`) by the `.github/workflows/build.yml` GitHub Action. The action only
+runs in the canonical `CoEDL/50words.online` repository, never in forks.
+
+The image is built from a multi-stage `Dockerfile` (Node 24 builds the bundle, nginx serves it), so
+no separate build step is needed.
+
+The following tags are produced:
+
+| Trigger                                            | Image tag(s)                |
+| -------------------------------------------------- | --------------------------- |
+| Pushing a git tag (e.g. `v1.4.2`)                  | `:latest` and `:v1.4.2`     |
+| Pushing to `master`                                | `:staging`                  |
+| Manually running the workflow against a branch     | `:<branch-name>` (slugified) |
+
+To build a new production release (tagged `:latest`), bump the version and push the tag:
 
 ```
 > version-and-push.sh [minor || patch]
 ```
 
-A github action will build the container when a new tag (this script does the tagging) is pushed to
-the repo.
+This bumps the version in `package.json`, commits, tags, and pushes — which triggers the release
+build.
+
+To build a container for an arbitrary branch, open the **Actions** tab on GitHub, choose the
+**Build and publish container** workflow, click **Run workflow**, and select the branch from the
+dropdown. The resulting image is tagged with the branch name.
+
+## Deploying
+
+The deployment stack lives in `deploy/`. `deploy/docker-compose.yml` defines two services:
+
+-   `prod` — serves the `:latest` image on port `8081`
+-   `stage` — serves the `:staging` image on port `8082`
+
+Both serve the same repository dataset (`deploy/production/repository`, mounted read-only) using
+`deploy/nginx.conf`.

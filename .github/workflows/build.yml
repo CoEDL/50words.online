@@ -1,0 +1,61 @@
+name: Build and publish container to GitHub Container Registry
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Only build in the canonical repository, never in forks.
+    if: github.repository == 'CoEDL/50words.online'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          # metadata-action lowercases the image name for GHCR automatically.
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            # Released git tags -> :latest and the literal tag name (e.g. :v1.4.2)
+            type=ref,event=tag
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            # Pushes to master -> :staging
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/master' }}
+            # Manually dispatched branch builds -> :<branch-slug>
+            type=ref,event=branch,enable=${{ github.event_name == 'workflow_dispatch' }}
+
+      - name: Build and push the container
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

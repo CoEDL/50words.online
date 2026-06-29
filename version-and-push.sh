@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 if [ "$#" != "1" ] ; then
     echo "Usage: $0 [minor | patch]"
-    exit -1
+    exit 1
 fi
 
 if [[ $1 != 'minor'  && $1 != 'patch' ]] ; then
     echo "Usage: $0 [minor | patch]"
-    exit -1
+    exit 1
 fi
 
-# version the code
-version=$(npm version --no-git-tag-version $1)
-git tag $version
-git commit -a -m "tag and bump version"
+# Bump the version, commit and tag atomically (npm version does all three).
+npm version "$1"
 
-# push it to github to trigger container builds
-git push origin master --tags
+# Push the commit and the new tag to trigger the container build.
+git push origin master --follow-tags
