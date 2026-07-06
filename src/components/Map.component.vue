@@ -36,6 +36,7 @@
         </el-dialog>
         <render-word-map-popup-component
             v-if="word"
+            :key="wordKey"
             :word="word"
             class="absolute z-10 top-0 ml-4 mt-4 p-1 rounded-lg bg-white border-2 border-highlight-dark text-center style-overlay"
             @done="word = undefined"
@@ -64,6 +65,7 @@ export default {
     data() {
         return {
             popup: undefined,
+            wordKey: 0,
             emptyWordsLanguageLayerShowing: true,
             showContributeDialog: false,
             debouncedRenderLanguageLayers: debounce(this.renderLanguageLayers, 200),
@@ -264,6 +266,7 @@ export default {
                 if (properties.video) properties.video = JSON.parse(properties.video);
                 properties.language = JSON.parse(properties.language);
                 if (!this.smallDevice) {
+                    this.wordKey++;
                     this.word = { ...properties };
                 }
             });
