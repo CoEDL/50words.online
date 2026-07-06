@@ -104,6 +104,12 @@ export default {
                 }
             }
         },
+        data: function () {
+            this.word = this.data.properties ? this.data.properties : this.data;
+            this.state = { play: false };
+            this.loading = false;
+            this.ready = false;
+        },
     },
     beforeMount() {
         if (this.data.properties) {

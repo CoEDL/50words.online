@@ -91,6 +91,6 @@ function back() {
     }, 100);
 }
 function index(word) {
-    return `${word.language?.code}${word.english}${word.indigenous}`;
+    return `${language.value.properties.code}${word.english}${word.indigenous}`;
 }
 </script>
